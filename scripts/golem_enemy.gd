@@ -16,7 +16,7 @@ enum State { IDLE, PATROL, CHASE, ATTACK, HIT, DEAD }
 @export_group("Combat Stats")
 @export var max_health: float = 250.0
 @export var attack_damage: float = 30.0
-@export var attack_cooldown: float = 2.2
+@export var attack_cooldown: float = 0.5
 @export var attack_range: float = 3.2
 @export var detection_range: float = 10.0
 @export var patrol_range: float = 5.0
