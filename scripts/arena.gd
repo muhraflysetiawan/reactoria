@@ -15,6 +15,7 @@ func _ready() -> void:
 	if auto_generate_collisions:
 		setup_collisions()
 
+## saya akan lawan
 ## Fungsi untuk membuat collision shape secara otomatis untuk setiap mesh
 func setup_collisions() -> void:
 	generated_collision_count = 0
