@@ -5,8 +5,8 @@ class_name PlayerController
 ## Menjalankan animasi lari asli (Run_02), serta animasi Idle (tanpa T-pose) dan Jump
 
 @export_group("Movement")
-@export var walk_speed: float = 6.0
-@export var sprint_speed: float = 10.5
+@export var walk_speed: float = 5.0
+@export var sprint_speed: float = 8.0
 @export var jump_velocity: float = 6.0
 @export var acceleration: float = 12.0
 @export var friction: float = 14.0
