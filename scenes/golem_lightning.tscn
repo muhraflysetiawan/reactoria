@@ -1,0 +1,26 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://scripts/golem_enemy.gd" id="1_script"]
+[ext_resource type="PackedScene" path="res://assets/3dassets/golem/golem_lightning.glb" id="2_model"]
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_golem"]
+radius = 0.65
+height = 2.2
+
+[node name="GolemLightning" type="CharacterBody3D"]
+collision_layer = 4
+collision_mask = 3
+script = ExtResource("1_script")
+element_type = 3
+golem_title = "Stormheart Golem [Lightning]"
+element_color = Color(1, 0.9, 0.25, 1)
+max_health = 240.0
+attack_damage = 32.0
+chase_speed = 5.0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.1, 0)
+shape = SubResource("CapsuleShape3D_golem")
+
+[node name="Model" parent="." instance=ExtResource("2_model")]
+transform = Transform3D(-1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 0, 0, 0)

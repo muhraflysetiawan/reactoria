@@ -1,0 +1,9 @@
+# Mint textured OBJ material package
+# Generated from a Mint GLB conversion.
+
+newmtl Mossback-Stone-Colossus-Material
+Kd 1 1 1
+d 1
+Tr 0
+illum 2
+map_Kd textures/Color_33f3bc82-c604-4ed5-8b25-02d98709db89-98cf8b4edc51.png

@@ -1,0 +1,113 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://scenes/arena.tscn" id="1_jyhfs"]
+[ext_resource type="Script" path="res://scripts/arena.gd" id="2_tbgi4"]
+[ext_resource type="PackedScene" path="res://scenes/player.tscn" id="3_tefeu"]
+[ext_resource type="Script" path="res://scripts/player.gd" id="4_o6xl0"]
+[ext_resource type="PackedScene" path="res://scenes/golem_earth.tscn" id="5_earth"]
+[ext_resource type="PackedScene" path="res://scenes/golem_ice.tscn" id="6_ice"]
+[ext_resource type="PackedScene" path="res://scenes/golem_lava.tscn" id="7_lava"]
+[ext_resource type="PackedScene" path="res://scenes/golem_lightning.tscn" id="8_lightning"]
+[ext_resource type="PackedScene" path="res://scenes/golem_wind.tscn" id="9_wind"]
+
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_tipki"]
+sky_top_color = Color(0.32, 0.52, 0.82, 1)
+sky_horizon_color = Color(0.65, 0.75, 0.85, 1)
+ground_bottom_color = Color(0.18, 0.2, 0.24, 1)
+ground_horizon_color = Color(0.65, 0.75, 0.85, 1)
+
+[sub_resource type="Sky" id="Sky_85g3d"]
+sky_material = SubResource("ProceduralSkyMaterial_tipki")
+
+[sub_resource type="Environment" id="Environment_choun"]
+background_mode = 2
+sky = SubResource("Sky_85g3d")
+tonemap_mode = 2
+glow_enabled = true
+
+[node name="Main" type="Node3D" unique_id=1451059590]
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=1214174078]
+environment = SubResource("Environment_choun")
+
+[node name="SunLight" type="DirectionalLight3D" parent="." unique_id=1361471328]
+transform = Transform3D(0.81915206, 0.4055798, -0.4055798, 0, 0.70710677, 0.70710677, 0.57357645, -0.579228, 0.579228, 0, 0, 0)
+light_color = Color(1, 0.97, 0.92, 1)
+light_energy = 1.25
+shadow_enabled = true
+
+[node name="Arena" type="Node3D" parent="." unique_id=1541300288 instance=ExtResource("1_jyhfs")]
+script = ExtResource("2_tbgi4")
+
+[node name="Player" type="CharacterBody3D" parent="." unique_id=1716225669 instance=ExtResource("3_tefeu")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.4, -5)
+collision_layer = 2
+script = ExtResource("4_o6xl0")
+
+[node name="Enemies" type="Node3D" parent="."]
+
+[node name="GolemEarth" parent="Enemies" instance=ExtResource("5_earth")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 18, 0.4, 12)
+
+[node name="GolemLava" parent="Enemies" instance=ExtResource("7_lava")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -18, 0.4, 10)
+
+[node name="GolemIce" parent="Enemies" instance=ExtResource("6_ice")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 25)
+
+[node name="GolemLightning" parent="Enemies" instance=ExtResource("8_lightning")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -15, 0.5, -15)
+
+[node name="GolemWind" parent="Enemies" instance=ExtResource("9_wind")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14, 0.4, -12)
+
+[node name="HUD" type="CanvasLayer" parent="." unique_id=1986624508]
+
+[node name="ControlsPanel" type="PanelContainer" parent="HUD" unique_id=366952633]
+offset_left = 20.0
+offset_top = 20.0
+offset_right = 350.0
+offset_bottom = 295.0
+
+[node name="Margin" type="MarginContainer" parent="HUD/ControlsPanel" unique_id=1620758437]
+layout_mode = 2
+theme_override_constants/margin_left = 16
+theme_override_constants/margin_top = 14
+theme_override_constants/margin_right = 16
+theme_override_constants/margin_bottom = 14
+
+[node name="VBox" type="VBoxContainer" parent="HUD/ControlsPanel/Margin" unique_id=2040715154]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="@Label@2" type="Label" parent="HUD/ControlsPanel/Margin/VBox" unique_id=33436531]
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+text = "⚔️ Reactioria - Battle Arena"
+
+[node name="PlayerHPLabel" type="Label" parent="HUD/ControlsPanel/Margin/VBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+modulate = Color(0.3, 0.95, 0.4, 1)
+text = "❤️ HP: 100 / 100"
+
+[node name="@HSeparator@3" type="HSeparator" parent="HUD/ControlsPanel/Margin/VBox" unique_id=1962495430]
+layout_mode = 2
+
+[node name="@Label@4" type="Label" parent="HUD/ControlsPanel/Margin/VBox" unique_id=657527023]
+layout_mode = 2
+theme_override_font_sizes/font_size = 13
+text = "• W A S D / Panah : Bergerak
+• Shift : Sprint (Lari)
+• Spasi : Lompat
+• Klik Kiri / F : Serang Musuh Golem
+• Mouse : Arahkan Kamera
+• Scroll Wheel : Zoom Kamera
+• R : Respawn ke Arena
+• Esc : Kunci / Buka Kursor"
+
+[node name="@Label@5" type="Label" parent="HUD/ControlsPanel/Margin/VBox" unique_id=979070412]
+modulate = Color(0.4, 0.9, 0.5, 1)
+layout_mode = 2
+theme_override_font_sizes/font_size = 11
+text = "Status: 5 Golem Elemen Aktif di Arena!"

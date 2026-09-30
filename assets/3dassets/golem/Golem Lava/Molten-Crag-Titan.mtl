@@ -1,0 +1,9 @@
+# Mint textured OBJ material package
+# Generated from a Mint GLB conversion.
+
+newmtl Molten-Crag-Titan-Material
+Kd 1 1 1
+d 1
+Tr 0
+illum 2
+map_Kd textures/Color_103da4c2-b21b-4299-9cd3-0234120a9d7b-26e6a2884ca1.png

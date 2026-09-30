@@ -1,0 +1,9 @@
+# Mint textured OBJ material package
+# Generated from a Mint GLB conversion.
+
+newmtl Frostcrag-Ice-Colossus-Material
+Kd 1 1 1
+d 1
+Tr 0
+illum 2
+map_Kd textures/Color_cc6a367c-4d1d-4515-8daa-fc41561ee535-2fd588149d7b.png

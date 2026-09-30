@@ -1,0 +1,9 @@
+# Mint textured OBJ material package
+# Generated from a Mint GLB conversion.
+
+newmtl Cyan-Tempest-Golem-Material
+Kd 1 1 1
+d 1
+Tr 0
+illum 2
+map_Kd textures/Color_9c43d702-be1c-41e4-8dbe-424a567fe0da-d5a29c505175.png

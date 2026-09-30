@@ -1,0 +1,9 @@
+# Mint textured OBJ material package
+# Generated from a Mint GLB conversion.
+
+newmtl Stormheart-Stone-Golem-Material
+Kd 1 1 1
+d 1
+Tr 0
+illum 2
+map_Kd textures/Color_21403651-f38f-43bf-a596-6572a989749b-c6847f3d21cd.png
