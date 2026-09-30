@@ -1,6 +1,9 @@
 extends CharacterBody3D
 class_name PlayerController
 
+signal health_changed(current_hp: float, max_hp: float)
+signal damaged(amount: float)
+
 ## Controller Karakter 3D untuk Battle Arena Reactoria
 ## Dilengkapi animasi Run asli, Idle, Jump, serta Sistem Pedang (Aqua Saber) & Animasi Serangan Combo 3-Hit
 
@@ -75,6 +78,8 @@ func _ready() -> void:
 	add_to_group("player")
 	spawn_position = global_position
 	current_health = max_health
+	health_changed.emit(current_health, max_health)
+	# _update_hud_hp()
 	capture_mouse()
 	
 	floor_snap_length = 0.4
@@ -190,7 +195,7 @@ func _update_sword_transform() -> void:
 		sword_holder.rotation_degrees = sword_rotation
 		sword_holder.scale = sword_scale
 
-func _unhandled_input(event: InputEvent) -> void:
+func _input(event: InputEvent) -> void:
 	if event is InputEventMouseMotion and mouse_captured:
 		rotate_y(-event.relative.x * mouse_sensitivity)
 		spring_arm.rotate_x(-event.relative.y * mouse_sensitivity)
@@ -202,10 +207,9 @@ func _unhandled_input(event: InputEvent) -> void:
 		elif event.button_index == MOUSE_BUTTON_WHEEL_DOWN:
 			spring_arm.spring_length = clamp(spring_arm.spring_length + 0.4, min_zoom, max_zoom)
 		elif event.button_index == MOUSE_BUTTON_LEFT:
-			if mouse_captured:
-				perform_attack()
-			else:
+			if not mouse_captured:
 				capture_mouse()
+			perform_attack()
 
 	if event is InputEventKey and event.pressed:
 		if event.keycode == KEY_ESCAPE:
@@ -214,6 +218,10 @@ func _unhandled_input(event: InputEvent) -> void:
 			respawn()
 		elif event.keycode == KEY_F:
 			perform_attack()
+		elif event.keycode == KEY_H:
+			take_damage(20.0) # Debug test damage
+		elif event.keycode == KEY_J:
+			heal(25.0) # Debug test heal
 
 func _physics_process(delta: float) -> void:
 	# Update timers
@@ -470,20 +478,29 @@ func respawn() -> void:
 	current_health = max_health
 	is_attacking = false
 	combo_index = 1
-	_update_hud_hp()
+	health_changed.emit(current_health, max_health)
+	# _update_hud_hp()
+
+func heal(amount: float) -> void:
+	current_health = min(max_health, current_health + amount)
+	print("[Player] Menyembuhkan HP! HP tersisa: ", current_health)
+	health_changed.emit(current_health, max_health)
+	# _update_hud_hp()
 
 func take_damage(amount: float) -> void:
 	current_health = max(0.0, current_health - amount)
 	print("[Player] Terkena serangan! HP tersisa: ", current_health)
 	shake_intensity = 0.12
-	_update_hud_hp()
+	damaged.emit(amount)
+	health_changed.emit(current_health, max_health)
+	# _update_hud_hp()
 	if current_health <= 0.0:
 		respawn()
 
-func _update_hud_hp() -> void:
-	var hud_hp = get_tree().root.find_child("PlayerHPLabel", true, false)
-	if hud_hp and hud_hp is Label:
-		hud_hp.text = "❤️ HP: %d / %d" % [int(current_health), int(max_health)]
+# func _update_hud_hp() -> void:
+# 	var hud_hp = get_tree().root.find_child("PlayerHPLabel", true, false)
+# 	if hud_hp and hud_hp is Label:
+# 		hud_hp.text = "❤️ HP : %d / %d" % [int(current_health), int(max_health)]
 
 func capture_mouse() -> void:
 	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)

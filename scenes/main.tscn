@@ -9,6 +9,7 @@
 [ext_resource type="PackedScene" path="res://scenes/golem_lava.tscn" id="7_lava"]
 [ext_resource type="PackedScene" path="res://scenes/golem_lightning.tscn" id="8_lightning"]
 [ext_resource type="PackedScene" path="res://scenes/golem_wind.tscn" id="9_wind"]
+[ext_resource type="PackedScene" uid="uid://cx6y8v2q9kbm1" path="res://scenes/health_bar_ui.tscn" id="10_health_ui"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_tipki"]
 sky_top_color = Color(0.32, 0.52, 0.82, 1)
@@ -63,51 +64,56 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14, 0.4, -12)
 
 [node name="HUD" type="CanvasLayer" parent="." unique_id=1986624508]
 
-[node name="ControlsPanel" type="PanelContainer" parent="HUD" unique_id=366952633]
-offset_left = 20.0
-offset_top = 20.0
-offset_right = 350.0
-offset_bottom = 295.0
+[node name="HealthBarUI" parent="HUD" instance=ExtResource("10_health_ui")]
+offset_left = 40.0
+offset_top = 22.0
+offset_right = 866.0
+offset_bottom = 172.0
 
-[node name="Margin" type="MarginContainer" parent="HUD/ControlsPanel" unique_id=1620758437]
-layout_mode = 2
-theme_override_constants/margin_left = 16
-theme_override_constants/margin_top = 14
-theme_override_constants/margin_right = 16
-theme_override_constants/margin_bottom = 14
+; [node name="ControlsPanel" type="PanelContainer" parent="HUD" unique_id=366952633]
+; offset_left = 20.0
+; offset_top = 108.0
+; offset_right = 360.0
+; offset_bottom = 398.0
+; mouse_filter = 2
 
-[node name="VBox" type="VBoxContainer" parent="HUD/ControlsPanel/Margin" unique_id=2040715154]
-layout_mode = 2
-theme_override_constants/separation = 6
+; [node name="Margin" type="MarginContainer" parent="HUD/ControlsPanel" unique_id=1620758437]
+; layout_mode = 2
+; theme_override_constants/margin_left = 16
+; theme_override_constants/margin_top = 12
+; theme_override_constants/margin_right = 16
+; theme_override_constants/margin_bottom = 12
+; mouse_filter = 2
 
-[node name="@Label@2" type="Label" parent="HUD/ControlsPanel/Margin/VBox" unique_id=33436531]
-layout_mode = 2
-theme_override_font_sizes/font_size = 16
-text = "⚔️ Reactioria - Battle Arena"
+; [node name="VBox" type="VBoxContainer" parent="HUD/ControlsPanel/Margin" unique_id=2040715154]
+; layout_mode = 2
+; theme_override_constants/separation = 5
+; mouse_filter = 2
 
-[node name="PlayerHPLabel" type="Label" parent="HUD/ControlsPanel/Margin/VBox"]
-layout_mode = 2
-theme_override_font_sizes/font_size = 14
-modulate = Color(0.3, 0.95, 0.4, 1)
-text = "❤️ HP: 100 / 100"
+; [node name="PlayerHPLabel" type="Label" parent="HUD/ControlsPanel/Margin/VBox"]
+; layout_mode = 2
+; theme_override_font_sizes/font_size = 14
+; modulate = Color(0.3, 0.95, 0.4, 1)
+; text = "❤️ HP: 100 / 100"
 
-[node name="@HSeparator@3" type="HSeparator" parent="HUD/ControlsPanel/Margin/VBox" unique_id=1962495430]
-layout_mode = 2
+; [node name="@HSeparator@3" type="HSeparator" parent="HUD/ControlsPanel/Margin/VBox" unique_id=1962495430]
+; layout_mode = 2
 
-[node name="@Label@4" type="Label" parent="HUD/ControlsPanel/Margin/VBox" unique_id=657527023]
-layout_mode = 2
-theme_override_font_sizes/font_size = 13
-text = "• W A S D / Panah : Bergerak
-• Shift : Sprint (Lari Cepat)
-• Spasi : Lompat
-• Klik Kiri / F : Serang Pedang (3-Hit Combo Aqua Saber)
-• Mouse : Arahkan Kamera
-• Scroll Wheel : Zoom Kamera
-• R : Respawn ke Arena
-• Esc : Kunci / Buka Kursor"
+; [node name="@Label@4" type="Label" parent="HUD/ControlsPanel/Margin/VBox" unique_id=657527023]
+; layout_mode = 2
+; theme_override_font_sizes/font_size = 13
+; text = "• W A S D / Panah : Bergerak
+; • Shift : Sprint (Lari Cepat)
+; • Spasi : Lompat
+; • Klik Kiri / F : Serang Pedang (3-Hit Combo)
+; • H / J : Test Damage / Heal
+; • Mouse : Arahkan Kamera
+; • Scroll Wheel : Zoom Kamera
+; • R : Respawn ke Arena
+; • Esc : Kunci / Buka Kursor"
 
-[node name="@Label@5" type="Label" parent="HUD/ControlsPanel/Margin/VBox" unique_id=979070412]
-modulate = Color(0.4, 0.9, 0.5, 1)
-layout_mode = 2
-theme_override_font_sizes/font_size = 11
-text = "Status: 5 Golem Elemen Aktif di Arena!"
+; [node name="@Label@5" type="Label" parent="HUD/ControlsPanel/Margin/VBox" unique_id=979070412]
+; modulate = Color(0.4, 0.9, 0.5, 1)
+; layout_mode = 2
+; theme_override_font_sizes/font_size = 11
+; text = "Status: 5 Golem Elemen Aktif di Arena!"
