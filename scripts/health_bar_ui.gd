@@ -56,6 +56,12 @@ func _ready() -> void:
 		# Set pivot di tengah agar scale punch membesar dari titik tengah icon
 		heart_shake.pivot_offset = heart_shake.size * 0.5
 	
+	# Pastikan bar dan label terlihat (scene menyimpan visible = false)
+	if hp_bar:
+		hp_bar.visible = true
+	if hp_label:
+		hp_label.visible = true
+	
 	# Inisialisasi Shader Material untuk HP Bar & Ghost Bar
 	_setup_materials()
 	
@@ -110,7 +116,7 @@ func _connect_to_player() -> void:
 func _process(delta: float) -> void:
 	# Proses getaran (shake) pada Health Background & Heart Icon
 	if current_shake_time > 0.0:
-		current_shake_time -= delta
+		current_shake_time = max(current_shake_time - delta, 0.0)
 		var progress = current_shake_time / shake_duration
 		# Damping kurva non-linear agar getaran terasa tajam di awal lalu melandai
 		var intensity = pow(progress, 1.4) * max_shake_offset * current_shake_trauma

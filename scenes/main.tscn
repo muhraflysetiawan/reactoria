@@ -1,15 +1,13 @@
-[gd_scene format=3]
+[gd_scene format=3 uid="uid://b8bq8ubtlekcb"]
 
-[ext_resource type="PackedScene" path="res://scenes/arena.tscn" id="1_jyhfs"]
-[ext_resource type="Script" path="res://scripts/arena.gd" id="2_tbgi4"]
-[ext_resource type="PackedScene" path="res://scenes/player.tscn" id="3_tefeu"]
-[ext_resource type="Script" path="res://scripts/player.gd" id="4_o6xl0"]
+[ext_resource type="PackedScene" uid="uid://cxrn32w88i001" path="res://scenes/arena.tscn" id="1_jyhfs"]
+[ext_resource type="PackedScene" uid="uid://c84x5qvev1p1" path="res://scenes/player.tscn" id="3_tefeu"]
 [ext_resource type="PackedScene" path="res://scenes/golem_earth.tscn" id="5_earth"]
 [ext_resource type="PackedScene" path="res://scenes/golem_ice.tscn" id="6_ice"]
 [ext_resource type="PackedScene" path="res://scenes/golem_lava.tscn" id="7_lava"]
 [ext_resource type="PackedScene" path="res://scenes/golem_lightning.tscn" id="8_lightning"]
 [ext_resource type="PackedScene" path="res://scenes/golem_wind.tscn" id="9_wind"]
-[ext_resource type="PackedScene" uid="uid://cx6y8v2q9kbm1" path="res://scenes/health_bar_ui.tscn" id="10_health_ui"]
+[ext_resource type="PackedScene" uid="uid://cx6y8v2rakbm1" path="res://scenes/health_bar_ui.tscn" id="10_health_ui"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_tipki"]
 sky_top_color = Color(0.32, 0.52, 0.82, 1)
@@ -37,83 +35,32 @@ light_color = Color(1, 0.97, 0.92, 1)
 light_energy = 1.25
 shadow_enabled = true
 
-[node name="Arena" type="Node3D" parent="." unique_id=1541300288 instance=ExtResource("1_jyhfs")]
-script = ExtResource("2_tbgi4")
+[node name="Arena" parent="." unique_id=1541300288 instance=ExtResource("1_jyhfs")]
 
-[node name="Player" type="CharacterBody3D" parent="." unique_id=1716225669 instance=ExtResource("3_tefeu")]
+[node name="Player" parent="." unique_id=1716225669 instance=ExtResource("3_tefeu")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.4, -5)
-collision_layer = 2
-script = ExtResource("4_o6xl0")
 
-[node name="Enemies" type="Node3D" parent="."]
+[node name="Enemies" type="Node3D" parent="." unique_id=868382235]
 
-[node name="GolemEarth" parent="Enemies" instance=ExtResource("5_earth")]
+[node name="GolemEarth" parent="Enemies" unique_id=719302659 instance=ExtResource("5_earth")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 18, 0.4, 12)
 
-[node name="GolemLava" parent="Enemies" instance=ExtResource("7_lava")]
+[node name="GolemLava" parent="Enemies" unique_id=1479974700 instance=ExtResource("7_lava")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -18, 0.4, 10)
 
-[node name="GolemIce" parent="Enemies" instance=ExtResource("6_ice")]
+[node name="GolemIce" parent="Enemies" unique_id=1705326028 instance=ExtResource("6_ice")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 25)
 
-[node name="GolemLightning" parent="Enemies" instance=ExtResource("8_lightning")]
+[node name="GolemLightning" parent="Enemies" unique_id=1678057471 instance=ExtResource("8_lightning")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -15, 0.5, -15)
 
-[node name="GolemWind" parent="Enemies" instance=ExtResource("9_wind")]
+[node name="GolemWind" parent="Enemies" unique_id=1169663225 instance=ExtResource("9_wind")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14, 0.4, -12)
 
 [node name="HUD" type="CanvasLayer" parent="." unique_id=1986624508]
 
-[node name="HealthBarUI" parent="HUD" instance=ExtResource("10_health_ui")]
+[node name="HealthBarUI" parent="HUD" unique_id=764858543 instance=ExtResource("10_health_ui")]
 offset_left = 40.0
 offset_top = 22.0
 offset_right = 866.0
 offset_bottom = 172.0
-
-; [node name="ControlsPanel" type="PanelContainer" parent="HUD" unique_id=366952633]
-; offset_left = 20.0
-; offset_top = 108.0
-; offset_right = 360.0
-; offset_bottom = 398.0
-; mouse_filter = 2
-
-; [node name="Margin" type="MarginContainer" parent="HUD/ControlsPanel" unique_id=1620758437]
-; layout_mode = 2
-; theme_override_constants/margin_left = 16
-; theme_override_constants/margin_top = 12
-; theme_override_constants/margin_right = 16
-; theme_override_constants/margin_bottom = 12
-; mouse_filter = 2
-
-; [node name="VBox" type="VBoxContainer" parent="HUD/ControlsPanel/Margin" unique_id=2040715154]
-; layout_mode = 2
-; theme_override_constants/separation = 5
-; mouse_filter = 2
-
-; [node name="PlayerHPLabel" type="Label" parent="HUD/ControlsPanel/Margin/VBox"]
-; layout_mode = 2
-; theme_override_font_sizes/font_size = 14
-; modulate = Color(0.3, 0.95, 0.4, 1)
-; text = "❤️ HP: 100 / 100"
-
-; [node name="@HSeparator@3" type="HSeparator" parent="HUD/ControlsPanel/Margin/VBox" unique_id=1962495430]
-; layout_mode = 2
-
-; [node name="@Label@4" type="Label" parent="HUD/ControlsPanel/Margin/VBox" unique_id=657527023]
-; layout_mode = 2
-; theme_override_font_sizes/font_size = 13
-; text = "• W A S D / Panah : Bergerak
-; • Shift : Sprint (Lari Cepat)
-; • Spasi : Lompat
-; • Klik Kiri / F : Serang Pedang (3-Hit Combo)
-; • H / J : Test Damage / Heal
-; • Mouse : Arahkan Kamera
-; • Scroll Wheel : Zoom Kamera
-; • R : Respawn ke Arena
-; • Esc : Kunci / Buka Kursor"
-
-; [node name="@Label@5" type="Label" parent="HUD/ControlsPanel/Margin/VBox" unique_id=979070412]
-; modulate = Color(0.4, 0.9, 0.5, 1)
-; layout_mode = 2
-; theme_override_font_sizes/font_size = 11
-; text = "Status: 5 Golem Elemen Aktif di Arena!"

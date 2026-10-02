@@ -62,7 +62,7 @@ var sword_holder: Node3D = null
 var gravity: float = 15.0
 var spawn_position: Vector3 = Vector3(0, 0.4, -5.0)
 var mouse_captured: bool = true
-var run_anim_name: String = "Armature|Run_02|baselayer"
+var run_anim_name: String = "MC_RUN"
 
 # Combo Attack System
 var combo_index: int = 1
@@ -73,6 +73,12 @@ var attack_cooldown_timer: float = 0.2
 
 # Camera shake
 var shake_intensity: float = 0.0
+
+# Parry System
+var is_parrying: bool = false
+var parry_timer: float = 0.0
+const PARRY_WINDOW: float = 0.4    # detik jendela parry aktif
+const PARRY_COOLDOWN: float = 1.2  # cooldown setelah parry
 
 func _ready() -> void:
 	add_to_group("player")
@@ -90,6 +96,13 @@ func _ready() -> void:
 	anim_player = _find_node_of_type(self, AnimationPlayer)
 	skeleton = _find_node_of_type(self, Skeleton3D)
 	
+	# Fix GLB origin offset — Blender export often places armature away from (0,0,0)
+	var char_model = $Visuals/CharacterModel
+	if char_model:
+		for child in char_model.get_children():
+			if child is Node3D:
+				child.position = Vector3.ZERO
+	
 	if anim_player:
 		_setup_animations()
 	
@@ -105,48 +118,18 @@ func _find_node_of_type(node: Node, target_type) -> Node:
 	return null
 
 func _setup_animations() -> void:
-	# Cari nama animasi lari asli di dalam glb
-	for anim_name in anim_player.get_animation_list():
-		if "run" in anim_name.to_lower():
-			run_anim_name = anim_name
-			var run_anim = anim_player.get_animation(run_anim_name)
-			if run_anim:
-				run_anim.loop_mode = Animation.LOOP_LINEAR
-			break
-
+	# NLA track animations are embedded in MC_NLATracks.glb
+	# Names: MC_IDLE, MC_RUN, MC_RUNFAST, MC_JUMP, MC_DEAD, MC_PARRY
 	var lib = anim_player.get_animation_library("")
-	if not lib:
-		return
 
-	# 1. Load animasi Idle
-	if not lib.has_animation("Idle"):
-		var idle_loaded: Animation = null
-		if ResourceLoader.exists("res://assets/3dassets/character/anim_idle.res"):
-			idle_loaded = load("res://assets/3dassets/character/anim_idle.res")
-		elif ResourceLoader.exists("res://assets/3dassets/character/mc_character.glb"):
-			var mc = load("res://assets/3dassets/character/mc_character.glb").instantiate()
-			var ap = _find_node_of_type(mc, AnimationPlayer)
-			if ap and ap.has_animation("Idle"):
-				idle_loaded = ap.get_animation("Idle").duplicate()
-		if idle_loaded:
-			idle_loaded.loop_mode = Animation.LOOP_LINEAR
-			lib.add_animation("Idle", idle_loaded)
+	for anim_name in ["MC_IDLE", "MC_RUN", "MC_RUNFAST"]:
+		if anim_player.has_animation(anim_name):
+			anim_player.get_animation(anim_name).loop_mode = Animation.LOOP_LINEAR
 
-	# 2. Load animasi Jump
-	if not lib.has_animation("Jump"):
-		var jump_loaded: Animation = null
-		if ResourceLoader.exists("res://assets/3dassets/character/anim_jump.res"):
-			jump_loaded = load("res://assets/3dassets/character/anim_jump.res")
-		elif ResourceLoader.exists("res://assets/3dassets/character/mc_character.glb"):
-			var mc = load("res://assets/3dassets/character/mc_character.glb").instantiate()
-			var ap = _find_node_of_type(mc, AnimationPlayer)
-			if ap and ap.has_animation("Jump"):
-				jump_loaded = ap.get_animation("Jump").duplicate()
-		if jump_loaded:
-			jump_loaded.loop_mode = Animation.LOOP_NONE
-			lib.add_animation("Jump", jump_loaded)
+	for anim_name in ["MC_JUMP", "MC_DEAD", "MC_PARRY"]:
+		if anim_player.has_animation(anim_name):
+			anim_player.get_animation(anim_name).loop_mode = Animation.LOOP_NONE
 
-	# 3. Load animasi Attack Combos (Attack1, Attack2, Attack3)
 	for i in range(1, 4):
 		var anim_id = "Attack" + str(i)
 		var res_path = "res://assets/3dassets/character/anim_attack" + str(i) + ".res"
@@ -157,7 +140,7 @@ func _setup_animations() -> void:
 				lib.add_animation(anim_id, atk_anim)
 
 	print("[Player] Animasi siap: ", anim_player.get_animation_list())
-	anim_player.play("Idle")
+	anim_player.play("MC_IDLE")
 
 ## Memasang pedang Aqua Saber (Weapon_Sword2) ke tangan kanan (RightHand bone)
 func _setup_sword_weapon() -> void:
@@ -210,6 +193,10 @@ func _input(event: InputEvent) -> void:
 			if not mouse_captured:
 				capture_mouse()
 			perform_attack()
+		elif event.button_index == MOUSE_BUTTON_RIGHT:
+			if not mouse_captured:
+				capture_mouse()
+			perform_parry()
 
 	if event is InputEventKey and event.pressed:
 		if event.keycode == KEY_ESCAPE:
@@ -237,6 +224,11 @@ func _physics_process(delta: float) -> void:
 		attack_timer -= delta
 		if attack_timer <= 0.0:
 			is_attacking = false
+
+	if is_parrying:
+		parry_timer -= delta
+		if parry_timer <= 0.0:
+			is_parrying = false
 			
 	# Camera shake decay
 	if shake_intensity > 0.0:
@@ -257,7 +249,7 @@ func _physics_process(delta: float) -> void:
 	elif InputMap.has_action("ui_accept") and Input.is_action_just_pressed("ui_accept"):
 		jump_pressed = true
 		
-	if jump_pressed and is_on_floor() and not is_attacking:
+	if jump_pressed and is_on_floor() and not is_attacking and not is_parrying:
 		velocity.y = jump_velocity
 
 	var is_sprinting: bool = Input.is_key_pressed(KEY_SHIFT) or (InputMap.has_action("sprint") and Input.is_action_pressed("sprint"))
@@ -277,7 +269,7 @@ func _physics_process(delta: float) -> void:
 	var move_direction: Vector3 = (transform.basis * Vector3(input_dir.x, 0, input_dir.y)).normalized()
 
 	if move_direction != Vector3.ZERO:
-		if not is_attacking:
+		if not is_attacking and not is_parrying:
 			velocity.x = lerp(velocity.x, move_direction.x * current_speed, acceleration * delta)
 			velocity.z = lerp(velocity.z, move_direction.z * current_speed, acceleration * delta)
 			if visuals:
@@ -299,29 +291,29 @@ func _physics_process(delta: float) -> void:
 	if global_position.y < -15.0:
 		respawn()
 
-func _update_animation(delta: float, is_moving: bool, is_sprinting: bool) -> void:
+func _update_animation(_delta: float, is_moving: bool, is_sprinting: bool) -> void:
 	if not anim_player:
 		return
 
-	# Jangan override jika sedang memainkan animasi serangan
-	if is_attacking:
+	# Jangan override jika sedang memainkan animasi serangan atau parry
+	if is_attacking or is_parrying:
 		return
 
 	if not is_on_floor():
 		# Melompat di udara
-		if anim_player.has_animation("Jump") and anim_player.current_animation != "Jump":
-			anim_player.play("Jump", 0.15)
+		if anim_player.has_animation("MC_JUMP") and anim_player.current_animation != "MC_JUMP":
+			anim_player.play("MC_JUMP", 0.15)
 	elif is_moving:
-		# Berlari dengan animasi asli
-		var target_speed: float = 1.35 if is_sprinting else 0.95
-		anim_player.speed_scale = lerp(anim_player.speed_scale, target_speed, 10.0 * delta)
-		if anim_player.has_animation(run_anim_name) and anim_player.current_animation != run_anim_name:
-			anim_player.play(run_anim_name, 0.2)
+		# Berlari — MC_RUNFAST untuk sprint, MC_RUN untuk jalan
+		var target_anim = "MC_RUNFAST" if is_sprinting else "MC_RUN"
+		anim_player.speed_scale = 1.0
+		if anim_player.has_animation(target_anim) and anim_player.current_animation != target_anim:
+			anim_player.play(target_anim, 0.2)
 	else:
 		# Berdiri santai (Idle)
 		anim_player.speed_scale = 1.0
-		if anim_player.has_animation("Idle") and anim_player.current_animation != "Idle":
-			anim_player.play("Idle", 0.25)
+		if anim_player.has_animation("MC_IDLE") and anim_player.current_animation != "MC_IDLE":
+			anim_player.play("MC_IDLE", 0.25)
 
 ## Eksekusi Serangan Pedang dengan Animasi Combo 3-Hit
 func perform_attack() -> void:
@@ -388,6 +380,47 @@ func perform_attack() -> void:
 
 	# Majukan indeks combo (1 -> 2 -> 3 -> 1)
 	combo_index = (combo_index % 3) + 1
+
+func perform_parry() -> void:
+	if is_parrying or is_attacking or attack_cooldown_timer > 0.0:
+		return
+
+	is_parrying = true
+	parry_timer = PARRY_WINDOW
+	attack_cooldown_timer = PARRY_COOLDOWN
+
+	# Hadapkan ke depan
+	if visuals:
+		visuals.rotation.y = 0.0
+
+	if anim_player and anim_player.has_animation("MC_PARRY"):
+		anim_player.play("MC_PARRY", 0.08)
+
+	print("[Player] Parry aktif! (%.1fs window)" % PARRY_WINDOW)
+
+## Counter-stagger musuh terdekat setelah parry berhasil
+func _parry_counter() -> void:
+	if not is_inside_tree() or not get_tree():
+		return
+	var enemies = get_tree().get_nodes_in_group("enemies")
+	for enemy in enemies:
+		if not is_instance_valid(enemy):
+			continue
+		var dist = global_position.distance_to(enemy.global_position)
+		if dist <= attack_reach * 1.5:
+			# Knockback
+			var push = (enemy.global_position - global_position).normalized()
+			push.y = 0.3
+			if "velocity" in enemy:
+				enemy.velocity += push * 10.0
+			# Force stagger state (GolemEnemy has _set_state)
+			if enemy.has_method("_set_state"):
+				enemy._set_state(enemy.State.HIT)
+			# Bonus damage dari parry counter
+			if enemy.has_method("take_damage"):
+				enemy.take_damage(base_attack_power * 0.5)
+			_spawn_hit_spark(enemy.global_position + Vector3(0, 1.2, 0))
+			print("[Player] Parry counter! Musuh terstagger!")
 
 func _detect_sword_hits(dmg: float, reach: float, combo_step: int) -> void:
 	if not is_inside_tree() or not get_tree():
@@ -488,6 +521,15 @@ func heal(amount: float) -> void:
 	# _update_hud_hp()
 
 func take_damage(amount: float) -> void:
+	# Parry berhasil — blok damage, stagger musuh terdekat
+	if is_parrying:
+		print("[Player] PARRY BERHASIL! Damage %d diblok!" % int(amount))
+		is_parrying = false
+		shake_intensity = 0.15
+		_spawn_hit_spark(global_position + Vector3(0, 1.2, 0))
+		_parry_counter()
+		return
+
 	current_health = max(0.0, current_health - amount)
 	print("[Player] Terkena serangan! HP tersisa: ", current_health)
 	shake_intensity = 0.12
