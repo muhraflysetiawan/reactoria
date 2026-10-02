@@ -73,6 +73,7 @@ var attack_cooldown_timer: float = 0.2
 
 # Camera shake
 var shake_intensity: float = 0.0
+var is_dead: bool = false
 
 # Parry System
 var is_parrying: bool = false
@@ -179,6 +180,8 @@ func _update_sword_transform() -> void:
 		sword_holder.scale = sword_scale
 
 func _input(event: InputEvent) -> void:
+	if is_dead:
+		return
 	if event is InputEventMouseMotion and mouse_captured:
 		rotate_y(-event.relative.x * mouse_sensitivity)
 		spring_arm.rotate_x(-event.relative.y * mouse_sensitivity)
@@ -242,6 +245,12 @@ func _physics_process(delta: float) -> void:
 
 	if not is_on_floor():
 		velocity.y -= gravity * delta
+
+	if is_dead:
+		velocity.x = lerp(velocity.x, 0.0, friction * delta)
+		velocity.z = lerp(velocity.z, 0.0, friction * delta)
+		move_and_slide()
+		return
 	
 	var jump_pressed: bool = Input.is_key_pressed(KEY_SPACE)
 	if InputMap.has_action("jump") and Input.is_action_just_pressed("jump"):
@@ -295,8 +304,8 @@ func _update_animation(_delta: float, is_moving: bool, is_sprinting: bool) -> vo
 	if not anim_player:
 		return
 
-	# Jangan override jika sedang memainkan animasi serangan atau parry
-	if is_attacking or is_parrying:
+	# Jangan override jika sedang mati, menyerang, atau parry
+	if is_dead or is_attacking or is_parrying:
 		return
 
 	if not is_on_floor():
@@ -510,6 +519,8 @@ func respawn() -> void:
 	velocity = Vector3.ZERO
 	current_health = max_health
 	is_attacking = false
+	is_parrying = false
+	is_dead = false
 	combo_index = 1
 	health_changed.emit(current_health, max_health)
 	# _update_hud_hp()
@@ -521,6 +532,9 @@ func heal(amount: float) -> void:
 	# _update_hud_hp()
 
 func take_damage(amount: float) -> void:
+	if is_dead:
+		return
+
 	# Parry berhasil — blok damage, stagger musuh terdekat
 	if is_parrying:
 		print("[Player] PARRY BERHASIL! Damage %d diblok!" % int(amount))
@@ -537,12 +551,15 @@ func take_damage(amount: float) -> void:
 	health_changed.emit(current_health, max_health)
 	# _update_hud_hp()
 	if current_health <= 0.0:
-		respawn()
+		is_dead = true
+		if anim_player and anim_player.has_animation("MC_DEAD"):
+			anim_player.play("MC_DEAD", 0.1)
+			anim_player.animation_finished.connect(_on_death_anim_finished, CONNECT_ONE_SHOT)
+		else:
+			respawn()
 
-# func _update_hud_hp() -> void:
-# 	var hud_hp = get_tree().root.find_child("PlayerHPLabel", true, false)
-# 	if hud_hp and hud_hp is Label:
-# 		hud_hp.text = "❤️ HP : %d / %d" % [int(current_health), int(max_health)]
+func _on_death_anim_finished(_anim_name: String) -> void:
+	respawn()
 
 func capture_mouse() -> void:
 	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)

@@ -154,8 +154,9 @@ func _physics_process(delta: float) -> void:
 		if p is CharacterBody3D:
 			player = p
 
+	var player_alive = _is_player_alive()
 	var dist_to_player = 999.0
-	if is_instance_valid(player):
+	if player_alive:
 		dist_to_player = global_position.distance_to(player.global_position)
 
 	# State Machine Logic
@@ -186,7 +187,7 @@ func _physics_process(delta: float) -> void:
 					_rotate_towards(dir, delta)
 
 		State.CHASE:
-			if dist_to_player > detection_range * 1.35:
+			if not player_alive or dist_to_player > detection_range * 1.35:
 				_set_state(State.IDLE)
 			elif dist_to_player <= attack_range and attack_timer <= 0.0:
 				_set_state(State.ATTACK)
@@ -199,6 +200,10 @@ func _physics_process(delta: float) -> void:
 				_rotate_towards(dir, delta)
 
 		State.ATTACK:
+			if not player_alive:
+				_set_state(State.IDLE)
+				return
+
 			velocity.x = lerp(velocity.x, 0.0, 12.0 * delta)
 			velocity.z = lerp(velocity.z, 0.0, 12.0 * delta)
 			
@@ -216,10 +221,10 @@ func _physics_process(delta: float) -> void:
 			# Selesai animasi serangan (panjang 1.5s)
 			if state_timer >= 1.5:
 				attack_timer = attack_cooldown
-				if dist_to_player <= attack_range:
-					_set_state(State.IDLE)
+				if not player_alive or dist_to_player > attack_range:
+					_set_state(State.CHASE if player_alive else State.IDLE)
 				else:
-					_set_state(State.CHASE)
+					_set_state(State.IDLE)
 
 		State.HIT:
 			velocity.x = lerp(velocity.x, 0.0, 8.0 * delta)
@@ -280,9 +285,18 @@ func _pick_patrol_target() -> void:
 	var dist = randf_range(3.0, patrol_range)
 	patrol_target = spawn_point + Vector3(cos(angle) * dist, 0, sin(angle) * dist)
 
+func _is_player_alive() -> bool:
+	if not is_instance_valid(player):
+		return false
+	if "is_dead" in player and player.is_dead:
+		return false
+	if "current_health" in player and player.current_health <= 0.0:
+		return false
+	return true
+
 func _execute_ground_slam() -> void:
 	# Efek hantam tanah: cek jarak ke player
-	if is_instance_valid(player):
+	if _is_player_alive():
 		var d = global_position.distance_to(player.global_position)
 		if d <= attack_range * 1.25:
 			# Player terkena hantaman golem!
