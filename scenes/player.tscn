@@ -1,31 +1,30 @@
-[gd_scene load_steps=4 format=3 uid="uid://c84x5qvev1p1"]
+[gd_scene format=3 uid="uid://c84x5qvev1p1"]
 
-[ext_resource type="Script" path="res://scripts/player.gd" id="1_player"]
-[ext_resource type="PackedScene" path="res://assets/3dassets/character/MC_NLATracks.glb" id="2_character_glb"]
+[ext_resource type="Script" uid="uid://e87i6l7keucx" path="res://scripts/player.gd" id="1_player"]
+[ext_resource type="PackedScene" uid="uid://beu0226sqr6v4" path="res://assets/3dassets/character/MC_NLATracks2.glb" id="2_character_glb"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_1"]
 radius = 0.4
 height = 1.8
 
-[node name="Player" type="CharacterBody3D"]
+[node name="Player" type="CharacterBody3D" unique_id=897428447]
 collision_layer = 2
-collision_mask = 1
 script = ExtResource("1_player")
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
+[node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=264198298]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.010843039, 0.9, 0)
 shape = SubResource("CapsuleShape3D_1")
 
-[node name="Visuals" type="Node3D" parent="."]
+[node name="Visuals" type="Node3D" parent="." unique_id=2119846843]
 
-[node name="CharacterModel" parent="Visuals" instance=ExtResource("2_character_glb")]
+[node name="CharacterModel" parent="Visuals" unique_id=1571812635 instance=ExtResource("2_character_glb")]
 transform = Transform3D(-1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 0, 0, 0)
 
-[node name="SpringArm3D" type="SpringArm3D" parent="."]
+[node name="SpringArm3D" type="SpringArm3D" parent="." unique_id=1032685877]
 transform = Transform3D(1, 0, 0, 0, 0.965926, 0.258819, 0, -0.258819, 0.965926, 0, 1.4, 0)
 spring_length = 4.5
 margin = 0.2
 
-[node name="Camera3D" type="Camera3D" parent="SpringArm3D"]
+[node name="Camera3D" type="Camera3D" parent="SpringArm3D" unique_id=1780814882]
+transform = Transform3D(1, 0, 0, 0, 0.9999998, 0, 0, 0, 0.9999998, 0.0077993274, 0, 0)
 current = true
-fov = 75.0

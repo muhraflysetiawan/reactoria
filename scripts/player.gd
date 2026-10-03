@@ -29,13 +29,13 @@ signal damaged(amount: float)
 
 @export_group("Sword Grip Offset")
 ## Geser posisi pedang di tangan (X: Kiri/Kanan, Y: Dari pergelangan ke telapak, Z: Maju/Mundur)
-@export var sword_position: Vector3 = Vector3(55.0, 5, 2.0):
+@export var sword_position: Vector3 = Vector3(0, 0, 0):
 	set(val):
 		sword_position = val
 		_update_sword_transform()
 
 ## Sudut rotasi kemiringan pedang di tangan (Pitch, Yaw, Roll)
-@export var sword_rotation: Vector3 = Vector3(-80.0, -180.0, 20.0):
+@export var sword_rotation: Vector3 = Vector3(0, 180, 0):
 	set(val):
 		sword_rotation = val
 		_update_sword_transform()
@@ -78,8 +78,8 @@ var is_dead: bool = false
 # Parry System
 var is_parrying: bool = false
 var parry_timer: float = 0.0
-const PARRY_WINDOW: float = 0.4    # detik jendela parry aktif
-const PARRY_COOLDOWN: float = 1.2  # cooldown setelah parry
+const PARRY_WINDOW: float = 0.4 # detik jendela parry aktif
+const PARRY_COOLDOWN: float = 1.2 # cooldown setelah parry
 
 func _ready() -> void:
 	add_to_group("player")
@@ -122,12 +122,23 @@ func _setup_animations() -> void:
 	# NLA track animations are embedded in MC_NLATracks.glb
 	# Names: MC_IDLE, MC_RUN, MC_RUNFAST, MC_JUMP, MC_DEAD, MC_PARRY
 	var lib = anim_player.get_animation_library("")
+	var anim_name_loop = ["MC_IDLE", "MC_RUN", "MC_RUNFAST"]
+	var anim_name_one_shot = [
+		"MC_CHARGEDSLASH",
+		"MC_CHARGEDUPSWORDSLASH",
+		"MC_DEAD",
+		"MC_JUMP",
+		"MC_JUMP2",
+		"MC_PARRY",
+		"MC_SWORDSLASH",
+		"MC_THRUSTSLASH"
+	]
 
-	for anim_name in ["MC_IDLE", "MC_RUN", "MC_RUNFAST"]:
+	for anim_name in anim_name_loop:
 		if anim_player.has_animation(anim_name):
 			anim_player.get_animation(anim_name).loop_mode = Animation.LOOP_LINEAR
 
-	for anim_name in ["MC_JUMP", "MC_DEAD", "MC_PARRY"]:
+	for anim_name in anim_name_one_shot:
 		if anim_player.has_animation(anim_name):
 			anim_player.get_animation(anim_name).loop_mode = Animation.LOOP_NONE
 
@@ -330,7 +341,8 @@ func perform_attack() -> void:
 		return
 	
 	var current_combo = combo_index
-	var anim_name = "Attack" + str(current_combo)
+	# var anim_name = "Attack" + str(current_combo)
+	var anim_name = ["MC_THRUSTSLASH", "MC_SWORDSLASH", "MC_CHARGEDSLASH", "MC_CHARGEDUPSWORDSLASH"]
 	var current_damage = base_attack_power
 	var current_reach = attack_reach
 	var lunge_force = 3.5
@@ -343,9 +355,9 @@ func perform_attack() -> void:
 			current_damage = base_attack_power
 			# current_reach = 3.8
 			lunge_force = 4.0
-			anim_speed = 1.25
-			duration = 0.35
-			attack_cooldown_timer = 0.8
+			anim_speed = 2.0
+			duration = 2.0
+			attack_cooldown_timer = 1.3
 		2:
 			# Combo 2: Tebasan Diagonal Bawah Kuat
 			current_damage = base_attack_power * 1.35 # ~60 dmg
@@ -353,7 +365,7 @@ func perform_attack() -> void:
 			lunge_force = 5.0
 			anim_speed = 1.2
 			duration = 0.38
-			attack_cooldown_timer = 0.8
+			attack_cooldown_timer = 0.3
 		3:
 			# Combo 3: Tebasan Putar 360 Whirlwind Finisher
 			current_damage = base_attack_power * 2.1 # ~95 dmg
@@ -361,7 +373,14 @@ func perform_attack() -> void:
 			lunge_force = 2.5
 			anim_speed = 1.15
 			duration = 0.48
-			attack_cooldown_timer = 0.8
+			attack_cooldown_timer = 0.3
+		4:
+			# Combo 4: Charged Uppercut Sword Slash
+			current_damage = base_attack_power * 2.5
+			lunge_force = 3.0
+			anim_speed = 1.1
+			duration = 0.52
+			attack_cooldown_timer = 0.3
 
 	is_attacking = true
 	attack_timer = duration
@@ -372,9 +391,10 @@ func perform_attack() -> void:
 		var cam_forward = - global_transform.basis.z
 		visuals.rotation.y = 0.0
 
-	# Mainkan animasi serangan
-	if anim_player and anim_player.has_animation(anim_name):
-		anim_player.play(anim_name, 0.08, anim_speed)
+	# Mainkan animasi serangan sesuai urutan combo
+	var current_anim = anim_name[current_combo - 1]
+	if anim_player and anim_player.has_animation(current_anim):
+		anim_player.play(current_anim, 0.08, anim_speed)
 	
 	# Mainkan efek VFX & suara ayunan pedang
 	if sword:
@@ -387,8 +407,8 @@ func perform_attack() -> void:
 	# Deteksi hantaman musuh (Area & Ray Hit Detection)
 	_detect_sword_hits(current_damage, current_reach, current_combo)
 
-	# Majukan indeks combo (1 -> 2 -> 3 -> 1)
-	combo_index = (combo_index % 3) + 1
+	# Majukan indeks combo (1 -> 2 -> 3 -> 4 -> 1)
+	combo_index = (combo_index % 4) + 1
 
 func perform_parry() -> void:
 	if is_parrying or is_attacking or attack_cooldown_timer > 0.0:

@@ -1,14 +1,7 @@
 [gd_scene format=3 uid="uid://dm5y3x4wql2a7"]
 
-[ext_resource type="Script" path="res://scripts/sword.gd" id="1_sword"]
+[ext_resource type="Script" uid="uid://c07eiitq2nyui" path="res://scripts/sword.gd" id="1_sword"]
 [ext_resource type="ArrayMesh" uid="uid://dc6bxyyyhrxqe" path="res://assets/3dassets/sword/Weapon_Sword2.obj" id="2_sword_mesh"]
-
-[sub_resource type="Curve" id="Curve_particles"]
-_data = [Vector2(0, 0.2), 0.0, 2.5, 0, 0, Vector2(0.5, 1), 0.0, 0.0, 0, 0, Vector2(1, 0), -2.5, 0.0, 0, 0]
-point_count = 3
-
-[sub_resource type="Gradient" id="Gradient_particles"]
-colors = PackedColorArray(0.3, 0.85, 1, 1, 0.1, 0.4, 0.9, 0)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_spark"]
 transparency = 1
@@ -21,17 +14,25 @@ material = SubResource("StandardMaterial3D_spark")
 radius = 0.02
 height = 0.04
 
-[node name="Sword" type="Node3D"]
+[sub_resource type="Curve" id="Curve_particles"]
+_data = [Vector2(0, 0.2), 0.0, 2.5, 0, 0, Vector2(0.5, 1), 0.0, 0.0, 0, 0, Vector2(1, 0), -2.5, 0.0, 0, 0]
+point_count = 3
+
+[sub_resource type="Gradient" id="Gradient_particles"]
+colors = PackedColorArray(0.3, 0.85, 1, 1, 0.1, 0.4, 0.9, 0)
+
+[node name="Sword" type="Node3D" unique_id=1751484387]
 script = ExtResource("1_sword")
 
-[node name="SwordMesh" type="MeshInstance3D" parent="."]
-transform = Transform3D(0.68962, -0.724172, 0, 0.724172, 0.68962, 0, 0, 0, 1, 0.302173, 0.064067, -0.007)
+[node name="SwordMesh" type="MeshInstance3D" parent="." unique_id=1084805006]
+transform = Transform3D(0.9363093, 0.35117766, 0, -0.35117766, 0.9363093, 0, 0, 0, 1, 0.27867448, 0.2656954, -0.007)
 mesh = ExtResource("2_sword_mesh")
 
-[node name="AuraParticles" type="CPUParticles3D" parent="."]
+[node name="AuraParticles" type="CPUParticles3D" parent="." unique_id=1625772722]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.6, 0)
 amount = 16
 lifetime = 0.8
+mesh = SubResource("SphereMesh_spark")
 emission_shape = 3
 emission_box_extents = Vector3(0.08, 0.5, 0.04)
 direction = Vector3(0, 1, 0)
@@ -41,14 +42,12 @@ initial_velocity_min = 0.2
 initial_velocity_max = 0.5
 scale_amount_curve = SubResource("Curve_particles")
 color_ramp = SubResource("Gradient_particles")
-mesh = SubResource("SphereMesh_spark")
 
-[node name="SlashContainer" type="Node3D" parent="."]
+[node name="SlashContainer" type="Node3D" parent="." unique_id=395377843]
 
-[node name="AudioSwing" type="AudioStreamPlayer3D" parent="."]
+[node name="AudioSwing" type="AudioStreamPlayer3D" parent="." unique_id=1271148849]
 unit_size = 8.0
 max_distance = 40.0
 
-[node name="AudioHit" type="AudioStreamPlayer3D" parent="."]
-unit_size = 10.0
+[node name="AudioHit" type="AudioStreamPlayer3D" parent="." unique_id=237665271]
 max_distance = 50.0

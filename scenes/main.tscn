@@ -38,7 +38,7 @@ shadow_enabled = true
 [node name="Arena" parent="." unique_id=1541300288 instance=ExtResource("1_jyhfs")]
 
 [node name="Player" parent="." unique_id=1716225669 instance=ExtResource("3_tefeu")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.4, -5)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.4, -0.7078147)
 
 [node name="Enemies" type="Node3D" parent="." unique_id=868382235]
 
