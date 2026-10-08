@@ -388,7 +388,7 @@ func perform_attack() -> void:
 
 	# Hadapkan visual karakter ke arah pandang kamera/gerakan jika menyerang
 	if visuals:
-		var cam_forward = - global_transform.basis.z
+		# var cam_forward = - global_transform.basis.z
 		visuals.rotation.y = 0.0
 
 	# Mainkan animasi serangan sesuai urutan combo
