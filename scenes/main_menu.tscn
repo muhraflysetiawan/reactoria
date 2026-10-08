@@ -3,6 +3,7 @@
 [ext_resource type="Texture2D" uid="uid://bc67psl2y8lgy" path="res://assets/ui/main-menu/background_main-menu.jpeg" id="1_bg"]
 [ext_resource type="Script" uid="uid://dat3l8jxvk4u2" path="res://scripts/main_menu.gd" id="2_script"]
 [ext_resource type="Shader" uid="uid://denyby2cmx8d0" path="res://shaders/menu_button_frame.gdshader" id="3_shader"]
+[ext_resource type="AudioStream" uid="uid://c8rfgl4d3dl6" path="res://assets/audio/main-menu/main-menu.mp3" id="4_wu84c"]
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_1"]
 
@@ -247,7 +248,7 @@ layout_mode = 2
 size_flags_horizontal = 4
 mouse_filter = 2
 
-[node name="CreditFrame" type="ColorRect" parent="MenuContainer/CreditSlot" unique_id=1612909446]
+[node name="CreditFrame" type="ColorRect" parent="MenuContainer/CreditSlot" unique_id=2004572875]
 unique_name_in_owner = true
 material = SubResource("ShaderMat_credit")
 layout_mode = 1
@@ -258,7 +259,7 @@ grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
 
-[node name="CreditButton" type="Button" parent="MenuContainer/CreditSlot" unique_id=1442524725]
+[node name="CreditButton" type="Button" parent="MenuContainer/CreditSlot" unique_id=1109768131]
 unique_name_in_owner = true
 layout_mode = 1
 anchors_preset = 15
@@ -288,6 +289,11 @@ grow_vertical = 0
 theme_override_colors/font_color = Color(0.7, 0.65, 0.6, 0.5)
 theme_override_font_sizes/font_size = 12
 text = "v0.1.0 Alpha"
+
+[node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="." unique_id=644870942]
+stream = ExtResource("4_wu84c")
+autoplay = true
+parameters/looping = true
 
 [connection signal="pressed" from="MenuContainer/CampaignSlot/CampaignButton" to="." method="_on_campaign_pressed"]
 [connection signal="pressed" from="MenuContainer/CreativeSlot/CreativeButton" to="." method="_on_creative_pressed"]
