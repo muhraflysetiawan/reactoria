@@ -1,36 +1,81 @@
 extends Control
-## Main Menu script — handles button interactions, hover animations,
+## Main Menu — handles button interactions, shader-driven hover animations,
 ## and scene transitions for Campaign, Creative, Setting, and Credits.
 
 # Scene paths — update these when the target scenes are created.
 const CAMPAIGN_SCENE := "res://scenes/main.tscn"
-const CREATIVE_SCENE := ""  # TODO: create creative mode scene
-const SETTING_SCENE := ""   # TODO: create settings scene
-const CREDITS_SCENE := ""   # TODO: create credits scene
+const CREATIVE_SCENE := "" # TODO: create creative mode scene
+const SETTING_SCENE := "" # TODO: create settings scene
+const CREDITS_SCENE := "" # TODO: create credits scene
+
+@onready var campaign_slot: Control = %CampaignSlot
+@onready var creative_slot: Control = %CreativeSlot
+@onready var setting_slot: Control = %SettingSlot
+@onready var credit_slot: Control = %CreditSlot
+
+@onready var campaign_frame: ColorRect = %CampaignFrame
+@onready var creative_frame: ColorRect = %CreativeFrame
+@onready var setting_frame: ColorRect = %SettingFrame
+@onready var credit_frame: ColorRect = %CreditFrame
 
 @onready var campaign_button: Button = %CampaignButton
 @onready var creative_button: Button = %CreativeButton
 @onready var setting_button: Button = %SettingButton
+@onready var credit_button: Button = %CreditButton
 
-var _tween: Tween
+# Tracks active hover tweens per frame to avoid conflicts
+var _hover_tweens: Dictionary = {}
 
 
 func _ready() -> void:
+	# Connect hover signals for shader animation
+	_connect_hover(campaign_button, campaign_frame)
+	_connect_hover(creative_button, creative_frame)
+	_connect_hover(setting_button, setting_frame)
+	_connect_hover(credit_button, credit_frame)
+
 	# Fade-in animation on menu load
 	modulate.a = 0.0
-	var fade_tween := create_tween()
-	fade_tween.tween_property(self, "modulate:a", 1.0, 0.6).set_ease(Tween.EASE_OUT)
+	var fade := create_tween()
+	fade.tween_property(self, "modulate:a", 1.0, 0.6).set_ease(Tween.EASE_OUT)
 
-	# Stagger button entrance animations
-	var buttons: Array[Button] = [campaign_button, creative_button, setting_button]
-	for i in buttons.size():
-		var btn := buttons[i]
-		btn.modulate.a = 0.0
-		btn.position.x -= 40.0
-		var btn_tween := create_tween()
-		btn_tween.set_parallel(true)
-		btn_tween.tween_property(btn, "modulate:a", 1.0, 0.4).set_delay(0.3 + i * 0.12).set_ease(Tween.EASE_OUT)
-		btn_tween.tween_property(btn, "position:x", btn.position.x + 40.0, 0.4).set_delay(0.3 + i * 0.12).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_BACK)
+	# Animasi kemunculan tombol yang diatur secara bertahap
+	var slots: Array[Control] = [campaign_slot, creative_slot, setting_slot, credit_slot]
+	for i in slots.size():
+		var slot := slots[i]
+		slot.modulate.a = 0.0
+		slot.position.x -= 40.0
+		var t := create_tween().set_parallel(true)
+		t.tween_property(slot, "modulate:a", 1.0, 0.4) \
+			.set_delay(0.3 + i * 0.12).set_ease(Tween.EASE_OUT)
+		t.tween_property(slot, "position:x", slot.position.x + 40.0, 0.4) \
+			.set_delay(0.3 + i * 0.12).set_ease(Tween.EASE_OUT) \
+			.set_trans(Tween.TRANS_BACK)
+
+
+# ---------- Hover Animation (Shader-driven) ----------
+
+func _connect_hover(btn: Button, frame: ColorRect) -> void:
+	btn.mouse_entered.connect(_animate_hover.bind(frame, 1.0))
+	btn.mouse_exited.connect(_animate_hover.bind(frame, 0.0))
+
+
+func _animate_hover(frame: ColorRect, target: float) -> void:
+	# Kill any running tween for this frame
+	if _hover_tweens.has(frame) and _hover_tweens[frame].is_running():
+		_hover_tweens[frame].kill()
+	var mat := frame.material as ShaderMaterial
+	if mat == null:
+		return
+	var current := float(mat.get_shader_parameter("hover"))
+	var duration := 0.15 if target > 0.5 else 0.25
+	var ease_type := Tween.EASE_OUT if target > 0.5 else Tween.EASE_IN
+	var t := create_tween()
+	t.tween_method(
+		func(v: float): mat.set_shader_parameter("hover", v),
+		current, target, duration
+	).set_ease(ease_type)
+	_hover_tweens[frame] = t
 
 
 # ---------- Button Callbacks ----------
@@ -53,26 +98,11 @@ func _on_setting_pressed() -> void:
 	_transition_to_scene(SETTING_SCENE)
 
 
-func _on_credits_pressed() -> void:
+func _on_credit_pressed() -> void:
 	if CREDITS_SCENE.is_empty():
 		push_warning("Credits scene not yet assigned.")
 		return
 	_transition_to_scene(CREDITS_SCENE)
-
-
-# ---------- Hover Animation ----------
-
-func _on_button_hover(button_name: String) -> void:
-	var btn := get_node_or_null("MenuContainer/" + button_name) as Button
-	if btn == null:
-		return
-	# Quick scale-pulse on hover
-	if _tween and _tween.is_running():
-		_tween.kill()
-	_tween = create_tween()
-	btn.pivot_offset = btn.size / 2.0
-	_tween.tween_property(btn, "scale", Vector2(1.04, 1.04), 0.1).set_ease(Tween.EASE_OUT)
-	_tween.tween_property(btn, "scale", Vector2.ONE, 0.1).set_ease(Tween.EASE_IN)
 
 
 # ---------- Scene Transition ----------
