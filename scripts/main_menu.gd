@@ -83,13 +83,11 @@ func _animate_hover(frame: ColorRect, target: float) -> void:
 func _on_campaign_pressed() -> void:
 	_transition_to_scene(CAMPAIGN_SCENE)
 
-
 func _on_creative_pressed() -> void:
 	if CREATIVE_SCENE.is_empty():
 		push_warning("Creative scene not yet assigned.")
 		return
 	_transition_to_scene(CREATIVE_SCENE)
-
 
 func _on_setting_pressed() -> void:
 	if SETTING_SCENE.is_empty():
@@ -97,13 +95,11 @@ func _on_setting_pressed() -> void:
 		return
 	_transition_to_scene(SETTING_SCENE)
 
-
 func _on_credit_pressed() -> void:
 	if CREDITS_SCENE.is_empty():
 		push_warning("Credits scene not yet assigned.")
 		return
 	_transition_to_scene(CREDITS_SCENE)
-
 
 # ---------- Scene Transition ----------
 
