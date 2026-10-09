@@ -81,6 +81,17 @@ var parry_timer: float = 0.0
 const PARRY_WINDOW: float = 0.4 # detik jendela parry aktif
 const PARRY_COOLDOWN: float = 1.2 # cooldown setelah parry
 
+# Footstep SFX System
+var footstep_player: AudioStreamPlayer3D = null
+var footstep_sounds: Dictionary = {
+	"grass": preload("res://assets/audio/player/run-sand.mp3"),
+	"rock": preload("res://assets/audio/player/run-rock.mp3"),
+	"log": preload("res://assets/audio/player/run-wood.mp3")
+}
+
+const SFX_HEART_BEAT := preload("res://assets/audio/player/heart-beat.mp3")
+var heartbeat_player: AudioStreamPlayer = null
+
 func _ready() -> void:
 	add_to_group("player")
 	spawn_position = global_position
@@ -108,6 +119,33 @@ func _ready() -> void:
 		_setup_animations()
 	
 	_setup_sword_weapon()
+	_setup_footstep_audio()
+	_setup_heartbeat_audio()
+
+func _setup_heartbeat_audio() -> void:
+	heartbeat_player = AudioStreamPlayer.new()
+	heartbeat_player.name = "HeartbeatAudio"
+	heartbeat_player.stream = SFX_HEART_BEAT
+	heartbeat_player.bus = "Master"
+	add_child(heartbeat_player)
+
+func _update_heartbeat_audio() -> void:
+	if not heartbeat_player:
+		return
+	if current_health <= 20.0 and current_health > 0.0 and not is_dead:
+		heartbeat_player.pitch_scale = 1.5 if current_health <= 10.0 else 1.0
+		if not heartbeat_player.playing:
+			heartbeat_player.play()
+	else:
+		if heartbeat_player.playing:
+			heartbeat_player.stop()
+
+func _setup_footstep_audio() -> void:
+	footstep_player = AudioStreamPlayer3D.new()
+	footstep_player.name = "FootstepAudio"
+	footstep_player.max_distance = 25.0
+	footstep_player.bus = "Master"
+	add_child(footstep_player)
 
 func _find_node_of_type(node: Node, target_type) -> Node:
 	if is_instance_of(node, target_type):
@@ -220,7 +258,7 @@ func _input(event: InputEvent) -> void:
 		elif event.keycode == KEY_F:
 			perform_attack()
 		elif event.keycode == KEY_H:
-			take_damage(20.0) # Debug test damage
+			take_damage(10.0) # Debug test damage
 		elif event.keycode == KEY_J:
 			heal(25.0) # Debug test heal
 
@@ -305,6 +343,9 @@ func _physics_process(delta: float) -> void:
 
 	move_and_slide()
 
+	# Suara Langkah Kaki (Footsteps)
+	_update_footsteps(delta, move_direction != Vector3.ZERO, is_sprinting)
+
 	# Kontrol Animasi
 	_update_animation(delta, move_direction != Vector3.ZERO, is_sprinting)
 
@@ -335,6 +376,75 @@ func _update_animation(_delta: float, is_moving: bool, is_sprinting: bool) -> vo
 		if anim_player.has_animation("MC_IDLE") and anim_player.current_animation != "MC_IDLE":
 			anim_player.play("MC_IDLE", 0.25)
 
+func _update_footsteps(delta: float, is_moving: bool, is_sprinting: bool) -> void:
+	var horizontal_speed = Vector2(velocity.x, velocity.z).length()
+	var actually_moving = is_moving and horizontal_speed > 0.5 and is_on_floor() and not is_dead and not is_attacking and not is_parrying
+
+	if not actually_moving:
+		if footstep_player and footstep_player.playing:
+			footstep_player.stop()
+		return
+
+	var surface = _detect_surface_type()
+	var desired_stream: AudioStream = footstep_sounds.get(surface, footstep_sounds["grass"])
+
+	if not footstep_player.playing or footstep_player.stream != desired_stream:
+		footstep_player.stream = desired_stream
+		footstep_player.play()
+
+	# Pitch sedikit lebih tinggi saat sprint untuk sensasi kecepatan
+	footstep_player.pitch_scale = 1.25 if is_sprinting else 1.0
+
+func _detect_surface_type() -> String:
+	# 1. Cek metadata dari collider lantai
+	for i in range(get_slide_collision_count()):
+		var col = get_slide_collision(i)
+		var collider = col.get_collider()
+		if collider:
+			if collider.has_meta("surface_type"):
+				return collider.get_meta("surface_type")
+			var cname = collider.name.to_lower()
+			if "rock" in cname or "cliff" in cname:
+				return "rock"
+			if "log" in cname or "wood" in cname or "bridge" in cname:
+				return "log"
+			var parent = collider.get_parent()
+			if parent:
+				if parent.has_meta("surface_type"):
+					return parent.get_meta("surface_type")
+				var pname = parent.name.to_lower()
+				if "rock" in pname or "cliff" in pname:
+					return "rock"
+				if "log" in pname or "wood" in pname or "bridge" in pname:
+					return "log"
+
+	# 2. Fallback direct RayCast3D ke bawah
+	var space_state = get_world_3d().direct_space_state
+	var ray_params = PhysicsRayQueryParameters3D.create(global_position + Vector3(0, 0.5, 0), global_position + Vector3(0, -1.5, 0))
+	ray_params.exclude = [get_rid()]
+	var result = space_state.intersect_ray(ray_params)
+	if result:
+		var collider = result.collider
+		if collider:
+			if collider.has_meta("surface_type"):
+				return collider.get_meta("surface_type")
+			var cname = collider.name.to_lower()
+			if "rock" in cname or "cliff" in cname:
+				return "rock"
+			if "log" in cname or "wood" in cname or "bridge" in cname:
+				return "log"
+			var parent = collider.get_parent()
+			if parent:
+				if parent.has_meta("surface_type"):
+					return parent.get_meta("surface_type")
+				var pname = parent.name.to_lower()
+				if "rock" in pname or "cliff" in pname:
+					return "rock"
+				if "log" in pname or "wood" in pname or "bridge" in pname:
+					return "log"
+
+	return "grass"
+
 ## Eksekusi Serangan Pedang dengan Animasi Combo 3-Hit
 func perform_attack() -> void:
 	if attack_cooldown_timer > 0.0:
@@ -355,15 +465,15 @@ func perform_attack() -> void:
 			current_damage = base_attack_power
 			# current_reach = 3.8
 			lunge_force = 4.0
-			anim_speed = 2.0
-			duration = 2.0
-			attack_cooldown_timer = 1.3
+			anim_speed = 3.0
+			duration = 0.5
+			attack_cooldown_timer = 0.5
 		2:
 			# Combo 2: Tebasan Diagonal Bawah Kuat
 			current_damage = base_attack_power * 1.35 # ~60 dmg
 			# current_reach = 4.0
 			lunge_force = 5.0
-			anim_speed = 1.2
+			anim_speed = 2
 			duration = 0.38
 			attack_cooldown_timer = 0.3
 		3:
@@ -371,15 +481,15 @@ func perform_attack() -> void:
 			current_damage = base_attack_power * 2.1 # ~95 dmg
 			# current_reach = 4.8
 			lunge_force = 2.5
-			anim_speed = 1.15
+			anim_speed = 2
 			duration = 0.48
 			attack_cooldown_timer = 0.3
 		4:
 			# Combo 4: Charged Uppercut Sword Slash
 			current_damage = base_attack_power * 2.5
 			lunge_force = 3.0
-			anim_speed = 1.1
-			duration = 0.52
+			anim_speed = 2
+			duration = 1.1
 			attack_cooldown_timer = 0.3
 
 	is_attacking = true
@@ -494,8 +604,6 @@ func _detect_sword_hits(dmg: float, reach: float, combo_step: int) -> void:
 
 	if hit_count > 0:
 		shake_intensity = 0.08 if combo_step < 3 else 0.15
-		if sword:
-			sword.play_hit_sound()
 		print("[Player] Combo %d Berhasil! Menebas %d musuh dengan %d damage!" % [combo_step, hit_count, int(dmg)])
 	else:
 		print("[Player] Ayunan Combo %d!" % combo_step)
@@ -543,12 +651,14 @@ func respawn() -> void:
 	is_dead = false
 	combo_index = 1
 	health_changed.emit(current_health, max_health)
+	_update_heartbeat_audio()
 	# _update_hud_hp()
 
 func heal(amount: float) -> void:
 	current_health = min(max_health, current_health + amount)
 	print("[Player] Menyembuhkan HP! HP tersisa: ", current_health)
 	health_changed.emit(current_health, max_health)
+	_update_heartbeat_audio()
 	# _update_hud_hp()
 
 func take_damage(amount: float) -> void:
@@ -569,6 +679,7 @@ func take_damage(amount: float) -> void:
 	shake_intensity = 0.12
 	damaged.emit(amount)
 	health_changed.emit(current_health, max_health)
+	_update_heartbeat_audio()
 	# _update_hud_hp()
 	if current_health <= 0.0:
 		is_dead = true

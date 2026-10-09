@@ -11,17 +11,17 @@ const CREDITS_SCENE := "" # TODO: create credits scene
 @onready var campaign_slot: Control = %CampaignSlot
 @onready var creative_slot: Control = %CreativeSlot
 @onready var setting_slot: Control = %SettingSlot
-@onready var credit_slot: Control = %CreditSlot
+# @onready var credit_slot: Control = %CreditSlot
 
 @onready var campaign_frame: ColorRect = %CampaignFrame
 @onready var creative_frame: ColorRect = %CreativeFrame
 @onready var setting_frame: ColorRect = %SettingFrame
-@onready var credit_frame: ColorRect = %CreditFrame
+# @onready var credit_frame: ColorRect = %CreditFrame
 
 @onready var campaign_button: Button = %CampaignButton
 @onready var creative_button: Button = %CreativeButton
 @onready var setting_button: Button = %SettingButton
-@onready var credit_button: Button = %CreditButton
+# @onready var credit_button: Button = %CreditButton
 
 # Sound effects
 const SFX_HOVER := preload("res://assets/audio/ui/hover-button.mp3")
@@ -38,7 +38,7 @@ func _ready() -> void:
 	_connect_hover(campaign_button, campaign_frame)
 	_connect_hover(creative_button, creative_frame)
 	_connect_hover(setting_button, setting_frame)
-	_connect_hover(credit_button, credit_frame)
+	# _connect_hover(credit_button, credit_frame)
 
 	# Fade-in animation on menu load
 	modulate.a = 0.0
@@ -46,7 +46,7 @@ func _ready() -> void:
 	fade.tween_property(self, "modulate:a", 1.0, 0.6).set_ease(Tween.EASE_OUT)
 
 	# Animasi kemunculan tombol yang diatur secara bertahap
-	var slots: Array[Control] = [campaign_slot, creative_slot, setting_slot, credit_slot]
+	var slots: Array[Control] = [campaign_slot, creative_slot, setting_slot]
 	for i in slots.size():
 		var slot := slots[i]
 		slot.modulate.a = 0.0

@@ -12,8 +12,8 @@ dest_files=["res://.godot/imported/heart-beat.mp3-f8aa8a3e69f601c861a4982522b90f
 
 [params]
 
-loop=false
-loop_offset=0
-bpm=0
+loop=true
+loop_offset=1.56
+bpm=0.0
 beat_count=0
 bar_beats=4

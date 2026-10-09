@@ -56,6 +56,20 @@ func _configure_mesh_collision(mesh_node: MeshInstance3D) -> void:
 	mesh_node.create_trimesh_collision()
 	generated_collision_count += 1
 
+	var body = mesh_node.get_node_or_null(str(mesh_node.name) + "_col")
+	if not body:
+		for child in mesh_node.get_children():
+			if child is StaticBody3D:
+				body = child
+				break
+	if body:
+		var surface = "grass"
+		if "rock" in node_name or "cliff" in node_name:
+			surface = "rock"
+		elif "log" in node_name or "wood" in node_name or "bridge" in node_name:
+			surface = "log"
+		body.set_meta("surface_type", surface)
+
 func _is_non_collidable(name_lower: String) -> bool:
 	if "cloud" in name_lower:
 		return true

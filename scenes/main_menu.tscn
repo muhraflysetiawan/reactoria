@@ -43,17 +43,6 @@ shader_parameter/ornament_size = 6.0
 shader_parameter/hover = 0.0
 shader_parameter/highlighted = 0.0
 
-[sub_resource type="ShaderMaterial" id="ShaderMat_credit"]
-shader = ExtResource("3_shader")
-shader_parameter/rect_size = Vector2(280, 56)
-shader_parameter/bg_color = Color(0.1, 0.1, 0.12, 0.82)
-shader_parameter/border_color = Color(0.55, 0.5, 0.4, 0.85)
-shader_parameter/accent_color = Color(0.4, 0.72, 0.65, 1)
-shader_parameter/border_width = 2.0
-shader_parameter/ornament_size = 6.0
-shader_parameter/hover = 0.0
-shader_parameter/highlighted = 0.0
-
 [node name="MainMenu" type="Control" unique_id=242881507]
 layout_mode = 3
 anchors_preset = 15
@@ -241,42 +230,6 @@ text = "Setting"
 custom_minimum_size = Vector2(0, 8)
 layout_mode = 2
 
-[node name="CreditSlot" type="Control" parent="MenuContainer" unique_id=51044357]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(280, 56)
-layout_mode = 2
-size_flags_horizontal = 4
-mouse_filter = 2
-
-[node name="CreditFrame" type="ColorRect" parent="MenuContainer/CreditSlot" unique_id=2004572875]
-unique_name_in_owner = true
-material = SubResource("ShaderMat_credit")
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-mouse_filter = 2
-
-[node name="CreditButton" type="Button" parent="MenuContainer/CreditSlot" unique_id=1109768131]
-unique_name_in_owner = true
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-theme_override_colors/font_color = Color(0.85, 0.82, 0.75, 1)
-theme_override_colors/font_pressed_color = Color(0.7, 0.65, 0.55, 1)
-theme_override_colors/font_hover_color = Color(1, 1, 1, 1)
-theme_override_font_sizes/font_size = 26
-theme_override_styles/normal = SubResource("StyleBoxEmpty_1")
-theme_override_styles/pressed = SubResource("StyleBoxEmpty_1")
-theme_override_styles/hover = SubResource("StyleBoxEmpty_1")
-theme_override_styles/focus = SubResource("StyleBoxEmpty_1")
-text = "Credits"
-
 [node name="VersionLabel" type="Label" parent="." unique_id=452905229]
 layout_mode = 1
 anchors_preset = 2
@@ -298,4 +251,3 @@ parameters/looping = true
 [connection signal="pressed" from="MenuContainer/CampaignSlot/CampaignButton" to="." method="_on_campaign_pressed"]
 [connection signal="pressed" from="MenuContainer/CreativeSlot/CreativeButton" to="." method="_on_creative_pressed"]
 [connection signal="pressed" from="MenuContainer/SettingSlot/SettingButton" to="." method="_on_setting_pressed"]
-[connection signal="pressed" from="MenuContainer/CreditSlot/CreditButton" to="." method="_on_credit_pressed"]

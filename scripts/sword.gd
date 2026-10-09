@@ -10,6 +10,12 @@ class_name SwordWeapon
 @onready var audio_swing: AudioStreamPlayer3D = $AudioSwing
 @onready var audio_hit: AudioStreamPlayer3D = $AudioHit
 
+@export_group("Sound Speed")
+@export var speed_thrust_slash: float = 2.0
+@export var speed_sword_slash: float = 1.0
+@export var speed_charged_slash: float = 1.0
+@export var speed_charged_up_slash: float = 1.0
+
 var swing_sfx: Array[AudioStream] = []
 var hit_sfx: AudioStream = null
 
@@ -78,14 +84,16 @@ func _setup_materials() -> void:
 	sword_mesh.set_surface_override_material(5, mat_strap)
 
 func _load_sounds() -> void:
-	if ResourceLoader.exists("res://assets/audio/sword_swing1.wav"):
-		swing_sfx.append(load("res://assets/audio/sword_swing1.wav"))
-	if ResourceLoader.exists("res://assets/audio/sword_swing2.wav"):
-		swing_sfx.append(load("res://assets/audio/sword_swing2.wav"))
-	if ResourceLoader.exists("res://assets/audio/sword_swing3.wav"):
-		swing_sfx.append(load("res://assets/audio/sword_swing3.wav"))
-	if ResourceLoader.exists("res://assets/audio/sword_hit.wav"):
-		hit_sfx = load("res://assets/audio/sword_hit.wav")
+	if ResourceLoader.exists("res://assets/audio/water_sword/thrust-slash.MP3"):
+		swing_sfx.append(load("res://assets/audio/water_sword/thrust-slash.MP3"))
+	if ResourceLoader.exists("res://assets/audio/water_sword/sword-slash.MP3"):
+		swing_sfx.append(load("res://assets/audio/water_sword/sword-slash.MP3"))
+	if ResourceLoader.exists("res://assets/audio/water_sword/charged-slash.MP3"):
+		swing_sfx.append(load("res://assets/audio/water_sword/charged-slash.MP3"))
+	if ResourceLoader.exists("res://assets/audio/water_sword/charged-up-sword-slash.MP3"):
+		swing_sfx.append(load("res://assets/audio/water_sword/charged-up-sword-slash.MP3"))
+	# if ResourceLoader.exists("res://assets/audio/water_sword/hit.wav"):
+	# 	hit_sfx = load("res://assets/audio/water_sword/hit.wav")
 
 func _setup_particles() -> void:
 	if aura_particles:
@@ -96,19 +104,15 @@ func play_attack_effect(combo_index: int) -> void:
 	# Mainkan SFX ayunan
 	if audio_swing and swing_sfx.size() > 0:
 		var sfx_idx = (combo_index - 1) % swing_sfx.size()
+		var speeds = [speed_thrust_slash, speed_sword_slash, speed_charged_slash, speed_charged_up_slash]
+		var sfx_speed = speeds[sfx_idx] if sfx_idx < speeds.size() else 1.0
 		audio_swing.stream = swing_sfx[sfx_idx]
-		audio_swing.pitch_scale = randf_range(0.95, 1.1)
+		audio_swing.pitch_scale = randf_range(0.95, 1.1) * sfx_speed
 		audio_swing.play()
 	
 	# Buat Slash Arc VFX dinamis
 	_spawn_slash_arc(combo_index)
 
-## Memainkan suara hantaman saat pedang mengenai musuh
-func play_hit_sound() -> void:
-	if audio_hit and hit_sfx:
-		audio_hit.stream = hit_sfx
-		audio_hit.pitch_scale = randf_range(0.92, 1.15)
-		audio_hit.play()
 
 ## Membuat mesh lengkungan tebasan bercahaya (Slash Arc Mesh)
 func _spawn_slash_arc(combo_index: int) -> void:
@@ -119,16 +123,16 @@ func _spawn_slash_arc(combo_index: int) -> void:
 	var segments = 16
 	var arc_radius_inner = 0.8
 	var arc_radius_outer = 1.6
-	var angle_start = -deg_to_rad(65.0)
+	var angle_start = - deg_to_rad(65.0)
 	var angle_end = deg_to_rad(75.0)
 	
 	if combo_index == 2:
 		# Tebasan vertikal diagonal
-		angle_start = -deg_to_rad(80.0)
+		angle_start = - deg_to_rad(80.0)
 		angle_end = deg_to_rad(60.0)
 	elif combo_index == 3:
 		# Tebasan putaran 360 derajat penuh
-		angle_start = -deg_to_rad(170.0)
+		angle_start = - deg_to_rad(170.0)
 		angle_end = deg_to_rad(170.0)
 		arc_radius_outer = 1.9
 
