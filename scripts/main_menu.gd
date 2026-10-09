@@ -23,12 +23,18 @@ const CREDITS_SCENE := "" # TODO: create credits scene
 @onready var setting_button: Button = %SettingButton
 @onready var credit_button: Button = %CreditButton
 
-# Tracks active hover tweens per frame to avoid conflicts
-var _hover_tweens: Dictionary = {}
+# Sound effects
+const SFX_HOVER := preload("res://assets/audio/ui/hover-button.mp3")
+const SFX_CLICK := preload("res://assets/audio/ui/select-button2.mp3")
+
+var _sfx_hover_player: AudioStreamPlayer
+var _sfx_click_player: AudioStreamPlayer
 
 
 func _ready() -> void:
-	# Connect hover signals for shader animation
+	_init_sfx()
+
+	# Connect hover signals for shader animation & sfx
 	_connect_hover(campaign_button, campaign_frame)
 	_connect_hover(creative_button, creative_frame)
 	_connect_hover(setting_button, setting_frame)
@@ -53,10 +59,27 @@ func _ready() -> void:
 			.set_trans(Tween.TRANS_BACK)
 
 
-# ---------- Hover Animation (Shader-driven) ----------
+# Tracks active hover tweens per frame to avoid conflicts
+var _hover_tweens: Dictionary = {}
+
+
+func _init_sfx() -> void:
+	_sfx_hover_player = AudioStreamPlayer.new()
+	_sfx_hover_player.stream = SFX_HOVER
+	add_child(_sfx_hover_player)
+
+	_sfx_click_player = AudioStreamPlayer.new()
+	_sfx_click_player.stream = SFX_CLICK
+	add_child(_sfx_click_player)
+
+
+# ---------- Hover Animation (Shader-driven) & SFX ----------
 
 func _connect_hover(btn: Button, frame: ColorRect) -> void:
-	btn.mouse_entered.connect(_animate_hover.bind(frame, 1.0))
+	btn.mouse_entered.connect(func():
+		_sfx_hover_player.play()
+		_animate_hover(frame, 1.0)
+	)
 	btn.mouse_exited.connect(_animate_hover.bind(frame, 0.0))
 
 
@@ -81,21 +104,25 @@ func _animate_hover(frame: ColorRect, target: float) -> void:
 # ---------- Button Callbacks ----------
 
 func _on_campaign_pressed() -> void:
+	_sfx_click_player.play()
 	_transition_to_scene(CAMPAIGN_SCENE)
 
 func _on_creative_pressed() -> void:
+	_sfx_click_player.play()
 	if CREATIVE_SCENE.is_empty():
 		push_warning("Creative scene not yet assigned.")
 		return
 	_transition_to_scene(CREATIVE_SCENE)
 
 func _on_setting_pressed() -> void:
+	_sfx_click_player.play()
 	if SETTING_SCENE.is_empty():
 		push_warning("Setting scene not yet assigned.")
 		return
 	_transition_to_scene(SETTING_SCENE)
 
 func _on_credit_pressed() -> void:
+	_sfx_click_player.play()
 	if CREDITS_SCENE.is_empty():
 		push_warning("Credits scene not yet assigned.")
 		return
