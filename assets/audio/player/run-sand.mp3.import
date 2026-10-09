@@ -13,7 +13,7 @@ dest_files=["res://.godot/imported/run-sand.mp3-3128931d21e7079859c7036ca5f437ba
 [params]
 
 loop=false
-loop_offset=0
-bpm=0
+loop_offset=0.0
+bpm=0.0
 beat_count=0
 bar_beats=4

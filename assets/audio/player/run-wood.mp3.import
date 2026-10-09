@@ -13,7 +13,7 @@ dest_files=["res://.godot/imported/run-wood.mp3-f2ab05c854bc338eff16f32af3acf960
 [params]
 
 loop=false
-loop_offset=0
-bpm=0
+loop_offset=0.0
+bpm=0.0
 beat_count=0
 bar_beats=4

@@ -13,7 +13,7 @@ dest_files=["res://.godot/imported/run-rock.mp3-ce6b73209dd37d7754b4c4bdda17cedd
 [params]
 
 loop=false
-loop_offset=0
-bpm=0
+loop_offset=0.0
+bpm=0.0
 beat_count=0
 bar_beats=4
