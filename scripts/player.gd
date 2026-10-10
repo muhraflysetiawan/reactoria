@@ -466,7 +466,7 @@ func perform_attack() -> void:
 			# current_reach = 3.8
 			lunge_force = 4.0
 			anim_speed = 3.0
-			duration = 0.5
+			duration = 0.6
 			attack_cooldown_timer = 0.5
 		2:
 			# Combo 2: Tebasan Diagonal Bawah Kuat

@@ -93,10 +93,17 @@ flat = true
 
 [node name="MenuContainer" type="VBoxContainer" parent="." unique_id=517934337]
 layout_mode = 1
-offset_left = 60.0
-offset_top = 100.0
-offset_right = 420.0
-offset_bottom = 491.0
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -180.0
+offset_top = -195.5
+offset_right = 180.0
+offset_bottom = 195.5
+grow_horizontal = 2
+grow_vertical = 2
 mouse_filter = 2
 
 [node name="Logo" type="TextureRect" parent="MenuContainer" unique_id=402255853]
@@ -114,7 +121,6 @@ layout_mode = 2
 unique_name_in_owner = true
 custom_minimum_size = Vector2(280, 56)
 layout_mode = 2
-size_flags_horizontal = 4
 mouse_filter = 2
 
 [node name="CampaignFrame" type="ColorRect" parent="MenuContainer/CampaignSlot" unique_id=1134440878]
@@ -154,7 +160,6 @@ layout_mode = 2
 unique_name_in_owner = true
 custom_minimum_size = Vector2(280, 56)
 layout_mode = 2
-size_flags_horizontal = 4
 mouse_filter = 2
 
 [node name="CreativeFrame" type="ColorRect" parent="MenuContainer/CreativeSlot" unique_id=1612909446]
@@ -194,7 +199,6 @@ layout_mode = 2
 unique_name_in_owner = true
 custom_minimum_size = Vector2(280, 56)
 layout_mode = 2
-size_flags_horizontal = 4
 mouse_filter = 2
 
 [node name="SettingFrame" type="ColorRect" parent="MenuContainer/SettingSlot" unique_id=667470821]
@@ -241,7 +245,7 @@ offset_right = 200.0
 grow_vertical = 0
 theme_override_colors/font_color = Color(0.7, 0.65, 0.6, 0.5)
 theme_override_font_sizes/font_size = 12
-text = "v0.1.0 Alpha"
+text = "v0.1 Beta"
 
 [node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="." unique_id=644870942]
 stream = ExtResource("4_wu84c")

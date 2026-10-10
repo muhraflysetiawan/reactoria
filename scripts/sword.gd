@@ -22,10 +22,35 @@ var hit_sfx: AudioStream = null
 var is_slashing: bool = false
 var slash_timer: float = 0.0
 
+# Trail dynamic points & mesh
+var trail_mesh_inst: MeshInstance3D = null
+var trail_points: Array[Dictionary] = [] # Array of {base: Vector3, tip: Vector3, time: float}
+var trail_duration: float = 0.22
+var trail_material: StandardMaterial3D = null
+
 func _ready() -> void:
 	_setup_materials()
 	_load_sounds()
 	_setup_particles()
+	_setup_trail_mesh()
+
+func _setup_trail_mesh() -> void:
+	trail_mesh_inst = MeshInstance3D.new()
+	trail_mesh_inst.name = "SwordTrail"
+	trail_mesh_inst.top_level = true # Rendernya di world space agar trail tertinggal di udara
+	
+	trail_material = StandardMaterial3D.new()
+	trail_material.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	trail_material.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	trail_material.cull_mode = BaseMaterial3D.CULL_DISABLED
+	trail_material.vertex_color_use_as_albedo = true
+	trail_material.albedo_color = Color(1.0, 1.0, 1.0, 1.0)
+	trail_material.emission_enabled = true
+	trail_material.emission = Color(0.2, 0.85, 1.0)
+	trail_material.emission_energy_multiplier = 3.0
+	trail_mesh_inst.material_override = trail_material
+	
+	add_child(trail_mesh_inst)
 
 func _setup_materials() -> void:
 	if not sword_mesh or not sword_mesh.mesh:
@@ -92,16 +117,13 @@ func _load_sounds() -> void:
 		swing_sfx.append(load("res://assets/audio/water_sword/charged-slash.MP3"))
 	if ResourceLoader.exists("res://assets/audio/water_sword/charged-up-sword-slash.MP3"):
 		swing_sfx.append(load("res://assets/audio/water_sword/charged-up-sword-slash.MP3"))
-	# if ResourceLoader.exists("res://assets/audio/water_sword/hit.wav"):
-	# 	hit_sfx = load("res://assets/audio/water_sword/hit.wav")
 
 func _setup_particles() -> void:
 	if aura_particles:
 		aura_particles.emitting = true
 
-## Memicu efek tebasan (Slash Arc Mesh VFX) & suara ayunan pedang
+## Memicu efek tebasan & suara ayunan pedang
 func play_attack_effect(combo_index: int) -> void:
-	# Mainkan SFX ayunan
 	if audio_swing and swing_sfx.size() > 0:
 		var sfx_idx = (combo_index - 1) % swing_sfx.size()
 		var speeds = [speed_thrust_slash, speed_sword_slash, speed_charged_slash, speed_charged_up_slash]
@@ -110,80 +132,69 @@ func play_attack_effect(combo_index: int) -> void:
 		audio_swing.pitch_scale = randf_range(0.95, 1.1) * sfx_speed
 		audio_swing.play()
 	
-	# Buat Slash Arc VFX dinamis
-	_spawn_slash_arc(combo_index)
+	# Aktifkan perekaman jejak tebasan pedang
+	is_slashing = true
+	var slash_durations = [0.6, 0.38, 0.48, 1]
+	var dur_idx = (combo_index - 1) % slash_durations.size()
+	slash_timer = slash_durations[dur_idx]
 
+func _process(delta: float) -> void:
+	if is_slashing:
+		slash_timer -= delta
+		if slash_timer <= 0.0:
+			is_slashing = false
 
-## Membuat mesh lengkungan tebasan bercahaya (Slash Arc Mesh)
-func _spawn_slash_arc(combo_index: int) -> void:
-	var arc_mesh_inst = MeshInstance3D.new()
-	var immediate_mesh = ImmediateMesh.new()
+	# Posisi pangkal & ujung pedang di koordinat lokal pedang
+	var local_base = Vector3(0.08, 0.15, 0.0)
+	var local_tip = Vector3(-0.39, 1.02, 0.0)
 	
-	# Buat busur tebasan berbentuk pita sabit berkilau
-	var segments = 16
-	var arc_radius_inner = 0.8
-	var arc_radius_outer = 1.6
-	var angle_start = - deg_to_rad(65.0)
-	var angle_end = deg_to_rad(75.0)
-	
-	if combo_index == 2:
-		# Tebasan vertikal diagonal
-		angle_start = - deg_to_rad(80.0)
-		angle_end = deg_to_rad(60.0)
-	elif combo_index == 3:
-		# Tebasan putaran 360 derajat penuh
-		angle_start = - deg_to_rad(170.0)
-		angle_end = deg_to_rad(170.0)
-		arc_radius_outer = 1.9
+	if is_slashing:
+		var current_base = to_global(local_base)
+		var current_tip = to_global(local_tip)
+		trail_points.push_front({
+			"base": current_base,
+			"tip": current_tip,
+			"time": trail_duration
+		})
 
-	immediate_mesh.surface_begin(Mesh.PRIMITIVE_TRIANGLE_STRIP)
-	for i in range(segments + 1):
-		var t = float(i) / float(segments)
-		var angle = lerp(angle_start, angle_end, t)
-		var width_factor = sin(t * PI) # Ujung sabit runcing, tengah tebal
-		var r_in = arc_radius_inner + (1.0 - width_factor) * 0.2
-		var r_out = arc_radius_outer * (0.6 + width_factor * 0.4)
+	# Update sisa masa hidup titik trail
+	var i = 0
+	while i < trail_points.size():
+		trail_points[i]["time"] -= delta
+		if trail_points[i]["time"] <= 0.0:
+			trail_points.remove_at(i)
+		else:
+			i += 1
+
+	_render_trail()
+
+func _render_trail() -> void:
+	if not trail_mesh_inst:
+		return
+	if trail_points.size() < 2:
+		trail_mesh_inst.mesh = null
+		return
+
+	var imm_mesh = ImmediateMesh.new()
+	imm_mesh.surface_begin(Mesh.PRIMITIVE_TRIANGLE_STRIP)
+	
+	var total = trail_points.size()
+	for idx in range(total):
+		var p = trail_points[idx]
+		var life_ratio = clamp(p["time"] / trail_duration, 0.0, 1.0)
+		var t = float(idx) / float(total - 1)
 		
-		var cos_a = cos(angle)
-		var sin_a = sin(angle)
-		
-		var p_in = Vector3(sin_a * r_in, 0.0, -cos_a * r_in)
-		var p_out = Vector3(sin_a * r_out, 0.0, -cos_a * r_out)
-		
-		immediate_mesh.surface_set_uv(Vector2(t, 0.0))
-		immediate_mesh.surface_add_vertex(p_in)
-		immediate_mesh.surface_set_uv(Vector2(t, 1.0))
-		immediate_mesh.surface_add_vertex(p_out)
-	immediate_mesh.surface_end()
-	
-	arc_mesh_inst.mesh = immediate_mesh
-	
-	# Material sabit tebasan: Glowing Cyan / Aqua Gradient
-	var slash_mat = StandardMaterial3D.new()
-	slash_mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
-	slash_mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
-	slash_mat.cull_mode = BaseMaterial3D.CULL_DISABLED
-	slash_mat.albedo_color = Color(0.4, 0.9, 1.0, 0.85)
-	slash_mat.emission_enabled = true
-	slash_mat.emission = Color(0.2, 0.85, 1.0)
-	slash_mat.emission_energy_multiplier = 2.5
-	arc_mesh_inst.material_override = slash_mat
-	
-	# Rotasi efek sesuai jenis kombo tebasan
-	if combo_index == 1:
-		arc_mesh_inst.rotation_degrees = Vector3(15.0, 0.0, 10.0)
-		arc_mesh_inst.position = Vector3(-2.0, 0.6, 3.3)
-	elif combo_index == 2:
-		arc_mesh_inst.rotation_degrees = Vector3(45.0, 30.0, -50.0)
-		arc_mesh_inst.position = Vector3(-2.0, 0.8, 0.2)
-	elif combo_index == 3:
-		arc_mesh_inst.rotation_degrees = Vector3(0.0, 0.0, 0.0)
-		arc_mesh_inst.position = Vector3(-2.0, 0.5, 0.0)
-	
-	slash_container.add_child(arc_mesh_inst)
-	
-	# Animasi Tween untuk memudarkan dan memperbesar efek tebasan
-	var tween = create_tween().set_parallel(true)
-	tween.tween_property(slash_mat, "albedo_color:a", 0.0, 0.26).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
-	tween.tween_property(arc_mesh_inst, "scale", Vector3(1.25, 1.25, 1.25), 0.26).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
-	tween.chain().tween_callback(arc_mesh_inst.queue_free)
+		# Alpha memudar ke ekor trail dan saat waktu habis
+		var alpha = sin(life_ratio * PI * 0.5) * (1.0 - t * 0.7)
+		var vert_color = Color(0.3, 0.85, 1.0, alpha * 0.85)
+
+		imm_mesh.surface_set_color(vert_color)
+		imm_mesh.surface_set_uv(Vector2(t, 0.0))
+		imm_mesh.surface_add_vertex(p["base"])
+
+		imm_mesh.surface_set_color(vert_color)
+		imm_mesh.surface_set_uv(Vector2(t, 1.0))
+		imm_mesh.surface_add_vertex(p["tip"])
+
+	imm_mesh.surface_end()
+	trail_mesh_inst.mesh = imm_mesh
