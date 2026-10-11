@@ -3,7 +3,7 @@ extends Control
 ## and scene transitions for Campaign, Creative, Setting, and Credits.
 
 # Scene paths — update these when the target scenes are created.
-const CAMPAIGN_SCENE := "res://scenes/main.tscn"
+const CAMPAIGN_SCENE := "res://scenes/combine_element.tscn"
 const CREATIVE_SCENE := "" # TODO: create creative mode scene
 const SETTING_SCENE := "" # TODO: create settings scene
 const CREDITS_SCENE := "" # TODO: create credits scene

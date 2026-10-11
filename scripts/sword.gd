@@ -134,7 +134,7 @@ func play_attack_effect(combo_index: int) -> void:
 	
 	# Aktifkan perekaman jejak tebasan pedang
 	is_slashing = true
-	var slash_durations = [0.6, 0.38, 0.48, 1]
+	var slash_durations = [0.7, 0.42, 0.48, 1]
 	var dur_idx = (combo_index - 1) % slash_durations.size()
 	slash_timer = slash_durations[dur_idx]
 

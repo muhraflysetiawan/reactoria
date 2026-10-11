@@ -1,0 +1,305 @@
+[gd_scene format=3 uid="uid://combine_element_scene"]
+
+[ext_resource type="Texture2D" path="res://assets/ui/campaign/combine-element.jpeg" id="1_bg"]
+[ext_resource type="Script" path="res://scripts/combine_element.gd" id="2_script"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_slot"]
+bg_color = Color(0.06, 0.08, 0.12, 0.9)
+border_color = Color(0.4, 0.7, 0.6, 0.8)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+content_margin_left = 16.0
+content_margin_top = 12.0
+content_margin_right = 16.0
+content_margin_bottom = 12.0
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_result"]
+bg_color = Color(0.04, 0.06, 0.1, 0.92)
+border_color = Color(0.3, 0.5, 0.45, 0.7)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+content_margin_left = 20.0
+content_margin_top = 16.0
+content_margin_right = 20.0
+content_margin_bottom = 16.0
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_combine_btn"]
+bg_color = Color(0.15, 0.45, 0.35, 0.95)
+border_color = Color(0.3, 0.8, 0.6, 1.0)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+content_margin_left = 24.0
+content_margin_top = 12.0
+content_margin_right = 24.0
+content_margin_bottom = 12.0
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_combine_hover"]
+bg_color = Color(0.2, 0.55, 0.4, 1.0)
+border_color = Color(0.4, 1.0, 0.7, 1.0)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+content_margin_left = 24.0
+content_margin_top = 12.0
+content_margin_right = 24.0
+content_margin_bottom = 12.0
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_combine_disabled"]
+bg_color = Color(0.1, 0.12, 0.15, 0.6)
+border_color = Color(0.3, 0.3, 0.3, 0.5)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+content_margin_left = 24.0
+content_margin_top = 12.0
+content_margin_right = 24.0
+content_margin_bottom = 12.0
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_back"]
+
+[node name="CombineElement" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("2_script")
+
+[node name="Background" type="TextureRect" parent="." unique_name_in_owner=true]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = ExtResource("1_bg")
+expand_mode = 1
+stretch_mode = 6
+
+[node name="DarkOverlay" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0, 0, 0, 0.35)
+
+[node name="BackButton" type="Button" parent="." unique_name_in_owner=true]
+unique_name_in_owner = true
+layout_mode = 1
+offset_left = 16.0
+offset_top = 12.0
+offset_right = 130.0
+offset_bottom = 44.0
+theme_override_colors/font_color = Color(0.85, 0.82, 0.75, 0.9)
+theme_override_colors/font_hover_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 16
+theme_override_styles/normal = SubResource("StyleBoxEmpty_back")
+theme_override_styles/pressed = SubResource("StyleBoxEmpty_back")
+theme_override_styles/hover = SubResource("StyleBoxEmpty_back")
+theme_override_styles/focus = SubResource("StyleBoxEmpty_back")
+text = "◀ Kembali"
+flat = true
+
+[node name="Title" type="Label" parent="."]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -200.0
+offset_top = 20.0
+offset_right = 200.0
+offset_bottom = 60.0
+grow_horizontal = 2
+theme_override_colors/font_color = Color(0.9, 0.95, 0.88, 1)
+theme_override_font_sizes/font_size = 28
+text = "⚗ Combine Element"
+horizontal_alignment = 1
+
+[node name="MainLayout" type="VBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -320.0
+offset_top = -200.0
+offset_right = 320.0
+offset_bottom = 220.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+alignment = 1
+
+[node name="SlotRow" type="HBoxContainer" parent="MainLayout"]
+layout_mode = 2
+alignment = 1
+
+[node name="SlotAPanel" type="PanelContainer" parent="MainLayout/SlotRow" unique_name_in_owner=true]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(120, 80)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_slot")
+
+[node name="SlotALabel" type="Label" parent="MainLayout/SlotRow/SlotAPanel" unique_name_in_owner=true]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.4, 0.9, 0.8, 1)
+theme_override_font_sizes/font_size = 32
+text = "?"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="PlusLabel" type="Label" parent="MainLayout/SlotRow"]
+custom_minimum_size = Vector2(50, 0)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.7, 0.7, 0.6, 0.9)
+theme_override_font_sizes/font_size = 36
+text = "+"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="SlotBPanel" type="PanelContainer" parent="MainLayout/SlotRow" unique_name_in_owner=true]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(120, 80)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_slot")
+
+[node name="SlotBLabel" type="Label" parent="MainLayout/SlotRow/SlotBPanel" unique_name_in_owner=true]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.4, 0.9, 0.8, 1)
+theme_override_font_sizes/font_size = 32
+text = "?"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="ArrowLabel" type="Label" parent="MainLayout"]
+custom_minimum_size = Vector2(0, 40)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.6, 0.6, 0.5, 0.8)
+theme_override_font_sizes/font_size = 28
+text = "▼"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="ResultPanel" type="PanelContainer" parent="MainLayout" unique_name_in_owner=true]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(400, 80)
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_styles/panel = SubResource("StyleBoxFlat_result")
+
+[node name="ResultVBox" type="VBoxContainer" parent="MainLayout/ResultPanel"]
+layout_mode = 2
+alignment = 1
+
+[node name="ResultLabel" type="Label" parent="MainLayout/ResultPanel/ResultVBox" unique_name_in_owner=true]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.6, 0.6, 0.6, 1)
+theme_override_font_sizes/font_size = 22
+text = "Pilih 2 elemen untuk combine"
+horizontal_alignment = 1
+
+[node name="ResultDesc" type="Label" parent="MainLayout/ResultPanel/ResultVBox" unique_name_in_owner=true]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.7, 0.7, 0.65, 0.8)
+theme_override_font_sizes/font_size = 14
+text = ""
+horizontal_alignment = 1
+autowrap_mode = 2
+
+[node name="Spacer1" type="Control" parent="MainLayout"]
+custom_minimum_size = Vector2(0, 12)
+layout_mode = 2
+
+[node name="ElementLabel" type="Label" parent="MainLayout"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.75, 0.72, 0.65, 0.9)
+theme_override_font_sizes/font_size = 16
+text = "Elemen:"
+horizontal_alignment = 1
+
+[node name="Spacer2" type="Control" parent="MainLayout"]
+custom_minimum_size = Vector2(0, 4)
+layout_mode = 2
+
+[node name="ElementGrid" type="GridContainer" parent="MainLayout" unique_name_in_owner=true]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 4
+columns = 5
+
+[node name="Spacer3" type="Control" parent="MainLayout"]
+custom_minimum_size = Vector2(0, 16)
+layout_mode = 2
+
+[node name="ButtonRow" type="HBoxContainer" parent="MainLayout"]
+layout_mode = 2
+alignment = 1
+
+[node name="ResetButton" type="Button" parent="MainLayout/ButtonRow"]
+custom_minimum_size = Vector2(100, 44)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.8, 0.75, 0.65, 0.9)
+theme_override_colors/font_hover_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 18
+text = "Reset"
+
+[node name="ButtonSpacer" type="Control" parent="MainLayout/ButtonRow"]
+custom_minimum_size = Vector2(16, 0)
+layout_mode = 2
+
+[node name="CombineButton" type="Button" parent="MainLayout/ButtonRow" unique_name_in_owner=true]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(200, 50)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.9, 1, 0.95, 1)
+theme_override_colors/font_hover_color = Color(1, 1, 1, 1)
+theme_override_colors/font_disabled_color = Color(0.4, 0.4, 0.4, 0.6)
+theme_override_font_sizes/font_size = 22
+theme_override_styles/normal = SubResource("StyleBoxFlat_combine_btn")
+theme_override_styles/hover = SubResource("StyleBoxFlat_combine_hover")
+theme_override_styles/disabled = SubResource("StyleBoxFlat_combine_disabled")
+text = "⚔ Combine & Fight!"
+disabled = true
+
+[connection signal="pressed" from="BackButton" to="." method="_on_back_pressed"]
+[connection signal="pressed" from="MainLayout/ButtonRow/ResetButton" to="." method="_on_reset_pressed"]
+[connection signal="pressed" from="MainLayout/ButtonRow/CombineButton" to="." method="_on_combine_pressed"]
