@@ -1,0 +1,13 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/sword.gd" id="1_script"]
+[ext_resource type="PackedScene" path="res://assets/3dassets/hammer/c3h8-hammer-lowpoly.glb" id="2_model"]
+
+[node name="HammerC3H8" type="Node3D"]
+script = ExtResource("1_script")
+weapon_id = "c3h8_hammer"
+trail_color = Color(1, 0.45, 0.1, 1)
+particle_color = Color(1, 0.55, 0.15, 1)
+
+[node name="Model" parent="." instance=ExtResource("2_model")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)

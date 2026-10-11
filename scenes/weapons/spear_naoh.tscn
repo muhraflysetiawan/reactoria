@@ -1,0 +1,13 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/sword.gd" id="1_script"]
+[ext_resource type="PackedScene" path="res://assets/3dassets/spear/naoh-spear-lowpoly.glb" id="2_model"]
+
+[node name="SpearNaOH" type="Node3D"]
+script = ExtResource("1_script")
+weapon_id = "naoh_spear"
+trail_color = Color(1, 0.88, 0.25, 1)
+particle_color = Color(1, 0.95, 0.4, 1)
+
+[node name="Model" parent="." instance=ExtResource("2_model")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)

@@ -50,7 +50,7 @@ signal damaged(amount: float)
 @onready var camera: Camera3D = $SpringArm3D/Camera3D
 @onready var visuals: Node3D = $Visuals
 
-const SwordWeaponScript = preload("res://scripts/sword.gd")
+const WeaponBaseScript = preload("res://scripts/weapon.gd")
 
 var current_health: float = 100.0
 var anim_player: AnimationPlayer = null
@@ -192,35 +192,42 @@ func _setup_animations() -> void:
 	print("[Player] Animasi siap: ", anim_player.get_animation_list())
 	anim_player.play("MC_IDLE")
 
-## Memasang pedang Aqua Saber (Weapon_Sword2) ke tangan kanan (RightHand bone)
+## Memasang senjata dari GameData ke tangan kanan (RightHand bone)
 func _setup_sword_weapon() -> void:
 	if not skeleton:
-		print("[Player] Warning: Skeleton3D tidak ditemukan untuk memasang pedang!")
+		print("[Player] Warning: Skeleton3D tidak ditemukan untuk memasang senjata!")
 		return
-		
+
 	var hand_idx = skeleton.find_bone("RightHand")
 	if hand_idx == -1:
 		print("[Player] Warning: Bone RightHand tidak ditemukan!")
 		return
 
+	var weapon_data: Dictionary = GameData.get_weapon_data()
+
 	# Buat BoneAttachment3D ke tangan kanan
 	sword_attachment = BoneAttachment3D.new()
-	sword_attachment.name = "RightHandSwordAttachment"
+	sword_attachment.name = "RightHandWeaponAttachment"
 	sword_attachment.bone_name = "RightHand"
 	skeleton.add_child(sword_attachment)
 
-	# Container pemegang pedang
+	# Container pemegang senjata
 	sword_holder = Node3D.new()
-	sword_holder.name = "SwordHolder"
+	sword_holder.name = "WeaponHolder"
 	sword_attachment.add_child(sword_holder)
 	_update_sword_transform()
 
-	# Load scene pedang
-	var sword_scene = load("res://scenes/sword.tscn")
-	if sword_scene:
-		sword = sword_scene.instantiate()
+	# Load scene senjata spesifik dari scenes/weapons/
+	var scene_path: String = weapon_data.get("scene_path", "res://scenes/weapons/sword_h2o.tscn")
+	var weapon_scene = load(scene_path)
+	if weapon_scene:
+		sword = weapon_scene.instantiate()
 		sword_holder.add_child(sword)
-		print("[Player] Pedang Aqua Saber berhasil dipasang di RightHand!")
+		if sword.has_method("setup_weapon_effects"):
+			sword.setup_weapon_effects(weapon_data)
+		print("[Player] Senjata %s (%s) berhasil dipasang di RightHand dari %s!" % [weapon_data.get("name", "Unknown"), weapon_data.get("formula", ""), scene_path])
+	else:
+		print("[Player] Error: Gagal load scene senjata dari %s!" % scene_path)
 
 func _update_sword_transform() -> void:
 	if sword_holder and is_instance_valid(sword_holder):
@@ -387,6 +394,11 @@ func _update_footsteps(delta: float, is_moving: bool, is_sprinting: bool) -> voi
 
 	var surface = _detect_surface_type()
 	var desired_stream: AudioStream = footstep_sounds.get(surface, footstep_sounds["grass"])
+
+	if is_dead == true:
+		if footstep_player and footstep_player.playing:
+			footstep_player.stop()
+		return
 
 	if not footstep_player.playing or footstep_player.stream != desired_stream:
 		footstep_player.stream = desired_stream
