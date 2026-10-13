@@ -10,7 +10,7 @@ signal damaged(amount: float)
 @export_group("Movement")
 @export var walk_speed: float = 5.0
 @export var sprint_speed: float = 8.5
-@export var jump_velocity: float = 6.2
+@export var jump_velocity: float = 20
 @export var acceleration: float = 14.0
 @export var friction: float = 15.0
 

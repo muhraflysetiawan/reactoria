@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://baa6ixbqk4o3i"
-path="res://.godot/imported/fire.svg-7fb0b4001934ff1b06f5a719078f9ef3.ctex"
+uid="uid://b8e7pvgogy4ka"
+path="res://.godot/imported/natrium.svg-2f802186d740c8f4b426798e516ba270.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/ui/campaign/elements/fire.svg"
-dest_files=["res://.godot/imported/fire.svg-7fb0b4001934ff1b06f5a719078f9ef3.ctex"]
+source_file="res://assets/ui/campaign/elements/natrium.svg"
+dest_files=["res://.godot/imported/natrium.svg-2f802186d740c8f4b426798e516ba270.ctex"]
 
 [params]
 

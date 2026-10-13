@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://b28oea1bpfg5b"
-path="res://.godot/imported/ice.svg-d9ef87b845e82a02341655412bbc387f.ctex"
+uid="uid://ct78md3puxcpu"
+path="res://.godot/imported/fluoin.svg-8c184bc515b5c75e2b2b9366125b6016.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/ui/campaign/elements/ice.svg"
-dest_files=["res://.godot/imported/ice.svg-d9ef87b845e82a02341655412bbc387f.ctex"]
+source_file="res://assets/ui/campaign/elements/fluoin.svg"
+dest_files=["res://.godot/imported/fluoin.svg-8c184bc515b5c75e2b2b9366125b6016.ctex"]
 
 [params]
 

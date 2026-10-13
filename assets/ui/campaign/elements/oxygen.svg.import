@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://7ufqgw4i133"
-path="res://.godot/imported/star.svg-341dd9b2b937c8c0472370a61094dd9a.ctex"
+uid="uid://c47omxj4ok1i1"
+path="res://.godot/imported/oxygen.svg-3f6cc5444428d4b64cfc576efc5433ec.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/ui/campaign/elements/star.svg"
-dest_files=["res://.godot/imported/star.svg-341dd9b2b937c8c0472370a61094dd9a.ctex"]
+source_file="res://assets/ui/campaign/elements/oxygen.svg"
+dest_files=["res://.godot/imported/oxygen.svg-3f6cc5444428d4b64cfc576efc5433ec.ctex"]
 
 [params]
 

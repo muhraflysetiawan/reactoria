@@ -1,13 +1,13 @@
-[gd_scene load_steps=3 format=3]
+[gd_scene format=3 uid="uid://b7rttavx0j5eq"]
 
-[ext_resource type="Script" path="res://scripts/sword.gd" id="1_script"]
-[ext_resource type="PackedScene" path="res://assets/3dassets/sword/c10h8-sword-lowpoly.glb" id="2_model"]
+[ext_resource type="Script" uid="uid://c07eiitq2nyui" path="res://scripts/sword.gd" id="1_script"]
+[ext_resource type="PackedScene" uid="uid://ct5nk31ddx3j0" path="res://assets/3dassets/sword/c10h8-sword-lowpoly.glb" id="2_model"]
 
-[node name="SwordC10H8" type="Node3D"]
+[node name="SwordC10H8" type="Node3D" unique_id=921730909]
 script = ExtResource("1_script")
 weapon_id = "c10h8_sword"
 trail_color = Color(1, 0.25, 0.2, 1)
 particle_color = Color(1, 0.4, 0.15, 1)
 
-[node name="Model" parent="." instance=ExtResource("2_model")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+[node name="Model" parent="." unique_id=740509360 instance=ExtResource("2_model")]
+transform = Transform3D(0.8, 0, 0, 0, 0.8, 0, 0, 0, 0.8, -0.6715293, 0.0848217, -0.024719328)

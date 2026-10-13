@@ -6,72 +6,6 @@ const ARENA_SCENE := "res://scenes/main.tscn"
 const SFX_HOVER := preload("res://assets/audio/ui/hover-button.mp3")
 const SFX_CLICK := preload("res://assets/audio/ui/select-button2.mp3")
 
-# Metadata mapping untuk 12 unsur/senyawa ke icon SVG dan warna representatif
-const ELEMENT_INFO: Dictionary = {
-	"H₂": {
-		"name": "Hidrogen (H₂)",
-		"icon": "res://assets/ui/campaign/elements/water.svg",
-		"color": Color(0.35, 0.75, 1.0),
-	},
-	"O": {
-		"name": "Oksigen (O)",
-		"icon": "res://assets/ui/campaign/elements/wind.svg",
-		"color": Color(0.45, 0.85, 0.95),
-	},
-	"K": {
-		"name": "Kalium (K)",
-		"icon": "res://assets/ui/campaign/elements/lightning.svg",
-		"color": Color(0.85, 0.6, 1.0),
-	},
-	"OH": {
-		"name": "Hidroksida (OH)",
-		"icon": "res://assets/ui/campaign/elements/ice.svg",
-		"color": Color(0.5, 0.9, 0.9),
-	},
-	"H": {
-		"name": "Hidrogen (H)",
-		"icon": "res://assets/ui/campaign/elements/star.svg",
-		"color": Color(0.95, 0.9, 0.5),
-	},
-	"Cl": {
-		"name": "Klorin (Cl)",
-		"icon": "res://assets/ui/campaign/elements/poison.svg",
-		"color": Color(0.4, 0.9, 0.35),
-	},
-	"Mg": {
-		"name": "Magnesium (Mg)",
-		"icon": "res://assets/ui/campaign/elements/metal.svg",
-		"color": Color(0.9, 0.7, 0.35),
-	},
-	"Na": {
-		"name": "Natrium (Na)",
-		"icon": "res://assets/ui/campaign/elements/earth.svg",
-		"color": Color(0.95, 0.82, 0.45),
-	},
-	"C₁₀": {
-		"name": "Karbon (C₁₀)",
-		"icon": "res://assets/ui/campaign/elements/fire.svg",
-		"color": Color(1.0, 0.35, 0.2),
-	},
-	"H₈": {
-		"name": "Hidrogen (H₈)",
-		"icon": "res://assets/ui/campaign/elements/dark.svg",
-		"color": Color(0.7, 0.45, 0.85),
-	},
-	"C₃": {
-		"name": "Propana (C₃)",
-		"icon": "res://assets/ui/campaign/elements/leaf.svg",
-		"color": Color(1.0, 0.55, 0.2),
-	},
-	"F₃": {
-		"name": "Fluorin (F₃)",
-		"icon": "res://assets/ui/campaign/elements/aether.svg",
-		"color": Color(0.3, 0.95, 0.85),
-	},
-}
-
-const DEFAULT_ICON := "res://assets/ui/campaign/elements/alchemy_flask.svg"
-
 @onready var bg: TextureRect = %Background
 @onready var back_button: Button = %BackButton
 @onready var element_grid: GridContainer = %ElementGrid
@@ -104,14 +38,20 @@ var _sfx_click: AudioStreamPlayer
 
 # State racik
 var slot_a: String = ""
+var count_a: int = 0
 var slot_b: String = ""
+var count_b: int = 0
 var matched_weapon: Dictionary = {}
 
 var all_elements: Array[String] = []
 var _element_buttons: Dictionary = {}
 
+var slot_a_count: Label
+var slot_b_count: Label
+
 func _ready() -> void:
 	_init_sfx()
+	_setup_count_badges()
 	_gather_elements()
 	_build_element_buttons()
 	_connect_slot_clicks()
@@ -121,6 +61,42 @@ func _ready() -> void:
 	modulate.a = 0.0
 	var t := create_tween()
 	t.tween_property(self, "modulate:a", 1.0, 0.4).set_ease(Tween.EASE_OUT)
+
+func _setup_count_badges() -> void:
+	slot_a_count = _create_count_badge(slot_a_panel)
+	slot_b_count = _create_count_badge(slot_b_panel)
+
+func _create_count_badge(parent: PanelContainer) -> Label:
+	var margin := MarginContainer.new()
+	margin.set_anchors_preset(Control.PRESET_FULL_RECT)
+	margin.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	margin.add_theme_constant_override("margin_top", 4)
+	margin.add_theme_constant_override("margin_right", 8)
+
+	var lbl := Label.new()
+	lbl.size_flags_horizontal = Control.SIZE_SHRINK_END
+	lbl.size_flags_vertical = Control.SIZE_SHRINK_BEGIN
+	lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	lbl.add_theme_font_size_override("font_size", 16)
+	lbl.add_theme_color_override("font_color", Color(1.0, 0.88, 0.35))
+	lbl.add_theme_color_override("font_shadow_color", Color(0, 0, 0, 0.95))
+	lbl.add_theme_constant_override("shadow_offset_x", 1)
+	lbl.add_theme_constant_override("shadow_offset_y", 1)
+	lbl.add_theme_constant_override("shadow_outline_size", 2)
+	lbl.visible = false
+
+	margin.add_child(lbl)
+	parent.add_child(margin)
+	return lbl
+
+func _get_max_element_count(el: String) -> int:
+	var m := 1
+	for w in GameData.WEAPONS:
+		if w["element_a"] == el:
+			m = max(m, w.get("count_a", 1))
+		if w["element_b"] == el:
+			m = max(m, w.get("count_b", 1))
+	return m
 
 func _init_sfx() -> void:
 	_sfx_hover = AudioStreamPlayer.new()
@@ -140,13 +116,7 @@ func _gather_elements() -> void:
 				all_elements.append(el)
 
 func _get_element_info(el: String) -> Dictionary:
-	if ELEMENT_INFO.has(el):
-		return ELEMENT_INFO[el]
-	return {
-		"name": el,
-		"icon": DEFAULT_ICON,
-		"color": Color(0.8, 0.85, 0.9),
-	}
+	return ElementData.get_info(el)
 
 func _build_element_buttons() -> void:
 	for child in element_grid.get_children():
@@ -156,51 +126,29 @@ func _build_element_buttons() -> void:
 	for el in all_elements:
 		var info: Dictionary = _get_element_info(el)
 		var btn := Button.new()
-		btn.custom_minimum_size = Vector2(88, 86)
+		btn.custom_minimum_size = Vector2(88, 88)
 		btn.tooltip_text = info["name"]
 		btn.focus_mode = Control.FOCUS_NONE
 
-		var vbox := VBoxContainer.new()
-		vbox.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-		vbox.alignment = BoxContainer.ALIGNMENT_CENTER
-		vbox.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		vbox.add_theme_constant_override("separation", 4)
-
 		var icon_rect := TextureRect.new()
-		icon_rect.custom_minimum_size = Vector2(38, 38)
+		icon_rect.set_anchors_preset(Control.PRESET_FULL_RECT)
 		icon_rect.texture = load(info["icon"])
 		icon_rect.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 		icon_rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 		icon_rect.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		vbox.add_child(icon_rect)
+		btn.add_child(icon_rect)
 
-		var lbl := Label.new()
-		lbl.text = el
-		lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-		lbl.add_theme_font_size_override("font_size", 14)
-		lbl.add_theme_color_override("font_color", Color(0.95, 0.95, 0.95))
-		lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		vbox.add_child(lbl)
+		var empty_style := StyleBoxEmpty.new()
+		btn.add_theme_stylebox_override("normal", empty_style)
+		btn.add_theme_stylebox_override("pressed", empty_style)
+		btn.add_theme_stylebox_override("focus", empty_style)
 
-		btn.add_child(vbox)
-
-		var normal_style := StyleBoxFlat.new()
-		normal_style.bg_color = Color(0.10, 0.11, 0.15, 0.88)
-		normal_style.border_color = Color(0.35, 0.32, 0.28, 0.75)
-		normal_style.set_border_width_all(2)
-		normal_style.set_corner_radius_all(8)
-		normal_style.set_content_margin_all(6)
-		btn.add_theme_stylebox_override("normal", normal_style)
-
-		var hover_style := normal_style.duplicate()
-		hover_style.bg_color = Color(0.18, 0.22, 0.28, 0.95)
-		hover_style.border_color = Color(0.45, 0.75, 0.85, 1.0)
+		var hover_style := StyleBoxFlat.new()
+		hover_style.bg_color = Color(0, 0, 0, 0)
+		hover_style.border_color = Color(0.85, 0.9, 1.0, 0.6)
+		hover_style.set_border_width_all(2)
+		hover_style.set_corner_radius_all(6)
 		btn.add_theme_stylebox_override("hover", hover_style)
-
-		var pressed_style := normal_style.duplicate()
-		pressed_style.bg_color = Color(0.08, 0.15, 0.2, 1.0)
-		pressed_style.border_color = Color(0.3, 0.9, 0.7, 1.0)
-		btn.add_theme_stylebox_override("pressed", pressed_style)
 
 		btn.pressed.connect(_on_element_pressed.bind(el))
 		btn.mouse_entered.connect(func(): _sfx_hover.play())
@@ -214,6 +162,7 @@ func _connect_slot_clicks() -> void:
 			if not slot_a.is_empty():
 				_sfx_click.play()
 				slot_a = ""
+				count_a = 0
 				_check_recipe()
 				_update_display()
 	)
@@ -222,6 +171,7 @@ func _connect_slot_clicks() -> void:
 			if not slot_b.is_empty():
 				_sfx_click.play()
 				slot_b = ""
+				count_b = 0
 				_check_recipe()
 				_update_display()
 	)
@@ -229,16 +179,28 @@ func _connect_slot_clicks() -> void:
 func _on_element_pressed(el: String) -> void:
 	_sfx_click.play()
 	if slot_a == el:
-		slot_a = ""
+		if count_a < _get_max_element_count(el):
+			count_a += 1
+		else:
+			slot_a = ""
+			count_a = 0
 	elif slot_b == el:
-		slot_b = ""
+		if count_b < _get_max_element_count(el):
+			count_b += 1
+		else:
+			slot_b = ""
+			count_b = 0
 	elif slot_a.is_empty():
 		slot_a = el
+		count_a = 1
 	elif slot_b.is_empty():
 		slot_b = el
+		count_b = 1
 	else:
 		slot_a = el
+		count_a = 1
 		slot_b = ""
+		count_b = 0
 
 	_check_recipe()
 	_update_display()
@@ -248,14 +210,18 @@ func _check_recipe() -> void:
 	if slot_a.is_empty() or slot_b.is_empty():
 		return
 	for w in GameData.WEAPONS:
-		if (w["element_a"] == slot_a and w["element_b"] == slot_b) \
-			or (w["element_a"] == slot_b and w["element_b"] == slot_a):
+		var req_a: String = w["element_a"]
+		var req_b: String = w["element_b"]
+		var req_ca: int = w.get("count_a", 1)
+		var req_cb: int = w.get("count_b", 1)
+		if (slot_a == req_a and count_a == req_ca and slot_b == req_b and count_b == req_cb) \
+			or (slot_a == req_b and count_a == req_cb and slot_b == req_a and count_b == req_ca):
 			matched_weapon = w
 			return
 
 func _update_display() -> void:
-	_update_slot(slot_a, slot_a_panel, slot_a_icon, slot_a_label, slot_a_name)
-	_update_slot(slot_b, slot_b_panel, slot_b_icon, slot_b_label, slot_b_name)
+	_update_slot(slot_a, count_a, slot_a_panel, slot_a_icon, slot_a_label, slot_a_name, slot_a_count)
+	_update_slot(slot_b, count_b, slot_b_panel, slot_b_icon, slot_b_label, slot_b_name, slot_b_count)
 	_update_element_button_highlights()
 
 	if not matched_weapon.is_empty():
@@ -272,6 +238,7 @@ func _update_display() -> void:
 		result_desc.add_theme_color_override("font_color", Color(0.9, 0.9, 0.88))
 		rune_circle_bg.modulate = matched_weapon["color"]
 		combine_button.disabled = false
+		bg.texture = load("res://assets/ui/campaign/combine-element.jpeg")
 	else:
 		result_question.visible = true
 		result_icon.visible = false
@@ -283,18 +250,23 @@ func _update_display() -> void:
 
 		if slot_a.is_empty() and slot_b.is_empty():
 			result_desc.text = "Gabungkan dua unsur untuk menemukan unsur baru!"
+			bg.texture = load("res://assets/ui/campaign/combine-element-2.jpeg")
 		elif not slot_b.is_empty():
 			result_desc.text = "Kombinasi tidak valid! Coba padukan unsur lain."
+			bg.texture = load("res://assets/ui/campaign/combine-element-2.jpeg")
 		else:
 			result_desc.text = "Pilih unsur kedua dari daftar di sebelah kiri..."
+			bg.texture = load("res://assets/ui/campaign/combine-element.jpeg")
 		result_desc.add_theme_color_override("font_color", Color(0.65, 0.65, 0.65))
 
 func _update_slot(
 	el: String,
+	count: int,
 	panel: PanelContainer,
 	icon_node: TextureRect,
 	lbl_node: Label,
-	name_node: Label
+	name_node: Label,
+	count_node: Label
 ) -> void:
 	var style := panel.get_theme_stylebox("panel") as StyleBoxFlat
 	if el.is_empty():
@@ -304,6 +276,8 @@ func _update_slot(
 		lbl_node.add_theme_color_override("font_color", Color(0.45, 0.45, 0.45))
 		name_node.text = "Pilih Unsur"
 		name_node.add_theme_color_override("font_color", Color(0.65, 0.6, 0.52))
+		if count_node:
+			count_node.visible = false
 		if style:
 			style.border_color = Color(0.42, 0.35, 0.25, 0.75)
 	else:
@@ -313,6 +287,9 @@ func _update_slot(
 		lbl_node.visible = false
 		name_node.text = el
 		name_node.add_theme_color_override("font_color", info["color"])
+		if count_node:
+			count_node.text = str(count)
+			count_node.visible = (count > 1)
 		if style:
 			style.border_color = info["color"]
 
@@ -320,15 +297,18 @@ func _update_element_button_highlights() -> void:
 	for el: String in _element_buttons:
 		var btn: Button = _element_buttons[el]
 		var is_selected: bool = (el == slot_a or el == slot_b)
-		var style := btn.get_theme_stylebox("normal") as StyleBoxFlat
-		if style:
-			if is_selected:
-				var info: Dictionary = _get_element_info(el)
-				style.bg_color = Color(0.15, 0.25, 0.25, 0.95)
-				style.border_color = info["color"]
-			else:
-				style.bg_color = Color(0.10, 0.11, 0.15, 0.88)
-				style.border_color = Color(0.35, 0.32, 0.28, 0.75)
+		if is_selected:
+			var info: Dictionary = _get_element_info(el)
+			var sel_style := StyleBoxFlat.new()
+			sel_style.bg_color = Color(0, 0, 0, 0)
+			sel_style.border_color = info["color"]
+			sel_style.set_border_width_all(3)
+			sel_style.set_corner_radius_all(6)
+			btn.add_theme_stylebox_override("normal", sel_style)
+			btn.modulate = Color(1.2, 1.2, 1.2)
+		else:
+			btn.add_theme_stylebox_override("normal", StyleBoxEmpty.new())
+			btn.modulate = Color(0.9, 0.9, 0.9)
 
 func _on_combine_pressed() -> void:
 	if matched_weapon.is_empty():
@@ -350,6 +330,8 @@ func _on_back_pressed() -> void:
 func _on_reset_pressed() -> void:
 	_sfx_click.play()
 	slot_a = ""
+	count_a = 0
 	slot_b = ""
+	count_b = 0
 	matched_weapon = {}
 	_update_display()

@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://ldsopbgn2am3"
-path="res://.godot/imported/aether.svg-069c2fa7c883a43d65d9622035255a7f.ctex"
+uid="uid://cwlb5md10xr5j"
+path="res://.godot/imported/magnesium.svg-50335e11a348a57f367e8474f9b54ff4.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/ui/campaign/elements/aether.svg"
-dest_files=["res://.godot/imported/aether.svg-069c2fa7c883a43d65d9622035255a7f.ctex"]
+source_file="res://assets/ui/campaign/elements/magnesium.svg"
+dest_files=["res://.godot/imported/magnesium.svg-50335e11a348a57f367e8474f9b54ff4.ctex"]
 
 [params]
 

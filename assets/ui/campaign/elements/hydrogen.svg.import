@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://cuv20eryhsj25"
-path="res://.godot/imported/water.svg-78e8f380e666a1b402cfeed39f009254.ctex"
+uid="uid://rjtmk3qp28hb"
+path="res://.godot/imported/hydrogen.svg-465d5df1ca173659faddf13c114466c7.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/ui/campaign/elements/water.svg"
-dest_files=["res://.godot/imported/water.svg-78e8f380e666a1b402cfeed39f009254.ctex"]
+source_file="res://assets/ui/campaign/elements/hydrogen.svg"
+dest_files=["res://.godot/imported/hydrogen.svg-465d5df1ca173659faddf13c114466c7.ctex"]
 
 [params]
 

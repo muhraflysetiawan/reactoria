@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://dhk4i2d222ke1"
-path="res://.godot/imported/dark.svg-f444330aa445a4f4d09dc5f26f878baa.ctex"
+uid="uid://x3ppnn3ynw2i"
+path="res://.godot/imported/chlorine.svg-e0b978f0b63b16795ef3350e4de23319.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/ui/campaign/elements/dark.svg"
-dest_files=["res://.godot/imported/dark.svg-f444330aa445a4f4d09dc5f26f878baa.ctex"]
+source_file="res://assets/ui/campaign/elements/chlorine.svg"
+dest_files=["res://.godot/imported/chlorine.svg-e0b978f0b63b16795ef3350e4de23319.ctex"]
 
 [params]
 

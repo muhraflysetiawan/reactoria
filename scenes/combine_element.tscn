@@ -1,34 +1,66 @@
-[gd_scene format=3 uid="uid://combine_element_scene"]
+[gd_scene format=3 uid="uid://bjrm4q4tiooor"]
 
-[ext_resource type="Texture2D" path="res://assets/ui/campaign/combine-element.jpeg" id="1_bg"]
-[ext_resource type="Script" path="res://scripts/combine_element.gd" id="2_script"]
-[ext_resource type="Texture2D" path="res://assets/ui/campaign/elements/arrow_back.svg" id="3_arrow"]
-[ext_resource type="Texture2D" path="res://assets/ui/campaign/elements/alchemy_flask.svg" id="4_flask"]
-[ext_resource type="Texture2D" path="res://assets/ui/campaign/elements/rune_circle.svg" id="5_rune"]
+[ext_resource type="Texture2D" uid="uid://b0cs0apdt6pam" path="res://assets/ui/campaign/combine-element-2.jpeg" id="2_d4wtx"]
+[ext_resource type="Script" uid="uid://smg8qb2ufv2j" path="res://scripts/combine_element.gd" id="2_script"]
+[ext_resource type="Texture2D" uid="uid://cgyyg52cc8uil" path="res://assets/ui/campaign/elements/arrow_back.svg" id="3_arrow"]
+[ext_resource type="Texture2D" uid="uid://bgblj4ifubqhf" path="res://assets/ui/campaign/elements/alchemy_flask.svg" id="4_flask"]
+[ext_resource type="Texture2D" uid="uid://c62wrvja3kytd" path="res://assets/ui/campaign/elements/rune_circle.svg" id="5_rune"]
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_panel"]
-bg_color = Color(0.08, 0.08, 0.11, 0.88)
-border_color = Color(0.42, 0.35, 0.25, 0.75)
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_back_btn"]
+content_margin_left = 14.0
+content_margin_top = 8.0
+content_margin_right = 16.0
+content_margin_bottom = 8.0
+bg_color = Color(0.12, 0.1, 0.1, 0.88)
 border_width_left = 2
 border_width_top = 2
 border_width_right = 2
 border_width_bottom = 2
-corner_radius_top_left = 10
-corner_radius_top_right = 10
-corner_radius_bottom_right = 10
-corner_radius_bottom_left = 10
+border_color = Color(0.45, 0.38, 0.28, 0.8)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_back_btn_hover"]
+content_margin_left = 14.0
+content_margin_top = 8.0
+content_margin_right = 16.0
+content_margin_bottom = 8.0
+bg_color = Color(0.2, 0.16, 0.14, 0.95)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.7, 0.6, 0.45, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_panel"]
 content_margin_left = 14.0
 content_margin_top = 14.0
 content_margin_right = 14.0
 content_margin_bottom = 14.0
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_slot_a"]
-bg_color = Color(0.06, 0.07, 0.1, 0.92)
-border_color = Color(0.42, 0.35, 0.25, 0.75)
+bg_color = Color(0.08, 0.08, 0.11, 0.88)
 border_width_left = 2
 border_width_top = 2
 border_width_right = 2
 border_width_bottom = 2
+border_color = Color(0.42, 0.35, 0.25, 0.75)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_slot_a"]
+bg_color = Color(0.06, 0.07, 0.1, 0.92)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.42, 0.35, 0.25, 0.75)
 corner_radius_top_left = 10
 corner_radius_top_right = 10
 corner_radius_bottom_right = 10
@@ -36,161 +68,129 @@ corner_radius_bottom_left = 10
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_slot_b"]
 bg_color = Color(0.06, 0.07, 0.1, 0.92)
-border_color = Color(0.42, 0.35, 0.25, 0.75)
 border_width_left = 2
 border_width_top = 2
 border_width_right = 2
 border_width_bottom = 2
+border_color = Color(0.42, 0.35, 0.25, 0.75)
 corner_radius_top_left = 10
 corner_radius_top_right = 10
 corner_radius_bottom_right = 10
 corner_radius_bottom_left = 10
 
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_reset"]
+content_margin_left = 12.0
+content_margin_top = 8.0
+content_margin_right = 12.0
+content_margin_bottom = 8.0
+bg_color = Color(0.14, 0.13, 0.15, 0.85)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.38, 0.34, 0.3, 0.7)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_reset_hover"]
+content_margin_left = 12.0
+content_margin_top = 8.0
+content_margin_right = 12.0
+content_margin_bottom = 8.0
+bg_color = Color(0.22, 0.2, 0.22, 0.95)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.65, 0.55, 0.45, 0.95)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_combine_normal"]
+content_margin_left = 18.0
+content_margin_top = 8.0
+content_margin_right = 18.0
+content_margin_bottom = 8.0
+bg_color = Color(0.18, 0.35, 0.3, 0.95)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.4, 0.85, 0.65, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_combine_hover"]
+content_margin_left = 18.0
+content_margin_top = 8.0
+content_margin_right = 18.0
+content_margin_bottom = 8.0
+bg_color = Color(0.24, 0.45, 0.38, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.5, 1, 0.8, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_combine_disabled"]
+content_margin_left = 18.0
+content_margin_top = 8.0
+content_margin_right = 18.0
+content_margin_bottom = 8.0
+bg_color = Color(0.12, 0.13, 0.16, 0.65)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.3, 0.3, 0.35, 0.5)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_subbox"]
-bg_color = Color(0.05, 0.06, 0.08, 0.85)
-border_color = Color(0.3, 0.28, 0.26, 0.6)
-border_width_left = 1
-border_width_top = 1
-border_width_right = 1
-border_width_bottom = 1
-corner_radius_top_left = 6
-corner_radius_top_right = 6
-corner_radius_bottom_right = 6
-corner_radius_bottom_left = 6
 content_margin_left = 12.0
 content_margin_top = 10.0
 content_margin_right = 12.0
 content_margin_bottom = 10.0
+bg_color = Color(0.05, 0.06, 0.08, 0.85)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.3, 0.28, 0.26, 0.6)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_parchment"]
-bg_color = Color(0.92, 0.87, 0.78, 0.95)
-border_color = Color(0.68, 0.58, 0.44, 0.9)
-border_width_left = 2
-border_width_top = 2
-border_width_right = 2
-border_width_bottom = 2
-corner_radius_top_left = 8
-corner_radius_top_right = 8
-corner_radius_bottom_right = 8
-corner_radius_bottom_left = 8
 content_margin_left = 14.0
 content_margin_top = 12.0
 content_margin_right = 14.0
 content_margin_bottom = 12.0
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_back_btn"]
-bg_color = Color(0.12, 0.1, 0.1, 0.88)
-border_color = Color(0.45, 0.38, 0.28, 0.8)
+bg_color = Color(0.92, 0.87, 0.78, 0.95)
 border_width_left = 2
 border_width_top = 2
 border_width_right = 2
 border_width_bottom = 2
+border_color = Color(0.68, 0.58, 0.44, 0.9)
 corner_radius_top_left = 8
 corner_radius_top_right = 8
 corner_radius_bottom_right = 8
 corner_radius_bottom_left = 8
-content_margin_left = 14.0
-content_margin_top = 8.0
-content_margin_right = 16.0
-content_margin_bottom = 8.0
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_back_btn_hover"]
-bg_color = Color(0.2, 0.16, 0.14, 0.95)
-border_color = Color(0.7, 0.6, 0.45, 1.0)
-border_width_left = 2
-border_width_top = 2
-border_width_right = 2
-border_width_bottom = 2
-corner_radius_top_left = 8
-corner_radius_top_right = 8
-corner_radius_bottom_right = 8
-corner_radius_bottom_left = 8
-content_margin_left = 14.0
-content_margin_top = 8.0
-content_margin_right = 16.0
-content_margin_bottom = 8.0
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_combine_normal"]
-bg_color = Color(0.18, 0.35, 0.3, 0.95)
-border_color = Color(0.4, 0.85, 0.65, 1.0)
-border_width_left = 2
-border_width_top = 2
-border_width_right = 2
-border_width_bottom = 2
-corner_radius_top_left = 8
-corner_radius_top_right = 8
-corner_radius_bottom_right = 8
-corner_radius_bottom_left = 8
-content_margin_left = 18.0
-content_margin_top = 8.0
-content_margin_right = 18.0
-content_margin_bottom = 8.0
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_combine_hover"]
-bg_color = Color(0.24, 0.45, 0.38, 1.0)
-border_color = Color(0.5, 1.0, 0.8, 1.0)
-border_width_left = 2
-border_width_top = 2
-border_width_right = 2
-border_width_bottom = 2
-corner_radius_top_left = 8
-corner_radius_top_right = 8
-corner_radius_bottom_right = 8
-corner_radius_bottom_left = 8
-content_margin_left = 18.0
-content_margin_top = 8.0
-content_margin_right = 18.0
-content_margin_bottom = 8.0
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_combine_disabled"]
-bg_color = Color(0.12, 0.13, 0.16, 0.65)
-border_color = Color(0.3, 0.3, 0.35, 0.5)
-border_width_left = 2
-border_width_top = 2
-border_width_right = 2
-border_width_bottom = 2
-corner_radius_top_left = 8
-corner_radius_top_right = 8
-corner_radius_bottom_right = 8
-corner_radius_bottom_left = 8
-content_margin_left = 18.0
-content_margin_top = 8.0
-content_margin_right = 18.0
-content_margin_bottom = 8.0
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_reset"]
-bg_color = Color(0.14, 0.13, 0.15, 0.85)
-border_color = Color(0.38, 0.34, 0.3, 0.7)
-border_width_left = 2
-border_width_top = 2
-border_width_right = 2
-border_width_bottom = 2
-corner_radius_top_left = 8
-corner_radius_top_right = 8
-corner_radius_bottom_right = 8
-corner_radius_bottom_left = 8
-content_margin_left = 12.0
-content_margin_top = 8.0
-content_margin_right = 12.0
-content_margin_bottom = 8.0
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_reset_hover"]
-bg_color = Color(0.22, 0.2, 0.22, 0.95)
-border_color = Color(0.65, 0.55, 0.45, 0.95)
-border_width_left = 2
-border_width_top = 2
-border_width_right = 2
-border_width_bottom = 2
-corner_radius_top_left = 8
-corner_radius_top_right = 8
-corner_radius_bottom_right = 8
-corner_radius_bottom_left = 8
-content_margin_left = 12.0
-content_margin_top = 8.0
-content_margin_right = 12.0
-content_margin_bottom = 8.0
-
-[node name="CombineElement" type="Control"]
+[node name="CombineElement" type="Control" unique_id=2030350545]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -199,7 +199,7 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("2_script")
 
-[node name="Background" type="TextureRect" parent="." unique_name_in_owner=true]
+[node name="Background" type="TextureRect" parent="." unique_id=1841027637]
 unique_name_in_owner = true
 layout_mode = 1
 anchors_preset = 15
@@ -208,11 +208,11 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
-texture = ExtResource("1_bg")
+texture = ExtResource("2_d4wtx")
 expand_mode = 1
 stretch_mode = 6
 
-[node name="DarkOverlay" type="ColorRect" parent="."]
+[node name="DarkOverlay" type="ColorRect" parent="." unique_id=845413434]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -222,14 +222,14 @@ grow_vertical = 2
 mouse_filter = 2
 color = Color(0, 0, 0, 0.2)
 
-[node name="TopBar" type="VBoxContainer" parent="."]
+[node name="TopBar" type="VBoxContainer" parent="." unique_id=341506390]
 layout_mode = 1
 offset_left = 32.0
 offset_top = 22.0
 offset_right = 360.0
 offset_bottom = 85.0
 
-[node name="BackButton" type="Button" parent="TopBar" unique_name_in_owner=true]
+[node name="BackButton" type="Button" parent="TopBar" unique_id=1093142445]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(150, 38)
 layout_mode = 2
@@ -239,19 +239,19 @@ theme_override_colors/font_hover_color = Color(1, 1, 1, 1)
 theme_override_constants/icon_max_width = 18
 theme_override_font_sizes/font_size = 16
 theme_override_styles/normal = SubResource("StyleBoxFlat_back_btn")
-theme_override_styles/hover = SubResource("StyleBoxFlat_back_btn_hover")
 theme_override_styles/pressed = SubResource("StyleBoxFlat_back_btn_hover")
+theme_override_styles/hover = SubResource("StyleBoxFlat_back_btn_hover")
 text = " Racik Unsur"
 icon = ExtResource("3_arrow")
 expand_icon = true
 
-[node name="SubtitleLabel" type="Label" parent="TopBar"]
+[node name="SubtitleLabel" type="Label" parent="TopBar" unique_id=1058733157]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.85, 0.82, 0.75, 0.85)
 theme_override_font_sizes/font_size = 13
 text = "Pilih dua unsur untuk digabungkan."
 
-[node name="LeftPanel" type="PanelContainer" parent="."]
+[node name="LeftPanel" type="PanelContainer" parent="." unique_id=926965603]
 layout_mode = 1
 anchors_preset = 9
 anchor_bottom = 1.0
@@ -262,28 +262,28 @@ offset_bottom = -24.0
 grow_vertical = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_panel")
 
-[node name="LeftMargin" type="MarginContainer" parent="LeftPanel"]
+[node name="LeftMargin" type="MarginContainer" parent="LeftPanel" unique_id=2026197034]
 layout_mode = 2
 
-[node name="LeftVBox" type="VBoxContainer" parent="LeftPanel/LeftMargin"]
+[node name="LeftVBox" type="VBoxContainer" parent="LeftPanel/LeftMargin" unique_id=1041014514]
 layout_mode = 2
 
-[node name="LeftTitle" type="Label" parent="LeftPanel/LeftMargin/LeftVBox"]
+[node name="LeftTitle" type="Label" parent="LeftPanel/LeftMargin/LeftVBox" unique_id=479390168]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.95, 0.92, 0.85, 1)
 theme_override_font_sizes/font_size = 18
 text = "Daftar Unsur"
 
-[node name="LeftSpacer" type="Control" parent="LeftPanel/LeftMargin/LeftVBox"]
+[node name="LeftSpacer" type="Control" parent="LeftPanel/LeftMargin/LeftVBox" unique_id=1179941492]
 custom_minimum_size = Vector2(0, 6)
 layout_mode = 2
 
-[node name="ElementScroll" type="ScrollContainer" parent="LeftPanel/LeftMargin/LeftVBox"]
+[node name="ElementScroll" type="ScrollContainer" parent="LeftPanel/LeftMargin/LeftVBox" unique_id=1103297692]
 layout_mode = 2
 size_flags_vertical = 3
 horizontal_scroll_mode = 0
 
-[node name="ElementGrid" type="GridContainer" parent="LeftPanel/LeftMargin/LeftVBox/ElementScroll" unique_name_in_owner=true]
+[node name="ElementGrid" type="GridContainer" parent="LeftPanel/LeftMargin/LeftVBox/ElementScroll" unique_id=2035554953]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
@@ -291,7 +291,7 @@ theme_override_constants/h_separation = 8
 theme_override_constants/v_separation = 8
 columns = 3
 
-[node name="CenterArea" type="VBoxContainer" parent="."]
+[node name="CenterArea" type="VBoxContainer" parent="." unique_id=27938331]
 layout_mode = 1
 anchors_preset = 7
 anchor_left = 0.5
@@ -306,24 +306,24 @@ grow_horizontal = 2
 grow_vertical = 0
 alignment = 1
 
-[node name="SlotsRow" type="HBoxContainer" parent="CenterArea"]
+[node name="SlotsRow" type="HBoxContainer" parent="CenterArea" unique_id=1157461060]
 layout_mode = 2
 alignment = 1
 
-[node name="SlotAContainer" type="VBoxContainer" parent="CenterArea/SlotsRow"]
+[node name="SlotAContainer" type="VBoxContainer" parent="CenterArea/SlotsRow" unique_id=1351166328]
 layout_mode = 2
 alignment = 1
 
-[node name="SlotAPanel" type="PanelContainer" parent="CenterArea/SlotsRow/SlotAContainer" unique_name_in_owner=true]
+[node name="SlotAPanel" type="PanelContainer" parent="CenterArea/SlotsRow/SlotAContainer" unique_id=1930758418]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(96, 96)
 layout_mode = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_slot_a")
 
-[node name="SlotACenter" type="CenterContainer" parent="CenterArea/SlotsRow/SlotAContainer/SlotAPanel"]
+[node name="SlotACenter" type="CenterContainer" parent="CenterArea/SlotsRow/SlotAContainer/SlotAPanel" unique_id=1362393775]
 layout_mode = 2
 
-[node name="SlotAIcon" type="TextureRect" parent="CenterArea/SlotsRow/SlotAContainer/SlotAPanel/SlotACenter" unique_name_in_owner=true]
+[node name="SlotAIcon" type="TextureRect" parent="CenterArea/SlotsRow/SlotAContainer/SlotAPanel/SlotACenter" unique_id=1621107098]
 unique_name_in_owner = true
 visible = false
 custom_minimum_size = Vector2(48, 48)
@@ -332,7 +332,7 @@ mouse_filter = 2
 expand_mode = 1
 stretch_mode = 5
 
-[node name="SlotALabel" type="Label" parent="CenterArea/SlotsRow/SlotAContainer/SlotAPanel/SlotACenter" unique_name_in_owner=true]
+[node name="SlotALabel" type="Label" parent="CenterArea/SlotsRow/SlotAContainer/SlotAPanel/SlotACenter" unique_id=54477506]
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_colors/font_color = Color(0.45, 0.45, 0.45, 1)
@@ -341,7 +341,7 @@ text = "?"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="SlotAName" type="Label" parent="CenterArea/SlotsRow/SlotAContainer" unique_name_in_owner=true]
+[node name="SlotAName" type="Label" parent="CenterArea/SlotsRow/SlotAContainer" unique_id=262742078]
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_colors/font_color = Color(0.65, 0.6, 0.52, 1)
@@ -349,7 +349,7 @@ theme_override_font_sizes/font_size = 13
 text = "Pilih Unsur"
 horizontal_alignment = 1
 
-[node name="PlusLabel" type="Label" parent="CenterArea/SlotsRow"]
+[node name="PlusLabel" type="Label" parent="CenterArea/SlotsRow" unique_id=837536358]
 custom_minimum_size = Vector2(40, 96)
 layout_mode = 2
 theme_override_colors/font_color = Color(0.85, 0.8, 0.7, 1)
@@ -358,20 +358,20 @@ text = "+"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="SlotBContainer" type="VBoxContainer" parent="CenterArea/SlotsRow"]
+[node name="SlotBContainer" type="VBoxContainer" parent="CenterArea/SlotsRow" unique_id=129658746]
 layout_mode = 2
 alignment = 1
 
-[node name="SlotBPanel" type="PanelContainer" parent="CenterArea/SlotsRow/SlotBContainer" unique_name_in_owner=true]
+[node name="SlotBPanel" type="PanelContainer" parent="CenterArea/SlotsRow/SlotBContainer" unique_id=616308731]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(96, 96)
 layout_mode = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_slot_b")
 
-[node name="SlotBCenter" type="CenterContainer" parent="CenterArea/SlotsRow/SlotBContainer/SlotBPanel"]
+[node name="SlotBCenter" type="CenterContainer" parent="CenterArea/SlotsRow/SlotBContainer/SlotBPanel" unique_id=541894479]
 layout_mode = 2
 
-[node name="SlotBIcon" type="TextureRect" parent="CenterArea/SlotsRow/SlotBContainer/SlotBPanel/SlotBCenter" unique_name_in_owner=true]
+[node name="SlotBIcon" type="TextureRect" parent="CenterArea/SlotsRow/SlotBContainer/SlotBPanel/SlotBCenter" unique_id=309517407]
 unique_name_in_owner = true
 visible = false
 custom_minimum_size = Vector2(48, 48)
@@ -380,7 +380,7 @@ mouse_filter = 2
 expand_mode = 1
 stretch_mode = 5
 
-[node name="SlotBLabel" type="Label" parent="CenterArea/SlotsRow/SlotBContainer/SlotBPanel/SlotBCenter" unique_name_in_owner=true]
+[node name="SlotBLabel" type="Label" parent="CenterArea/SlotsRow/SlotBContainer/SlotBPanel/SlotBCenter" unique_id=1442724007]
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_colors/font_color = Color(0.45, 0.45, 0.45, 1)
@@ -389,7 +389,7 @@ text = "?"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="SlotBName" type="Label" parent="CenterArea/SlotsRow/SlotBContainer" unique_name_in_owner=true]
+[node name="SlotBName" type="Label" parent="CenterArea/SlotsRow/SlotBContainer" unique_id=229212705]
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_colors/font_color = Color(0.65, 0.6, 0.52, 1)
@@ -397,15 +397,15 @@ theme_override_font_sizes/font_size = 13
 text = "Pilih Unsur"
 horizontal_alignment = 1
 
-[node name="SpacerCenter" type="Control" parent="CenterArea"]
+[node name="SpacerCenter" type="Control" parent="CenterArea" unique_id=505057733]
 custom_minimum_size = Vector2(0, 14)
 layout_mode = 2
 
-[node name="ButtonsRow" type="HBoxContainer" parent="CenterArea"]
+[node name="ButtonsRow" type="HBoxContainer" parent="CenterArea" unique_id=1905177370]
 layout_mode = 2
 alignment = 1
 
-[node name="ResetButton" type="Button" parent="CenterArea/ButtonsRow" unique_name_in_owner=true]
+[node name="ResetButton" type="Button" parent="CenterArea/ButtonsRow" unique_id=449779213]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(76, 44)
 layout_mode = 2
@@ -413,15 +413,15 @@ theme_override_colors/font_color = Color(0.85, 0.8, 0.75, 1)
 theme_override_colors/font_hover_color = Color(1, 1, 1, 1)
 theme_override_font_sizes/font_size = 15
 theme_override_styles/normal = SubResource("StyleBoxFlat_reset")
-theme_override_styles/hover = SubResource("StyleBoxFlat_reset_hover")
 theme_override_styles/pressed = SubResource("StyleBoxFlat_reset_hover")
+theme_override_styles/hover = SubResource("StyleBoxFlat_reset_hover")
 text = "Reset"
 
-[node name="BtnSpacer" type="Control" parent="CenterArea/ButtonsRow"]
+[node name="BtnSpacer" type="Control" parent="CenterArea/ButtonsRow" unique_id=1327546866]
 custom_minimum_size = Vector2(10, 0)
 layout_mode = 2
 
-[node name="CombineButton" type="Button" parent="CenterArea/ButtonsRow" unique_name_in_owner=true]
+[node name="CombineButton" type="Button" parent="CenterArea/ButtonsRow" unique_id=100581534]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(170, 44)
 layout_mode = 2
@@ -431,15 +431,15 @@ theme_override_colors/font_disabled_color = Color(0.45, 0.45, 0.45, 0.7)
 theme_override_constants/icon_max_width = 22
 theme_override_font_sizes/font_size = 17
 theme_override_styles/normal = SubResource("StyleBoxFlat_combine_normal")
-theme_override_styles/hover = SubResource("StyleBoxFlat_combine_hover")
 theme_override_styles/pressed = SubResource("StyleBoxFlat_combine_hover")
+theme_override_styles/hover = SubResource("StyleBoxFlat_combine_hover")
 theme_override_styles/disabled = SubResource("StyleBoxFlat_combine_disabled")
 disabled = true
 text = " Racik"
 icon = ExtResource("4_flask")
 expand_icon = true
 
-[node name="RightPanel" type="VBoxContainer" parent="."]
+[node name="RightPanel" type="VBoxContainer" parent="." unique_id=963205979]
 layout_mode = 1
 anchors_preset = 11
 anchor_left = 1.0
@@ -452,29 +452,29 @@ offset_bottom = -24.0
 grow_horizontal = 0
 grow_vertical = 2
 
-[node name="ResultPanel" type="PanelContainer" parent="RightPanel" unique_name_in_owner=true]
+[node name="ResultPanel" type="PanelContainer" parent="RightPanel" unique_id=118226339]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_vertical = 3
 theme_override_styles/panel = SubResource("StyleBoxFlat_panel")
 
-[node name="ResultMargin" type="MarginContainer" parent="RightPanel/ResultPanel"]
+[node name="ResultMargin" type="MarginContainer" parent="RightPanel/ResultPanel" unique_id=1467633304]
 layout_mode = 2
 
-[node name="ResultVBox" type="VBoxContainer" parent="RightPanel/ResultPanel/ResultMargin"]
+[node name="ResultVBox" type="VBoxContainer" parent="RightPanel/ResultPanel/ResultMargin" unique_id=711753407]
 layout_mode = 2
 
-[node name="ResultTitle" type="Label" parent="RightPanel/ResultPanel/ResultMargin/ResultVBox"]
+[node name="ResultTitle" type="Label" parent="RightPanel/ResultPanel/ResultMargin/ResultVBox" unique_id=431116991]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.95, 0.92, 0.85, 1)
 theme_override_font_sizes/font_size = 18
 text = "Hasil Gabungan"
 
-[node name="RuneCenter" type="CenterContainer" parent="RightPanel/ResultPanel/ResultMargin/ResultVBox"]
+[node name="RuneCenter" type="CenterContainer" parent="RightPanel/ResultPanel/ResultMargin/ResultVBox" unique_id=1338228624]
 layout_mode = 2
 size_flags_vertical = 3
 
-[node name="RuneCircleBg" type="TextureRect" parent="RightPanel/ResultPanel/ResultMargin/ResultVBox/RuneCenter" unique_name_in_owner=true]
+[node name="RuneCircleBg" type="TextureRect" parent="RightPanel/ResultPanel/ResultMargin/ResultVBox/RuneCenter" unique_id=1390647693]
 unique_name_in_owner = true
 modulate = Color(0.5, 0.55, 0.6, 0.45)
 custom_minimum_size = Vector2(100, 100)
@@ -484,7 +484,7 @@ texture = ExtResource("5_rune")
 expand_mode = 1
 stretch_mode = 5
 
-[node name="ResultIcon" type="TextureRect" parent="RightPanel/ResultPanel/ResultMargin/ResultVBox/RuneCenter" unique_name_in_owner=true]
+[node name="ResultIcon" type="TextureRect" parent="RightPanel/ResultPanel/ResultMargin/ResultVBox/RuneCenter" unique_id=1044411070]
 unique_name_in_owner = true
 visible = false
 custom_minimum_size = Vector2(44, 44)
@@ -493,7 +493,7 @@ mouse_filter = 2
 expand_mode = 1
 stretch_mode = 5
 
-[node name="ResultQuestion" type="Label" parent="RightPanel/ResultPanel/ResultMargin/ResultVBox/RuneCenter" unique_name_in_owner=true]
+[node name="ResultQuestion" type="Label" parent="RightPanel/ResultPanel/ResultMargin/ResultVBox/RuneCenter" unique_id=911423419]
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_colors/font_color = Color(0.65, 0.65, 0.65, 1)
@@ -502,7 +502,7 @@ text = "?"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="ResultName" type="Label" parent="RightPanel/ResultPanel/ResultMargin/ResultVBox" unique_name_in_owner=true]
+[node name="ResultName" type="Label" parent="RightPanel/ResultPanel/ResultMargin/ResultVBox" unique_id=1765523126]
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_colors/font_color = Color(0.65, 0.65, 0.65, 1)
@@ -510,7 +510,7 @@ theme_override_font_sizes/font_size = 17
 text = "???"
 horizontal_alignment = 1
 
-[node name="ResultFormula" type="Label" parent="RightPanel/ResultPanel/ResultMargin/ResultVBox" unique_name_in_owner=true]
+[node name="ResultFormula" type="Label" parent="RightPanel/ResultPanel/ResultMargin/ResultVBox" unique_id=1425769604]
 unique_name_in_owner = true
 visible = false
 layout_mode = 2
@@ -518,15 +518,15 @@ theme_override_colors/font_color = Color(0.5, 0.8, 0.9, 1)
 theme_override_font_sizes/font_size = 13
 horizontal_alignment = 1
 
-[node name="DescSpacer" type="Control" parent="RightPanel/ResultPanel/ResultMargin/ResultVBox"]
+[node name="DescSpacer" type="Control" parent="RightPanel/ResultPanel/ResultMargin/ResultVBox" unique_id=67087932]
 custom_minimum_size = Vector2(0, 4)
 layout_mode = 2
 
-[node name="DescPanel" type="PanelContainer" parent="RightPanel/ResultPanel/ResultMargin/ResultVBox"]
+[node name="DescPanel" type="PanelContainer" parent="RightPanel/ResultPanel/ResultMargin/ResultVBox" unique_id=1851547923]
 layout_mode = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_subbox")
 
-[node name="ResultDesc" type="Label" parent="RightPanel/ResultPanel/ResultMargin/ResultVBox/DescPanel" unique_name_in_owner=true]
+[node name="ResultDesc" type="Label" parent="RightPanel/ResultPanel/ResultMargin/ResultVBox/DescPanel" unique_id=708693490]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 42)
 layout_mode = 2
@@ -537,24 +537,24 @@ horizontal_alignment = 1
 vertical_alignment = 1
 autowrap_mode = 2
 
-[node name="RightSpacer" type="Control" parent="RightPanel"]
+[node name="RightSpacer" type="Control" parent="RightPanel" unique_id=1164329859]
 custom_minimum_size = Vector2(0, 10)
 layout_mode = 2
 
-[node name="GuidePanel" type="PanelContainer" parent="RightPanel"]
+[node name="GuidePanel" type="PanelContainer" parent="RightPanel" unique_id=854218329]
 layout_mode = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_parchment")
 
-[node name="GuideVBox" type="VBoxContainer" parent="RightPanel/GuidePanel"]
+[node name="GuideVBox" type="VBoxContainer" parent="RightPanel/GuidePanel" unique_id=658345996]
 layout_mode = 2
 
-[node name="GuideTitle" type="Label" parent="RightPanel/GuidePanel/GuideVBox"]
+[node name="GuideTitle" type="Label" parent="RightPanel/GuidePanel/GuideVBox" unique_id=644287480]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.2, 0.15, 0.1, 1)
 theme_override_font_sizes/font_size = 14
 text = "ℹ Petunjuk"
 
-[node name="GuideText" type="Label" parent="RightPanel/GuidePanel/GuideVBox"]
+[node name="GuideText" type="Label" parent="RightPanel/GuidePanel/GuideVBox" unique_id=858396243]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.28, 0.22, 0.16, 1)
 theme_override_font_sizes/font_size = 12

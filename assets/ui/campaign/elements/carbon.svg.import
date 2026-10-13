@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://cqenrq14ni0p5"
-path="res://.godot/imported/wind.svg-dd4a06125f2438e6993501bc75dc2386.ctex"
+uid="uid://cwqlnyaejlne2"
+path="res://.godot/imported/carbon.svg-1c1dfc100cbecae9bd747117a56dbf69.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/ui/campaign/elements/wind.svg"
-dest_files=["res://.godot/imported/wind.svg-dd4a06125f2438e6993501bc75dc2386.ctex"]
+source_file="res://assets/ui/campaign/elements/carbon.svg"
+dest_files=["res://.godot/imported/carbon.svg-1c1dfc100cbecae9bd747117a56dbf69.ctex"]
 
 [params]
 

@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://by8ki32x88l6u"
-path="res://.godot/imported/lightning.svg-97404dc40b0508fffc847e2327c01f51.ctex"
+uid="uid://c7o4vhdx73ee"
+path="res://.godot/imported/kalium.svg-1d5b36d66aff009e6bf57b4d6fcd8e8c.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/ui/campaign/elements/lightning.svg"
-dest_files=["res://.godot/imported/lightning.svg-97404dc40b0508fffc847e2327c01f51.ctex"]
+source_file="res://assets/ui/campaign/elements/kalium.svg"
+dest_files=["res://.godot/imported/kalium.svg-1d5b36d66aff009e6bf57b4d6fcd8e8c.ctex"]
 
 [params]
 
