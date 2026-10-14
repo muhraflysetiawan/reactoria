@@ -54,30 +54,6 @@ corner_radius_top_right = 10
 corner_radius_bottom_right = 10
 corner_radius_bottom_left = 10
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_slot_a"]
-bg_color = Color(0.06, 0.07, 0.1, 0.92)
-border_width_left = 2
-border_width_top = 2
-border_width_right = 2
-border_width_bottom = 2
-border_color = Color(0.42, 0.35, 0.25, 0.75)
-corner_radius_top_left = 10
-corner_radius_top_right = 10
-corner_radius_bottom_right = 10
-corner_radius_bottom_left = 10
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_slot_b"]
-bg_color = Color(0.06, 0.07, 0.1, 0.92)
-border_width_left = 2
-border_width_top = 2
-border_width_right = 2
-border_width_bottom = 2
-border_color = Color(0.42, 0.35, 0.25, 0.75)
-corner_radius_top_left = 10
-corner_radius_top_right = 10
-corner_radius_bottom_right = 10
-corner_radius_bottom_left = 10
-
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_reset"]
 content_margin_left = 12.0
 content_margin_top = 8.0
@@ -298,104 +274,20 @@ anchor_left = 0.5
 anchor_top = 1.0
 anchor_right = 0.5
 anchor_bottom = 1.0
-offset_left = -170.0
+offset_left = -260.0
 offset_top = -252.0
-offset_right = 170.0
+offset_right = 260.0
 offset_bottom = -28.0
 grow_horizontal = 2
 grow_vertical = 0
 alignment = 1
 
 [node name="SlotsRow" type="HBoxContainer" parent="CenterArea" unique_id=1157461060]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(450, 300)
 layout_mode = 2
+size_flags_horizontal = 4
 alignment = 1
-
-[node name="SlotAContainer" type="VBoxContainer" parent="CenterArea/SlotsRow" unique_id=1351166328]
-layout_mode = 2
-alignment = 1
-
-[node name="SlotAPanel" type="PanelContainer" parent="CenterArea/SlotsRow/SlotAContainer" unique_id=1930758418]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(96, 96)
-layout_mode = 2
-theme_override_styles/panel = SubResource("StyleBoxFlat_slot_a")
-
-[node name="SlotACenter" type="CenterContainer" parent="CenterArea/SlotsRow/SlotAContainer/SlotAPanel" unique_id=1362393775]
-layout_mode = 2
-
-[node name="SlotAIcon" type="TextureRect" parent="CenterArea/SlotsRow/SlotAContainer/SlotAPanel/SlotACenter" unique_id=1621107098]
-unique_name_in_owner = true
-visible = false
-custom_minimum_size = Vector2(48, 48)
-layout_mode = 2
-mouse_filter = 2
-expand_mode = 1
-stretch_mode = 5
-
-[node name="SlotALabel" type="Label" parent="CenterArea/SlotsRow/SlotAContainer/SlotAPanel/SlotACenter" unique_id=54477506]
-unique_name_in_owner = true
-layout_mode = 2
-theme_override_colors/font_color = Color(0.45, 0.45, 0.45, 1)
-theme_override_font_sizes/font_size = 38
-text = "?"
-horizontal_alignment = 1
-vertical_alignment = 1
-
-[node name="SlotAName" type="Label" parent="CenterArea/SlotsRow/SlotAContainer" unique_id=262742078]
-unique_name_in_owner = true
-layout_mode = 2
-theme_override_colors/font_color = Color(0.65, 0.6, 0.52, 1)
-theme_override_font_sizes/font_size = 13
-text = "Pilih Unsur"
-horizontal_alignment = 1
-
-[node name="PlusLabel" type="Label" parent="CenterArea/SlotsRow" unique_id=837536358]
-custom_minimum_size = Vector2(40, 96)
-layout_mode = 2
-theme_override_colors/font_color = Color(0.85, 0.8, 0.7, 1)
-theme_override_font_sizes/font_size = 32
-text = "+"
-horizontal_alignment = 1
-vertical_alignment = 1
-
-[node name="SlotBContainer" type="VBoxContainer" parent="CenterArea/SlotsRow" unique_id=129658746]
-layout_mode = 2
-alignment = 1
-
-[node name="SlotBPanel" type="PanelContainer" parent="CenterArea/SlotsRow/SlotBContainer" unique_id=616308731]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(96, 96)
-layout_mode = 2
-theme_override_styles/panel = SubResource("StyleBoxFlat_slot_b")
-
-[node name="SlotBCenter" type="CenterContainer" parent="CenterArea/SlotsRow/SlotBContainer/SlotBPanel" unique_id=541894479]
-layout_mode = 2
-
-[node name="SlotBIcon" type="TextureRect" parent="CenterArea/SlotsRow/SlotBContainer/SlotBPanel/SlotBCenter" unique_id=309517407]
-unique_name_in_owner = true
-visible = false
-custom_minimum_size = Vector2(48, 48)
-layout_mode = 2
-mouse_filter = 2
-expand_mode = 1
-stretch_mode = 5
-
-[node name="SlotBLabel" type="Label" parent="CenterArea/SlotsRow/SlotBContainer/SlotBPanel/SlotBCenter" unique_id=1442724007]
-unique_name_in_owner = true
-layout_mode = 2
-theme_override_colors/font_color = Color(0.45, 0.45, 0.45, 1)
-theme_override_font_sizes/font_size = 38
-text = "?"
-horizontal_alignment = 1
-vertical_alignment = 1
-
-[node name="SlotBName" type="Label" parent="CenterArea/SlotsRow/SlotBContainer" unique_id=229212705]
-unique_name_in_owner = true
-layout_mode = 2
-theme_override_colors/font_color = Color(0.65, 0.6, 0.52, 1)
-theme_override_font_sizes/font_size = 13
-text = "Pilih Unsur"
-horizontal_alignment = 1
 
 [node name="SpacerCenter" type="Control" parent="CenterArea" unique_id=505057733]
 custom_minimum_size = Vector2(0, 14)
@@ -518,6 +410,12 @@ theme_override_colors/font_color = Color(0.5, 0.8, 0.9, 1)
 theme_override_font_sizes/font_size = 13
 horizontal_alignment = 1
 
+[node name="CandidateRow" type="HBoxContainer" parent="RightPanel/ResultPanel/ResultMargin/ResultVBox" unique_id=1425769605]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+alignment = 1
+
 [node name="DescSpacer" type="Control" parent="RightPanel/ResultPanel/ResultMargin/ResultVBox" unique_id=67087932]
 custom_minimum_size = Vector2(0, 4)
 layout_mode = 2
@@ -532,7 +430,7 @@ custom_minimum_size = Vector2(0, 42)
 layout_mode = 2
 theme_override_colors/font_color = Color(0.65, 0.65, 0.65, 1)
 theme_override_font_sizes/font_size = 13
-text = "Gabungkan dua unsur untuk menemukan unsur baru!"
+text = "Gabungkan beberapa unsur untuk menemukan senyawa baru!"
 horizontal_alignment = 1
 vertical_alignment = 1
 autowrap_mode = 2
@@ -558,9 +456,9 @@ text = "ℹ Petunjuk"
 layout_mode = 2
 theme_override_colors/font_color = Color(0.28, 0.22, 0.16, 1)
 theme_override_font_sizes/font_size = 12
-text = "• Pilih dua unsur dari daftar di sebelah kiri.
-• Letakkan pada meja racik.
-• Tekan tombol Racik untuk melihat hasilnya."
+text = "• Pilih unsur dari daftar di sebelah kiri.
+• Meja racik bertambah sesuai unsur yang dipilih.
+• Tekan tombol Racik untuk menempa senjata."
 autowrap_mode = 2
 
 [connection signal="pressed" from="TopBar/BackButton" to="." method="_on_back_pressed"]

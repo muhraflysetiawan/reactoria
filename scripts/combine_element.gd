@@ -1,5 +1,5 @@
 extends Control
-## Combine Element UI — Pemain meracik dua unsur/senyawa di atas meja alchemy untuk menempa senjata.
+## Combine Element UI — Pemain meracik unsur di atas meja alchemy untuk menempa senjata.
 
 const ARENA_SCENE := "res://scenes/main.tscn"
 
@@ -11,16 +11,7 @@ const SFX_CLICK := preload("res://assets/audio/ui/select-button2.mp3")
 @onready var element_grid: GridContainer = %ElementGrid
 
 # Tengah - Meja Racik
-@onready var slot_a_panel: PanelContainer = %SlotAPanel
-@onready var slot_a_icon: TextureRect = %SlotAIcon
-@onready var slot_a_label: Label = %SlotALabel
-@onready var slot_a_name: Label = %SlotAName
-
-@onready var slot_b_panel: PanelContainer = %SlotBPanel
-@onready var slot_b_icon: TextureRect = %SlotBIcon
-@onready var slot_b_label: Label = %SlotBLabel
-@onready var slot_b_name: Label = %SlotBName
-
+@onready var slots_row: HBoxContainer = %SlotsRow
 @onready var combine_button: Button = %CombineButton
 @onready var reset_button: Button = %ResetButton
 
@@ -31,72 +22,31 @@ const SFX_CLICK := preload("res://assets/audio/ui/select-button2.mp3")
 @onready var result_question: Label = %ResultQuestion
 @onready var result_name: Label = %ResultName
 @onready var result_formula: Label = %ResultFormula
+@onready var candidate_row: HBoxContainer = %CandidateRow
 @onready var result_desc: Label = %ResultDesc
 
 var _sfx_hover: AudioStreamPlayer
 var _sfx_click: AudioStreamPlayer
 
 # State racik
-var slot_a: String = ""
-var count_a: int = 0
-var slot_b: String = ""
-var count_b: int = 0
+var selected_elements: Array[String] = []
+var matched_weapons: Array[Dictionary] = []
+var selected_match_index: int = 0
 var matched_weapon: Dictionary = {}
 
 var all_elements: Array[String] = []
 var _element_buttons: Dictionary = {}
 
-var slot_a_count: Label
-var slot_b_count: Label
-
 func _ready() -> void:
 	_init_sfx()
-	_setup_count_badges()
 	_gather_elements()
 	_build_element_buttons()
-	_connect_slot_clicks()
 	_update_display()
 
 	# Fade in
 	modulate.a = 0.0
 	var t := create_tween()
 	t.tween_property(self, "modulate:a", 1.0, 0.4).set_ease(Tween.EASE_OUT)
-
-func _setup_count_badges() -> void:
-	slot_a_count = _create_count_badge(slot_a_panel)
-	slot_b_count = _create_count_badge(slot_b_panel)
-
-func _create_count_badge(parent: PanelContainer) -> Label:
-	var margin := MarginContainer.new()
-	margin.set_anchors_preset(Control.PRESET_FULL_RECT)
-	margin.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	margin.add_theme_constant_override("margin_top", 4)
-	margin.add_theme_constant_override("margin_right", 8)
-
-	var lbl := Label.new()
-	lbl.size_flags_horizontal = Control.SIZE_SHRINK_END
-	lbl.size_flags_vertical = Control.SIZE_SHRINK_BEGIN
-	lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	lbl.add_theme_font_size_override("font_size", 16)
-	lbl.add_theme_color_override("font_color", Color(1.0, 0.88, 0.35))
-	lbl.add_theme_color_override("font_shadow_color", Color(0, 0, 0, 0.95))
-	lbl.add_theme_constant_override("shadow_offset_x", 1)
-	lbl.add_theme_constant_override("shadow_offset_y", 1)
-	lbl.add_theme_constant_override("shadow_outline_size", 2)
-	lbl.visible = false
-
-	margin.add_child(lbl)
-	parent.add_child(margin)
-	return lbl
-
-func _get_max_element_count(el: String) -> int:
-	var m := 1
-	for w in GameData.WEAPONS:
-		if w["element_a"] == el:
-			m = max(m, w.get("count_a", 1))
-		if w["element_b"] == el:
-			m = max(m, w.get("count_b", 1))
-	return m
 
 func _init_sfx() -> void:
 	_sfx_hover = AudioStreamPlayer.new()
@@ -109,8 +59,7 @@ func _init_sfx() -> void:
 func _gather_elements() -> void:
 	var seen := {}
 	for w in GameData.WEAPONS:
-		for key in ["element_a", "element_b"]:
-			var el: String = w[key]
+		for el: String in w.get("elements", []):
 			if not seen.has(el):
 				seen[el] = true
 				all_elements.append(el)
@@ -156,78 +105,61 @@ func _build_element_buttons() -> void:
 		element_grid.add_child(btn)
 		_element_buttons[el] = btn
 
-func _connect_slot_clicks() -> void:
-	slot_a_panel.gui_input.connect(func(event: InputEvent):
-		if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
-			if not slot_a.is_empty():
-				_sfx_click.play()
-				slot_a = ""
-				count_a = 0
-				_check_recipe()
-				_update_display()
-	)
-	slot_b_panel.gui_input.connect(func(event: InputEvent):
-		if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
-			if not slot_b.is_empty():
-				_sfx_click.play()
-				slot_b = ""
-				count_b = 0
-				_check_recipe()
-				_update_display()
-	)
-
 func _on_element_pressed(el: String) -> void:
 	_sfx_click.play()
-	if slot_a == el:
-		if count_a < _get_max_element_count(el):
-			count_a += 1
-		else:
-			slot_a = ""
-			count_a = 0
-	elif slot_b == el:
-		if count_b < _get_max_element_count(el):
-			count_b += 1
-		else:
-			slot_b = ""
-			count_b = 0
-	elif slot_a.is_empty():
-		slot_a = el
-		count_a = 1
-	elif slot_b.is_empty():
-		slot_b = el
-		count_b = 1
+	if selected_elements.has(el):
+		selected_elements.erase(el)
 	else:
-		slot_a = el
-		count_a = 1
-		slot_b = ""
-		count_b = 0
+		selected_elements.append(el)
+	_check_recipe()
+	_update_display()
 
+func _remove_element(el: String) -> void:
+	_sfx_click.play()
+	selected_elements.erase(el)
 	_check_recipe()
 	_update_display()
 
 func _check_recipe() -> void:
+	matched_weapons.clear()
+	selected_match_index = 0
 	matched_weapon = {}
-	if slot_a.is_empty() or slot_b.is_empty():
+	if selected_elements.is_empty():
 		return
 	for w in GameData.WEAPONS:
-		var req_a: String = w["element_a"]
-		var req_b: String = w["element_b"]
-		var req_ca: int = w.get("count_a", 1)
-		var req_cb: int = w.get("count_b", 1)
-		if (slot_a == req_a and count_a == req_ca and slot_b == req_b and count_b == req_cb) \
-			or (slot_a == req_b and count_a == req_cb and slot_b == req_a and count_b == req_ca):
-			matched_weapon = w
-			return
+		var req: Array = w.get("elements", [])
+		if _elements_match(req, selected_elements):
+			matched_weapons.append(w)
+	if not matched_weapons.is_empty():
+		matched_weapon = matched_weapons[0]
+
+func _elements_match(req: Array, selected: Array[String]) -> bool:
+	if req.size() != selected.size():
+		return false
+	for el in req:
+		if not selected.has(el):
+			return false
+	return true
+
+func _select_candidate(idx: int) -> void:
+	if idx >= 0 and idx < matched_weapons.size():
+		_sfx_click.play()
+		selected_match_index = idx
+		matched_weapon = matched_weapons[idx]
+		_update_display()
 
 func _update_display() -> void:
-	_update_slot(slot_a, count_a, slot_a_panel, slot_a_icon, slot_a_label, slot_a_name, slot_a_count)
-	_update_slot(slot_b, count_b, slot_b_panel, slot_b_icon, slot_b_label, slot_b_name, slot_b_count)
+	_render_slots()
 	_update_element_button_highlights()
+
+	# Bersihkan tombol kandidat lama
+	for child in candidate_row.get_children():
+		child.queue_free()
 
 	if not matched_weapon.is_empty():
 		result_question.visible = false
 		result_icon.visible = true
-		var elem_info: Dictionary = _get_element_info(slot_a)
+		var elem_info: Dictionary = _get_element_info(selected_elements[0])
 		result_icon.texture = load(elem_info["icon"])
 		result_name.text = matched_weapon["name"]
 		result_name.add_theme_color_override("font_color", matched_weapon["color"])
@@ -239,7 +171,37 @@ func _update_display() -> void:
 		rune_circle_bg.modulate = matched_weapon["color"]
 		combine_button.disabled = false
 		bg.texture = load("res://assets/ui/campaign/combine-element.jpeg")
+
+		if matched_weapons.size() > 1:
+			candidate_row.visible = true
+			for i in matched_weapons.size():
+				var cand: Dictionary = matched_weapons[i]
+				var btn := Button.new()
+				btn.text = cand["formula"]
+				btn.tooltip_text = cand["name"]
+				btn.focus_mode = Control.FOCUS_NONE
+				btn.custom_minimum_size = Vector2(72, 32)
+				var btn_style := StyleBoxFlat.new()
+				btn_style.set_corner_radius_all(6)
+				btn_style.set_content_margin_all(4)
+				if i == selected_match_index:
+					btn_style.bg_color = cand["color"] * Color(0.4, 0.4, 0.4, 0.8)
+					btn_style.border_color = cand["color"]
+					btn_style.set_border_width_all(2)
+					btn.add_theme_color_override("font_color", Color.WHITE)
+				else:
+					btn_style.bg_color = Color(0.12, 0.12, 0.15, 0.8)
+					btn_style.border_color = Color(0.3, 0.3, 0.35, 0.5)
+					btn_style.set_border_width_all(1)
+					btn.add_theme_color_override("font_color", Color(0.65, 0.65, 0.65))
+				btn.add_theme_stylebox_override("normal", btn_style)
+				btn.add_theme_stylebox_override("hover", btn_style)
+				btn.pressed.connect(_select_candidate.bind(i))
+				candidate_row.add_child(btn)
+		else:
+			candidate_row.visible = false
 	else:
+		candidate_row.visible = false
 		result_question.visible = true
 		result_icon.visible = false
 		result_formula.visible = false
@@ -248,55 +210,96 @@ func _update_display() -> void:
 		rune_circle_bg.modulate = Color(0.5, 0.55, 0.6, 0.45)
 		combine_button.disabled = true
 
-		if slot_a.is_empty() and slot_b.is_empty():
-			result_desc.text = "Gabungkan dua unsur untuk menemukan unsur baru!"
-			bg.texture = load("res://assets/ui/campaign/combine-element-2.jpeg")
-		elif not slot_b.is_empty():
-			result_desc.text = "Kombinasi tidak valid! Coba padukan unsur lain."
+		if selected_elements.is_empty():
+			result_desc.text = "Gabungkan beberapa unsur untuk menemukan senyawa baru!"
 			bg.texture = load("res://assets/ui/campaign/combine-element-2.jpeg")
 		else:
-			result_desc.text = "Pilih unsur kedua dari daftar di sebelah kiri..."
-			bg.texture = load("res://assets/ui/campaign/combine-element.jpeg")
+			result_desc.text = "Kombinasi tidak valid! Coba padukan unsur lain."
+			bg.texture = load("res://assets/ui/campaign/combine-element-2.jpeg")
 		result_desc.add_theme_color_override("font_color", Color(0.65, 0.65, 0.65))
 
-func _update_slot(
-	el: String,
-	count: int,
-	panel: PanelContainer,
-	icon_node: TextureRect,
-	lbl_node: Label,
-	name_node: Label,
-	count_node: Label
-) -> void:
-	var style := panel.get_theme_stylebox("panel") as StyleBoxFlat
-	if el.is_empty():
-		icon_node.visible = false
-		lbl_node.visible = true
-		lbl_node.text = "?"
-		lbl_node.add_theme_color_override("font_color", Color(0.45, 0.45, 0.45))
-		name_node.text = "Pilih Unsur"
-		name_node.add_theme_color_override("font_color", Color(0.65, 0.6, 0.52))
-		if count_node:
-			count_node.visible = false
-		if style:
-			style.border_color = Color(0.42, 0.35, 0.25, 0.75)
-	else:
+func _render_slots() -> void:
+	for child in slots_row.get_children():
+		child.queue_free()
+
+	if selected_elements.is_empty():
+		var empty_label := Label.new()
+		empty_label.text = "Pilih unsur dari daftar di sebelah kiri..."
+		empty_label.add_theme_color_override("font_color", Color(0.6, 0.55, 0.5, 0.8))
+		empty_label.add_theme_font_size_override("font_size", 15)
+		empty_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+		empty_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		slots_row.add_child(empty_label)
+		return
+
+	for i in selected_elements.size():
+		var el: String = selected_elements[i]
 		var info: Dictionary = _get_element_info(el)
-		icon_node.visible = true
-		icon_node.texture = load(info["icon"])
-		lbl_node.visible = false
-		name_node.text = el
-		name_node.add_theme_color_override("font_color", info["color"])
-		if count_node:
-			count_node.text = str(count)
-			count_node.visible = (count > 1)
-		if style:
-			style.border_color = info["color"]
+
+		if i > 0:
+			var plus := Label.new()
+			plus.text = "+"
+			plus.custom_minimum_size = Vector2(30, 96)
+			plus.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+			plus.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+			plus.add_theme_font_size_override("font_size", 28)
+			plus.add_theme_color_override("font_color", Color(0.85, 0.8, 0.7))
+			slots_row.add_child(plus)
+
+		var slot_box := VBoxContainer.new()
+		slot_box.alignment = BoxContainer.ALIGNMENT_CENTER
+
+		var panel := PanelContainer.new()
+		panel.custom_minimum_size = Vector2(72, 72)
+		panel.mouse_filter = Control.MOUSE_FILTER_PASS
+		panel.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
+		panel.tooltip_text = "Klik untuk menghapus %s" % info["name"]
+
+		var style := StyleBoxFlat.new()
+		style.bg_color = Color(0.06, 0.07, 0.1, 0.92)
+		style.set_border_width_all(2)
+		style.border_color = info["color"]
+		style.set_corner_radius_all(10)
+		panel.add_theme_stylebox_override("panel", style)
+
+		var center := CenterContainer.new()
+		center.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		var icon_rect := TextureRect.new()
+		icon_rect.texture = load(info["icon"])
+		icon_rect.custom_minimum_size = Vector2(48, 48)
+		icon_rect.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+		icon_rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+		icon_rect.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		center.add_child(icon_rect)
+		panel.add_child(center)
+
+		# if i > 4:
+		# 	var child_panel := HBoxContainer.new()
+		# 	child_panel.add_child(panel)
+		# 	slots_row.add_child(child_panel)
+		# 	child_panel.move_child(panel, 1)
+		# else:
+		# 	slots_row.add_child(panel)
+
+		var name_lbl := Label.new()
+		name_lbl.text = el
+		name_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		name_lbl.add_theme_font_size_override("font_size", 13)
+		name_lbl.add_theme_color_override("font_color", info["color"])
+
+		panel.gui_input.connect(func(event: InputEvent):
+			if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
+				_remove_element(el)
+		)
+
+		slot_box.add_child(panel)
+		slot_box.add_child(name_lbl)
+		slots_row.add_child(slot_box)
 
 func _update_element_button_highlights() -> void:
 	for el: String in _element_buttons:
 		var btn: Button = _element_buttons[el]
-		var is_selected: bool = (el == slot_a or el == slot_b)
+		var is_selected: bool = selected_elements.has(el)
 		if is_selected:
 			var info: Dictionary = _get_element_info(el)
 			var sel_style := StyleBoxFlat.new()
@@ -329,9 +332,8 @@ func _on_back_pressed() -> void:
 
 func _on_reset_pressed() -> void:
 	_sfx_click.play()
-	slot_a = ""
-	count_a = 0
-	slot_b = ""
-	count_b = 0
+	selected_elements.clear()
+	matched_weapons.clear()
+	selected_match_index = 0
 	matched_weapon = {}
 	_update_display()

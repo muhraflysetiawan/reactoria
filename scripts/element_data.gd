@@ -20,11 +20,6 @@ const ELEMENT_INFO: Dictionary = {
 		"icon": "res://assets/ui/campaign/elements/kalium.svg",
 		"color": Color(0.85, 0.6, 1.0),
 	},
-	"OH": {
-		"name": "Hidroksida (OH)",
-		"icon": "res://assets/ui/campaign/elements/oxygen.svg",
-		"color": Color(0.5, 0.9, 0.9),
-	},
 	"Cl": {
 		"name": "Klorin (Cl)",
 		"icon": "res://assets/ui/campaign/elements/chlorine.svg",
