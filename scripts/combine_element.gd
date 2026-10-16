@@ -6,6 +6,19 @@ const ARENA_SCENE := "res://scenes/main.tscn"
 const SFX_HOVER := preload("res://assets/audio/ui/hover-button.mp3")
 const SFX_CLICK := preload("res://assets/audio/ui/select-button2.mp3")
 
+const ELEMENT_TABLE_FIELDS: Array[Dictionary] = [
+	{"key": "atomic_number", "label": "Nomor Atom", "suffix": ""},
+	{"key": "relative_atomic_mass", "label": "Massa Atom Relatif", "suffix": ""},
+	{"key": "proton", "label": "Proton", "suffix": ""},
+	{"key": "electron", "label": "Elektron", "suffix": ""},
+	{"key": "neutron", "label": "Neutron", "suffix": ""},
+	{"key": "electron configuration", "label": "Konfigurasi Elektron", "suffix": ""},
+	{"key": "phase", "label": "Fase", "suffix": ""},
+	{"key": "melting_point", "label": "Titik Lebur", "suffix": " °C"},
+	{"key": "boiling_point", "label": "Titik Didih", "suffix": " °C"},
+	{"key": "density", "label": "Massa Jenis", "suffix": " g/cm³"},
+]
+
 @onready var bg: TextureRect = %Background
 @onready var back_button: Button = %BackButton
 @onready var element_grid: GridContainer = %ElementGrid
@@ -25,6 +38,16 @@ const SFX_CLICK := preload("res://assets/audio/ui/select-button2.mp3")
 @onready var candidate_row: HBoxContainer = %CandidateRow
 @onready var result_desc: Label = %ResultDesc
 
+# Modal Info Unsur
+@onready var info_modal: Control = %InfoModal
+@onready var info_backdrop: ColorRect = %InfoBackdrop
+@onready var info_icon: TextureRect = %InfoIcon
+@onready var info_title: Label = %InfoTitle
+@onready var info_close_btn: Button = %InfoCloseBtn
+@onready var info_desc: Label = %InfoDesc
+@onready var info_table_vbox: VBoxContainer = %InfoTableVBox
+@onready var info_empty_table_label: Label = %InfoEmptyTableLabel
+
 var _sfx_hover: AudioStreamPlayer
 var _sfx_click: AudioStreamPlayer
 
@@ -39,6 +62,7 @@ var _element_buttons: Dictionary = {}
 
 func _ready() -> void:
 	_init_sfx()
+	_init_info_modal()
 	_gather_elements()
 	_build_element_buttons()
 	_update_display()
@@ -86,6 +110,33 @@ func _build_element_buttons() -> void:
 		icon_rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 		icon_rect.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		btn.add_child(icon_rect)
+
+		var info_btn := Button.new()
+		info_btn.text = "i"
+		# info_btn.custom_minimum_size = Vector2(24, 24)
+		info_btn.size = Vector2(24, 16)
+		info_btn.position = Vector2(btn.custom_minimum_size.x - 28, 4)
+		info_btn.focus_mode = Control.FOCUS_NONE
+		info_btn.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
+
+		# var style := StyleBoxFlat.new()
+		# style.bg_color = Color(0.18, 0.2, 0.25, 0.9)
+		# style.set_corner_radius_all(16)
+		# info_btn.add_theme_stylebox_override("normal", style)
+		
+		# var hover_info_style := style.duplicate() as StyleBoxFlat
+		# hover_info_style.bg_color = Color(0.35, 0.5, 0.65, 0.95)
+		# info_btn.add_theme_stylebox_override("hover", hover_info_style)
+
+		# info_btn.add_theme_color_override("font_color", Color(0.85, 0.85, 0.85))
+		# info_btn.add_theme_color_override("font_hover_color", Color.WHITE)
+
+		var font = load("res://assets/fonts/Cinzel-Bold.ttf")
+		info_btn.add_theme_font_override("font", font)
+		info_btn.add_theme_font_size_override("font_size", 12)
+
+		info_btn.pressed.connect(_show_element_info.bind(el))
+		btn.add_child(info_btn)
 
 		var empty_style := StyleBoxEmpty.new()
 		btn.add_theme_stylebox_override("normal", empty_style)
@@ -259,7 +310,6 @@ func _render_slots() -> void:
 		style.bg_color = Color(0.06, 0.07, 0.1, 0.92)
 		style.set_border_width_all(2)
 		style.border_color = info["color"]
-		style.set_corner_radius_all(10)
 		panel.add_theme_stylebox_override("panel", style)
 
 		var center := CenterContainer.new()
@@ -272,14 +322,6 @@ func _render_slots() -> void:
 		icon_rect.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		center.add_child(icon_rect)
 		panel.add_child(center)
-
-		# if i > 4:
-		# 	var child_panel := HBoxContainer.new()
-		# 	child_panel.add_child(panel)
-		# 	slots_row.add_child(child_panel)
-		# 	child_panel.move_child(panel, 1)
-		# else:
-		# 	slots_row.add_child(panel)
 
 		var name_lbl := Label.new()
 		name_lbl.text = el
@@ -337,3 +379,95 @@ func _on_reset_pressed() -> void:
 	selected_match_index = 0
 	matched_weapon = {}
 	_update_display()
+
+func _unhandled_input(event: InputEvent) -> void:
+	if info_modal.visible and event.is_action_pressed("ui_cancel"):
+		_hide_element_info()
+		get_viewport().set_input_as_handled()
+
+func _init_info_modal() -> void:
+	info_close_btn.pressed.connect(_hide_element_info)
+	info_backdrop.gui_input.connect(func(event: InputEvent):
+		if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
+			_hide_element_info()
+	)
+
+func _show_element_info(el: String) -> void:
+	_sfx_click.play()
+	var info: Dictionary = _get_element_info(el)
+
+	info_title.text = info.get("name", el)
+	var elem_color: Color = info.get("color", Color(0.95, 0.92, 0.85))
+	info_title.add_theme_color_override("font_color", elem_color)
+	info_icon.texture = load(info.get("icon", ElementData.DEFAULT_ICON))
+
+	var raw_desc: String = info.get("desc", "")
+	var desc_text := RegEx.create_from_string(r"\n\s*").sub(raw_desc, " ", true).strip_edges()
+	if desc_text.is_empty():
+		info_desc.text = "Belum ada penjelasan detail untuk unsur ini."
+		info_desc.add_theme_color_override("font_color", Color(0.6, 0.6, 0.6))
+	else:
+		info_desc.text = desc_text
+		info_desc.add_theme_color_override("font_color", Color(0.88, 0.88, 0.85))
+
+	for child in info_table_vbox.get_children():
+		child.queue_free()
+
+	var has_table_data := false
+	var row_idx := 0
+	for field in ELEMENT_TABLE_FIELDS:
+		var key: String = field["key"]
+		if info.has(key):
+			has_table_data = true
+			var val = info[key]
+			var val_str := str(val)
+			if field["suffix"] != "" and not val_str.ends_with(field["suffix"].strip_edges()):
+				val_str += field["suffix"]
+			if key == "phase" and val is String:
+				val_str = val.capitalize()
+
+			var row_panel := PanelContainer.new()
+			var row_style := StyleBoxFlat.new()
+			if row_idx % 2 == 0:
+				row_style.bg_color = Color(0.12, 0.13, 0.16, 0.7)
+			else:
+				row_style.bg_color = Color(0.08, 0.09, 0.11, 0.7)
+			row_style.content_margin_left = 12
+			row_style.content_margin_right = 12
+			row_style.content_margin_top = 6
+			row_style.content_margin_bottom = 6
+			row_style.set_corner_radius_all(4)
+			row_panel.add_theme_stylebox_override("panel", row_style)
+
+			var row_hbox := HBoxContainer.new()
+			var label_prop := Label.new()
+			label_prop.text = field["label"]
+			label_prop.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+			label_prop.add_theme_color_override("font_color", Color(0.7, 0.72, 0.78))
+			label_prop.add_theme_font_size_override("font_size", 12)
+
+			var label_val := Label.new()
+			label_val.text = val_str
+			label_val.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+			label_val.add_theme_color_override("font_color", Color(0.95, 0.95, 0.95))
+			label_val.add_theme_font_size_override("font_size", 12)
+
+			row_hbox.add_child(label_prop)
+			row_hbox.add_child(label_val)
+			row_panel.add_child(row_hbox)
+			info_table_vbox.add_child(row_panel)
+			row_idx += 1
+
+	info_empty_table_label.visible = not has_table_data
+	info_table_vbox.visible = has_table_data
+
+	info_modal.visible = true
+	info_modal.modulate.a = 0.0
+	var t := create_tween()
+	t.tween_property(info_modal, "modulate:a", 1.0, 0.2).set_ease(Tween.EASE_OUT)
+
+func _hide_element_info() -> void:
+	_sfx_click.play()
+	var t := create_tween()
+	t.tween_property(info_modal, "modulate:a", 0.0, 0.15).set_ease(Tween.EASE_IN)
+	t.tween_callback(func(): info_modal.visible = false)

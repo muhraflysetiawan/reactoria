@@ -3,7 +3,9 @@
 [ext_resource type="Texture2D" uid="uid://b0cs0apdt6pam" path="res://assets/ui/campaign/combine-element-2.jpeg" id="2_d4wtx"]
 [ext_resource type="Script" uid="uid://smg8qb2ufv2j" path="res://scripts/combine_element.gd" id="2_script"]
 [ext_resource type="Texture2D" uid="uid://cgyyg52cc8uil" path="res://assets/ui/campaign/elements/arrow_back.svg" id="3_arrow"]
+[ext_resource type="FontFile" uid="uid://crof6r0ksey76" path="res://assets/fonts/Cinzel-Bold.ttf" id="3_dsajp"]
 [ext_resource type="Texture2D" uid="uid://bgblj4ifubqhf" path="res://assets/ui/campaign/elements/alchemy_flask.svg" id="4_flask"]
+[ext_resource type="FontFile" uid="uid://boo7rhdm8yr20" path="res://assets/fonts/Cinzel-Medium.ttf" id="5_ise2b"]
 [ext_resource type="Texture2D" uid="uid://c62wrvja3kytd" path="res://assets/ui/campaign/elements/rune_circle.svg" id="5_rune"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_back_btn"]
@@ -213,7 +215,8 @@ size_flags_horizontal = 0
 theme_override_colors/font_color = Color(0.92, 0.88, 0.8, 1)
 theme_override_colors/font_hover_color = Color(1, 1, 1, 1)
 theme_override_constants/icon_max_width = 18
-theme_override_font_sizes/font_size = 16
+theme_override_fonts/font = ExtResource("3_dsajp")
+theme_override_font_sizes/font_size = 14
 theme_override_styles/normal = SubResource("StyleBoxFlat_back_btn")
 theme_override_styles/pressed = SubResource("StyleBoxFlat_back_btn_hover")
 theme_override_styles/hover = SubResource("StyleBoxFlat_back_btn_hover")
@@ -224,8 +227,9 @@ expand_icon = true
 [node name="SubtitleLabel" type="Label" parent="TopBar" unique_id=1058733157]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.85, 0.82, 0.75, 0.85)
+theme_override_fonts/font = ExtResource("5_ise2b")
 theme_override_font_sizes/font_size = 13
-text = "Pilih dua unsur untuk digabungkan."
+text = "Pilih unsur untuk digabungkan."
 
 [node name="LeftPanel" type="PanelContainer" parent="." unique_id=926965603]
 layout_mode = 1
@@ -247,6 +251,7 @@ layout_mode = 2
 [node name="LeftTitle" type="Label" parent="LeftPanel/LeftMargin/LeftVBox" unique_id=479390168]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.95, 0.92, 0.85, 1)
+theme_override_fonts/font = ExtResource("5_ise2b")
 theme_override_font_sizes/font_size = 18
 text = "Daftar Unsur"
 
@@ -303,6 +308,7 @@ custom_minimum_size = Vector2(76, 44)
 layout_mode = 2
 theme_override_colors/font_color = Color(0.85, 0.8, 0.75, 1)
 theme_override_colors/font_hover_color = Color(1, 1, 1, 1)
+theme_override_fonts/font = ExtResource("3_dsajp")
 theme_override_font_sizes/font_size = 15
 theme_override_styles/normal = SubResource("StyleBoxFlat_reset")
 theme_override_styles/pressed = SubResource("StyleBoxFlat_reset_hover")
@@ -321,6 +327,7 @@ theme_override_colors/font_color = Color(0.9, 1, 0.95, 1)
 theme_override_colors/font_hover_color = Color(1, 1, 1, 1)
 theme_override_colors/font_disabled_color = Color(0.45, 0.45, 0.45, 0.7)
 theme_override_constants/icon_max_width = 22
+theme_override_fonts/font = ExtResource("3_dsajp")
 theme_override_font_sizes/font_size = 17
 theme_override_styles/normal = SubResource("StyleBoxFlat_combine_normal")
 theme_override_styles/pressed = SubResource("StyleBoxFlat_combine_hover")
@@ -359,6 +366,7 @@ layout_mode = 2
 [node name="ResultTitle" type="Label" parent="RightPanel/ResultPanel/ResultMargin/ResultVBox" unique_id=431116991]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.95, 0.92, 0.85, 1)
+theme_override_fonts/font = ExtResource("5_ise2b")
 theme_override_font_sizes/font_size = 18
 text = "Hasil Gabungan"
 
@@ -398,6 +406,7 @@ vertical_alignment = 1
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_colors/font_color = Color(0.65, 0.65, 0.65, 1)
+theme_override_fonts/font = ExtResource("5_ise2b")
 theme_override_font_sizes/font_size = 17
 text = "???"
 horizontal_alignment = 1
@@ -429,6 +438,7 @@ unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 42)
 layout_mode = 2
 theme_override_colors/font_color = Color(0.65, 0.65, 0.65, 1)
+theme_override_fonts/font = ExtResource("5_ise2b")
 theme_override_font_sizes/font_size = 13
 text = "Gabungkan beberapa unsur untuk menemukan senyawa baru!"
 horizontal_alignment = 1
@@ -449,17 +459,152 @@ layout_mode = 2
 [node name="GuideTitle" type="Label" parent="RightPanel/GuidePanel/GuideVBox" unique_id=644287480]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.2, 0.15, 0.1, 1)
+theme_override_fonts/font = ExtResource("5_ise2b")
 theme_override_font_sizes/font_size = 14
 text = "ℹ Petunjuk"
 
 [node name="GuideText" type="Label" parent="RightPanel/GuidePanel/GuideVBox" unique_id=858396243]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.28, 0.22, 0.16, 1)
+theme_override_fonts/font = ExtResource("5_ise2b")
 theme_override_font_sizes/font_size = 12
 text = "• Pilih unsur dari daftar di sebelah kiri.
 • Meja racik bertambah sesuai unsur yang dipilih.
 • Tekan tombol Racik untuk menempa senjata."
 autowrap_mode = 2
+
+[node name="InfoModal" type="Control" parent="." unique_id=314159265]
+unique_name_in_owner = true
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+[node name="InfoBackdrop" type="ColorRect" parent="InfoModal" unique_id=314159266]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.65)
+[node name="InfoCenter" type="CenterContainer" parent="InfoModal" unique_id=314159267]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+[node name="InfoCard" type="PanelContainer" parent="InfoModal/InfoCenter" unique_id=314159268]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(520, 560)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_panel")
+[node name="InfoMargin" type="MarginContainer" parent="InfoModal/InfoCenter/InfoCard" unique_id=314159269]
+layout_mode = 2
+theme_override_constants/margin_left = 18
+theme_override_constants/margin_top = 18
+theme_override_constants/margin_right = 18
+theme_override_constants/margin_bottom = 18
+[node name="InfoVBox" type="VBoxContainer" parent="InfoModal/InfoCenter/InfoCard/InfoMargin" unique_id=314159270]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="InfoHeader" type="HBoxContainer" parent="InfoModal/InfoCenter/InfoCard/InfoMargin/InfoVBox" unique_id=314159271]
+layout_mode = 2
+alignment = 1
+
+[node name="InfoIcon" type="TextureRect" parent="InfoModal/InfoCenter/InfoCard/InfoMargin/InfoVBox/InfoHeader" unique_id=314159272]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(36, 36)
+layout_mode = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="InfoHeaderSpacer" type="Control" parent="InfoModal/InfoCenter/InfoCard/InfoMargin/InfoVBox/InfoHeader" unique_id=314159273]
+custom_minimum_size = Vector2(10, 0)
+layout_mode = 2
+
+[node name="InfoTitle" type="Label" parent="InfoModal/InfoCenter/InfoCard/InfoMargin/InfoVBox/InfoHeader" unique_id=314159274]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0.95, 0.92, 0.85, 1)
+theme_override_fonts/font = ExtResource("3_dsajp")
+theme_override_font_sizes/font_size = 20
+text = "Nama Unsur"
+vertical_alignment = 1
+
+[node name="InfoCloseBtn" type="Button" parent="InfoModal/InfoCenter/InfoCard/InfoMargin/InfoVBox/InfoHeader" unique_id=314159275]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(32, 32)
+layout_mode = 2
+focus_mode = 0
+theme_override_colors/font_color = Color(0.8, 0.75, 0.7, 1)
+theme_override_colors/font_hover_color = Color(1, 1, 1, 1)
+theme_override_fonts/font = ExtResource("3_dsajp")
+theme_override_font_sizes/font_size = 16
+theme_override_styles/normal = SubResource("StyleBoxFlat_reset")
+theme_override_styles/hover = SubResource("StyleBoxFlat_reset_hover")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_reset_hover")
+text = "✕"
+
+[node name="InfoDivider" type="HSeparator" parent="InfoModal/InfoCenter/InfoCard/InfoMargin/InfoVBox" unique_id=314159276]
+layout_mode = 2
+
+[node name="InfoScroll" type="ScrollContainer" parent="InfoModal/InfoCenter/InfoCard/InfoMargin/InfoVBox" unique_id=314159277]
+layout_mode = 2
+size_flags_vertical = 3
+horizontal_scroll_mode = 0
+
+[node name="InfoScrollContent" type="VBoxContainer" parent="InfoModal/InfoCenter/InfoCard/InfoMargin/InfoVBox/InfoScroll" unique_id=314159278]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 12
+
+[node name="DescHeader" type="Label" parent="InfoModal/InfoCenter/InfoCard/InfoMargin/InfoVBox/InfoScroll/InfoScrollContent" unique_id=314159279]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.7, 0.65, 0.55, 1)
+theme_override_fonts/font = ExtResource("5_ise2b")
+theme_override_font_sizes/font_size = 13
+text = "PENJELASAN"
+
+[node name="InfoDesc" type="Label" parent="InfoModal/InfoCenter/InfoCard/InfoMargin/InfoVBox/InfoScroll/InfoScrollContent" unique_id=314159280]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0.88, 0.88, 0.85, 1)
+theme_override_fonts/font = ExtResource("5_ise2b")
+theme_override_font_sizes/font_size = 13
+autowrap_mode = 2
+
+[node name="TableDivider" type="HSeparator" parent="InfoModal/InfoCenter/InfoCard/InfoMargin/InfoVBox/InfoScroll/InfoScrollContent" unique_id=314159281]
+layout_mode = 2
+
+[node name="TableHeader" type="Label" parent="InfoModal/InfoCenter/InfoCard/InfoMargin/InfoVBox/InfoScroll/InfoScrollContent" unique_id=314159282]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.7, 0.65, 0.55, 1)
+theme_override_fonts/font = ExtResource("5_ise2b")
+theme_override_font_sizes/font_size = 13
+text = "SIFAT & DATA ATOM"
+
+[node name="InfoTableVBox" type="VBoxContainer" parent="InfoModal/InfoCenter/InfoCard/InfoMargin/InfoVBox/InfoScroll/InfoScrollContent" unique_id=314159283]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 3
+
+[node name="InfoEmptyTableLabel" type="Label" parent="InfoModal/InfoCenter/InfoCard/InfoMargin/InfoVBox/InfoScroll/InfoScrollContent" unique_id=314159284]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+theme_override_colors/font_color = Color(0.55, 0.55, 0.55, 1)
+theme_override_font_sizes/font_size = 12
+text = "Data rincian unsur belum tersedia."
+horizontal_alignment = 1
 
 [connection signal="pressed" from="TopBar/BackButton" to="." method="_on_back_pressed"]
 [connection signal="pressed" from="CenterArea/ButtonsRow/ResetButton" to="." method="_on_reset_pressed"]

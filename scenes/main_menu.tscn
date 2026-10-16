@@ -3,6 +3,7 @@
 [ext_resource type="Texture2D" uid="uid://bc67psl2y8lgy" path="res://assets/ui/main-menu/background_main-menu.jpeg" id="1_bg"]
 [ext_resource type="Script" uid="uid://dat3l8jxvk4u2" path="res://scripts/main_menu.gd" id="2_script"]
 [ext_resource type="Shader" uid="uid://denyby2cmx8d0" path="res://shaders/menu_button_frame.gdshader" id="3_shader"]
+[ext_resource type="FontFile" uid="uid://crof6r0ksey76" path="res://assets/fonts/Cinzel-Bold.ttf" id="4_8ln24"]
 [ext_resource type="AudioStream" uid="uid://c8rfgl4d3dl6" path="res://assets/audio/main-menu/main-menu.mp3" id="4_wu84c"]
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_1"]
@@ -145,7 +146,8 @@ grow_vertical = 2
 theme_override_colors/font_color = Color(0.9, 0.95, 0.92, 1)
 theme_override_colors/font_pressed_color = Color(0.7, 0.9, 0.85, 1)
 theme_override_colors/font_hover_color = Color(1, 1, 1, 1)
-theme_override_font_sizes/font_size = 26
+theme_override_fonts/font = ExtResource("4_8ln24")
+theme_override_font_sizes/font_size = 24
 theme_override_styles/normal = SubResource("StyleBoxEmpty_1")
 theme_override_styles/pressed = SubResource("StyleBoxEmpty_1")
 theme_override_styles/hover = SubResource("StyleBoxEmpty_1")
@@ -184,7 +186,8 @@ grow_vertical = 2
 theme_override_colors/font_color = Color(0.85, 0.82, 0.75, 1)
 theme_override_colors/font_pressed_color = Color(0.7, 0.65, 0.55, 1)
 theme_override_colors/font_hover_color = Color(1, 1, 1, 1)
-theme_override_font_sizes/font_size = 26
+theme_override_fonts/font = ExtResource("4_8ln24")
+theme_override_font_sizes/font_size = 24
 theme_override_styles/normal = SubResource("StyleBoxEmpty_1")
 theme_override_styles/pressed = SubResource("StyleBoxEmpty_1")
 theme_override_styles/hover = SubResource("StyleBoxEmpty_1")
@@ -223,6 +226,7 @@ grow_vertical = 2
 theme_override_colors/font_color = Color(0.85, 0.82, 0.75, 1)
 theme_override_colors/font_pressed_color = Color(0.7, 0.65, 0.55, 1)
 theme_override_colors/font_hover_color = Color(1, 1, 1, 1)
+theme_override_fonts/font = ExtResource("4_8ln24")
 theme_override_font_sizes/font_size = 26
 theme_override_styles/normal = SubResource("StyleBoxEmpty_1")
 theme_override_styles/pressed = SubResource("StyleBoxEmpty_1")
