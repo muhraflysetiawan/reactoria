@@ -32,19 +32,38 @@ signal damaged(amount: float)
 @export var sword_position: Vector3 = Vector3(0, 0, 0):
 	set(val):
 		sword_position = val
-		_update_sword_transform()
+		_update_weapon_transform()
 
 ## Sudut rotasi kemiringan pedang di tangan (Pitch, Yaw, Roll)
 @export var sword_rotation: Vector3 = Vector3(0, 180, 0):
 	set(val):
 		sword_rotation = val
-		_update_sword_transform()
+		_update_weapon_transform()
 
 ## Skala ukuran pedang
 @export var sword_scale: Vector3 = Vector3(100.0, 100.0, 100.0):
 	set(val):
 		sword_scale = val
-		_update_sword_transform()
+		_update_weapon_transform()
+
+@export_group("Bow Grip Offset")
+## Geser posisi busur di tangan kiri
+@export var bow_position: Vector3 = Vector3(0, 0, 0):
+	set(val):
+		bow_position = val
+		_update_weapon_transform()
+
+## Sudut rotasi busur di tangan kiri
+@export var bow_rotation: Vector3 = Vector3(0, 90, 0):
+	set(val):
+		bow_rotation = val
+		_update_weapon_transform()
+
+## Skala ukuran busur
+@export var bow_scale: Vector3 = Vector3(100.0, 100.0, 100.0):
+	set(val):
+		bow_scale = val
+		_update_weapon_transform()
 
 @onready var spring_arm: SpringArm3D = $SpringArm3D
 @onready var camera: Camera3D = $SpringArm3D/Camera3D
@@ -58,6 +77,7 @@ var skeleton: Skeleton3D = null
 var sword: Node3D = null
 var sword_attachment: BoneAttachment3D = null
 var sword_holder: Node3D = null
+var is_bow_equipped: bool = false
 
 var gravity: float = 15.0
 var spawn_position: Vector3 = Vector3(0, 0.4, -5.0)
@@ -157,14 +177,16 @@ func _find_node_of_type(node: Node, target_type) -> Node:
 	return null
 
 func _setup_animations() -> void:
-	# NLA track animations are embedded in MC_NLATracks.glb
-	# Names: MC_IDLE, MC_RUN, MC_RUNFAST, MC_JUMP, MC_DEAD, MC_PARRY
+	# NLA track animations are embedded in MC_NLATracks.glb / MC_NLATracks2.glb
 	var lib = anim_player.get_animation_library("")
 	var anim_name_loop = ["MC_IDLE", "MC_RUN", "MC_RUNFAST"]
 	var anim_name_one_shot = [
+		"MC_ARCHERYSHOT",
+		"MC_BACKWARD",
 		"MC_CHARGEDSLASH",
 		"MC_CHARGEDUPSWORDSLASH",
 		"MC_DEAD",
+		"MC_FORWARDBOW",
 		"MC_JUMP",
 		"MC_JUMP2",
 		"MC_PARRY",
@@ -192,30 +214,32 @@ func _setup_animations() -> void:
 	print("[Player] Animasi siap: ", anim_player.get_animation_list())
 	anim_player.play("MC_IDLE")
 
-## Memasang senjata dari GameData ke tangan kanan (RightHand bone)
+## Memasang senjata dari GameData ke tangan yang sesuai (RightHand untuk pedang/melee, LeftHand untuk busur)
 func _setup_sword_weapon() -> void:
 	if not skeleton:
 		print("[Player] Warning: Skeleton3D tidak ditemukan untuk memasang senjata!")
 		return
 
-	var hand_idx = skeleton.find_bone("RightHand")
-	if hand_idx == -1:
-		print("[Player] Warning: Bone RightHand tidak ditemukan!")
-		return
-
 	var weapon_data: Dictionary = GameData.get_weapon_data()
+	is_bow_equipped = weapon_data.get("type", "") == "bow" or weapon_data.get("id", "") == "koh_bow"
+	var target_bone = weapon_data.get("bone_attachment", "LeftHand" if is_bow_equipped else "RightHand")
 
-	# Buat BoneAttachment3D ke tangan kanan
+	var hand_idx = skeleton.find_bone(target_bone)
+	if hand_idx == -1:
+		print("[Player] Warning: Bone %s tidak ditemukan! Fallback ke RightHand" % target_bone)
+		target_bone = "RightHand"
+
+	# Buat BoneAttachment3D ke tangan yang sesuai
 	sword_attachment = BoneAttachment3D.new()
-	sword_attachment.name = "RightHandWeaponAttachment"
-	sword_attachment.bone_name = "RightHand"
+	sword_attachment.name = target_bone + "WeaponAttachment"
+	sword_attachment.bone_name = target_bone
 	skeleton.add_child(sword_attachment)
 
 	# Container pemegang senjata
 	sword_holder = Node3D.new()
 	sword_holder.name = "WeaponHolder"
 	sword_attachment.add_child(sword_holder)
-	_update_sword_transform()
+	_update_weapon_transform()
 
 	# Load scene senjata spesifik dari scenes/weapons/
 	var scene_path: String = weapon_data.get("scene_path", "res://scenes/weapons/sword_h2o.tscn")
@@ -225,15 +249,23 @@ func _setup_sword_weapon() -> void:
 		sword_holder.add_child(sword)
 		if sword.has_method("setup_weapon_effects"):
 			sword.setup_weapon_effects(weapon_data)
-		print("[Player] Senjata %s (%s) berhasil dipasang di RightHand dari %s!" % [weapon_data.get("name", "Unknown"), weapon_data.get("formula", ""), scene_path])
+		print("[Player] Senjata %s (%s) berhasil dipasang di %s dari %s!" % [weapon_data.get("name", "Unknown"), weapon_data.get("formula", ""), target_bone, scene_path])
 	else:
 		print("[Player] Error: Gagal load scene senjata dari %s!" % scene_path)
 
 func _update_sword_transform() -> void:
+	_update_weapon_transform()
+
+func _update_weapon_transform() -> void:
 	if sword_holder and is_instance_valid(sword_holder):
-		sword_holder.position = sword_position
-		sword_holder.rotation_degrees = sword_rotation
-		sword_holder.scale = sword_scale
+		if is_bow_equipped:
+			sword_holder.position = bow_position
+			sword_holder.rotation_degrees = bow_rotation
+			sword_holder.scale = bow_scale
+		else:
+			sword_holder.position = sword_position
+			sword_holder.rotation_degrees = sword_rotation
+			sword_holder.scale = sword_scale
 
 func _input(event: InputEvent) -> void:
 	if is_dead:
@@ -268,6 +300,15 @@ func _input(event: InputEvent) -> void:
 			take_damage(10.0) # Debug test damage
 		elif event.keycode == KEY_J:
 			heal(25.0) # Debug test heal
+		elif event.keycode == KEY_B:
+			if GameData.selected_weapon_id == "koh_bow":
+				GameData.selected_weapon_id = "h2o_sword"
+			else:
+				GameData.selected_weapon_id = "koh_bow"
+			if sword_attachment and is_instance_valid(sword_attachment):
+				sword_attachment.queue_free()
+			_setup_sword_weapon()
+			print("[Player] Debug switch weapon: ", GameData.selected_weapon_id)
 
 func _physics_process(delta: float) -> void:
 	# Update timers
@@ -457,9 +498,13 @@ func _detect_surface_type() -> String:
 
 	return "grass"
 
-## Eksekusi Serangan Pedang dengan Animasi Combo 3-Hit
+## Eksekusi Serangan (Pedang / Busur Panah)
 func perform_attack() -> void:
-	if attack_cooldown_timer > 0.0:
+	if attack_cooldown_timer > 0.0 or is_dead:
+		return
+	
+	if is_bow_equipped:
+		perform_bow_attack()
 		return
 	
 	var current_combo = combo_index
@@ -519,7 +564,7 @@ func perform_attack() -> void:
 		anim_player.play(current_anim, 0.08, anim_speed)
 	
 	# Mainkan efek VFX & suara ayunan pedang
-	if sword:
+	if sword and sword.has_method("play_attack_effect"):
 		sword.play_attack_effect(current_combo)
 
 	# Berikan dorongan maju saat menebas (Combat Lunge)
@@ -531,6 +576,152 @@ func perform_attack() -> void:
 
 	# Majukan indeks combo (1 -> 2 -> 3 -> 4 -> 1)
 	combo_index = (combo_index % 4) + 1
+
+## Eksekusi Serangan Busur (Bow & Arrow) dengan 3 Animasi Taktis
+func perform_bow_attack() -> void:
+	var weapon_data: Dictionary = GameData.get_weapon_data()
+	var current_combo = combo_index
+	var anim_name = "MC_ARCHERYSHOT"
+	var duration = 0.75
+	var release_delay = 0.32
+	var lunge_force = 0.0
+	var dmg_mult = 1.0
+	var cooldown = 0.45
+
+	match current_combo:
+		1:
+			# Combo 1: Standing Rapid Shot
+			anim_name = "MC_ARCHERYSHOT"
+			duration = 0.75
+			release_delay = 0.32
+			dmg_mult = 1.0
+			lunge_force = 0.0
+			cooldown = 0.45
+		2:
+			# Combo 2: Tactical Disengage Shot (Langkah/lompat mundur)
+			anim_name = "MC_BACKWARD"
+			duration = 0.95
+			release_delay = 0.40
+			dmg_mult = 1.3
+			lunge_force = -5.0 # Dorong ke belakang
+			cooldown = 0.50
+		3:
+			# Combo 3: Advancing Power Shot (Melangkah maju agresif)
+			anim_name = "MC_FORWARDBOW"
+			duration = 0.90
+			release_delay = 0.38
+			dmg_mult = 1.8
+			lunge_force = 5.5 # Dorong ke depan
+			cooldown = 0.55
+
+	is_attacking = true
+	attack_timer = duration
+	attack_cooldown_timer = cooldown
+	combo_reset_timer = 1.1
+
+	if visuals:
+		visuals.rotation.y = 0.0
+
+	if anim_player and anim_player.has_animation(anim_name):
+		anim_player.play(anim_name, 0.08, 1.25)
+
+	# Mainkan audio busur ditarik jika disiapkan
+	_play_bow_audio("draw", weapon_data)
+
+	# Terapkan dorongan gerak
+	var forward_dir = - global_transform.basis.z
+	velocity += forward_dir * lunge_force
+
+	# Jadwalkan rilis panah sesuai timing tarikan busur
+	var calculated_damage = base_attack_power * dmg_mult
+	get_tree().create_timer(release_delay).timeout.connect(
+		func(): _fire_arrow(calculated_damage, current_combo, weapon_data)
+	)
+
+	# Majukan kombo busur (1 -> 2 -> 3 -> 1)
+	combo_index = (combo_index % 3) + 1
+
+func _fire_arrow(dmg: float, combo_step: int, weapon_data: Dictionary) -> void:
+	if is_dead or not is_inside_tree():
+		return
+
+	var arrow_scene_path: String = weapon_data.get("arrow_scene", "res://scenes/weapons/arrow_projectile.tscn")
+	var arrow_res = load(arrow_scene_path)
+	if not arrow_res:
+		print("[Player] Warning: Gagal load scene arrow dari %s!" % arrow_scene_path)
+		return
+
+	var arrow = arrow_res.instantiate()
+
+	# Titik spawn dari posisi busur/tangan
+	var spawn_pos = global_position + Vector3(0, 1.2, 0)
+	if sword_holder and is_instance_valid(sword_holder):
+		spawn_pos = sword_holder.global_position + (-global_transform.basis.z * 0.3)
+
+	var shoot_dir = _get_aim_direction(spawn_pos)
+	var arrow_col: Color = weapon_data.get("trail_color", Color(0.85, 0.45, 1.0))
+	var sfx_dict: Dictionary = weapon_data.get("bow_sounds", {})
+	var sfx_release = _load_audio_stream(sfx_dict.get("release", ""))
+	var sfx_fly = _load_audio_stream(sfx_dict.get("fly", ""))
+	var sfx_hit = _load_audio_stream(sfx_dict.get("hit", ""))
+
+	if sfx_release:
+		_play_sfx_3d(sfx_release, spawn_pos)
+
+	var parent_scene = get_parent()
+	if not parent_scene:
+		parent_scene = get_tree().current_scene
+	parent_scene.add_child(arrow)
+
+	var knockback = 7.0 if combo_step < 3 else 12.0
+	if arrow.has_method("setup"):
+		arrow.setup(spawn_pos, shoot_dir, dmg, knockback, arrow_col, sfx_fly, sfx_hit)
+
+	shake_intensity = 0.05 if combo_step < 3 else 0.1
+	print("[Player] Panah Combo %d ditembakkan! Damage: %d" % [combo_step, int(dmg)])
+
+func _get_aim_direction(from_pos: Vector3) -> Vector3:
+	if not camera:
+		return - global_transform.basis.z
+
+	var space_state = get_world_3d().direct_space_state
+	var center_vp = get_viewport().get_visible_rect().size / 2.0
+	var ray_origin = camera.project_ray_origin(center_vp)
+	var ray_dir = camera.project_ray_normal(center_vp)
+	var ray_target = ray_origin + ray_dir * 120.0
+
+	var query = PhysicsRayQueryParameters3D.create(ray_origin, ray_target)
+	query.exclude = [get_rid()]
+	var hit = space_state.intersect_ray(query)
+
+	var target_point = hit.position if hit else ray_target
+	var dir = (target_point - from_pos).normalized()
+	if dir.is_zero_approx():
+		return - global_transform.basis.z
+	return dir
+
+func _load_audio_stream(path: String) -> AudioStream:
+	if path != "" and ResourceLoader.exists(path):
+		return load(path) as AudioStream
+	return null
+
+func _play_bow_audio(sound_key: String, weapon_data: Dictionary) -> void:
+	var sfx_dict: Dictionary = weapon_data.get("bow_sounds", {})
+	var path: String = sfx_dict.get(sound_key, "")
+	var stream = _load_audio_stream(path)
+	if stream:
+		_play_sfx_3d(stream, global_position)
+
+func _play_sfx_3d(stream: AudioStream, pos: Vector3) -> void:
+	if not stream:
+		return
+	var audio_player = AudioStreamPlayer3D.new()
+	audio_player.stream = stream
+	audio_player.bus = "Master"
+	audio_player.global_position = pos
+	get_parent().add_child(audio_player)
+	audio_player.play()
+	audio_player.finished.connect(audio_player.queue_free)
 
 func perform_parry() -> void:
 	if is_parrying or is_attacking or attack_cooldown_timer > 0.0:

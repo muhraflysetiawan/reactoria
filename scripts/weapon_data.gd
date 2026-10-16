@@ -33,11 +33,14 @@ const WEAPONS: Array[Dictionary] = [
 	},
 	{
 		"id": "koh_bow",
+		"type": "bow",
 		"name": "Crystal Bow",
 		"formula": "KOH",
 		"elements": ["K", "O", "H"],
 		"description": "Busur kristal basa yang menembakkan energi tajam berkecepatan tinggi.",
 		"scene_path": "res://scenes/weapons/bow_koh.tscn",
+		"arrow_scene": "res://scenes/weapons/arrow_projectile.tscn",
+		"bone_attachment": "LeftHand",
 		"color": Color(0.8, 0.5, 1.0),
 		"trail_color": Color(0.85, 0.45, 1.0),
 		"particle_color": Color(0.9, 0.55, 1.0),
@@ -48,6 +51,12 @@ const WEAPONS: Array[Dictionary] = [
 			"res://assets/audio/sword_swing2.wav",
 		],
 		"sound_speeds": [1.5, 1.6, 1.4, 1.7],
+		"bow_sounds": {
+			"draw": "",
+			"release": "",
+			"fly": "",
+			"hit": ""
+		},
 	},
 	{
 		"id": "hcl_gun",
