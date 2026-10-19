@@ -10,7 +10,7 @@ signal damaged(amount: float)
 @export_group("Movement")
 @export var walk_speed: float = 5.0
 @export var sprint_speed: float = 8.5
-@export var jump_velocity: float = 20
+@export var jump_velocity: float = 7
 @export var acceleration: float = 14.0
 @export var friction: float = 15.0
 
@@ -101,8 +101,9 @@ var parry_timer: float = 0.0
 const PARRY_WINDOW: float = 0.4 # detik jendela parry aktif
 const PARRY_COOLDOWN: float = 1.2 # cooldown setelah parry
 
-# Footstep SFX System
+# Footstep & Bow Audio
 var footstep_player: AudioStreamPlayer3D = null
+var bow_draw_player: AudioStreamPlayer3D = null
 var footstep_sounds: Dictionary = {
 	"grass": preload("res://assets/audio/player/run-sand.mp3"),
 	"rock": preload("res://assets/audio/player/run-rock.mp3"),
@@ -202,14 +203,14 @@ func _setup_animations() -> void:
 		if anim_player.has_animation(anim_name):
 			anim_player.get_animation(anim_name).loop_mode = Animation.LOOP_NONE
 
-	for i in range(1, 4):
-		var anim_id = "Attack" + str(i)
-		var res_path = "res://assets/3dassets/character/anim_attack" + str(i) + ".res"
-		if not lib.has_animation(anim_id) and ResourceLoader.exists(res_path):
-			var atk_anim: Animation = load(res_path)
-			if atk_anim:
-				atk_anim.loop_mode = Animation.LOOP_NONE
-				lib.add_animation(anim_id, atk_anim)
+	# for i in range(1, 4):
+	# 	var anim_id = "Attack" + str(i)
+	# 	var res_path = "res://assets/3dassets/character/anim_attack" + str(i) + ".res"
+	# 	if not lib.has_animation(anim_id) and ResourceLoader.exists(res_path):
+	# 		var atk_anim: Animation = load(res_path)
+	# 		if atk_anim:
+	# 			atk_anim.loop_mode = Animation.LOOP_NONE
+	# 			lib.add_animation(anim_id, atk_anim)
 
 	print("[Player] Animasi siap: ", anim_player.get_animation_list())
 	anim_player.play("MC_IDLE")
@@ -283,7 +284,7 @@ func _input(event: InputEvent) -> void:
 		elif event.button_index == MOUSE_BUTTON_LEFT:
 			if not mouse_captured:
 				capture_mouse()
-			perform_attack()
+			perform_sword_attack()
 		elif event.button_index == MOUSE_BUTTON_RIGHT:
 			if not mouse_captured:
 				capture_mouse()
@@ -295,7 +296,7 @@ func _input(event: InputEvent) -> void:
 		elif event.keycode == KEY_R:
 			respawn()
 		elif event.keycode == KEY_F:
-			perform_attack()
+			perform_sword_attack()
 		elif event.keycode == KEY_H:
 			take_damage(10.0) # Debug test damage
 		elif event.keycode == KEY_J:
@@ -311,6 +312,15 @@ func _input(event: InputEvent) -> void:
 			print("[Player] Debug switch weapon: ", GameData.selected_weapon_id)
 
 func _physics_process(delta: float) -> void:
+	var weapon_data: Dictionary = GameData.get_weapon_data()
+	# Inside _physics_process(delta):
+	if is_attacking and is_bow_equipped and visuals:
+		var aim_dir: Vector3 = _get_aim_direction(global_position)
+		# Archery stances are often 90° or -90° sideways; adjust offset if model doesn't face target
+		var angle_offset: float = deg_to_rad(-90.0) # Change to 90.0 or -90.0 if the animation stance is sideways
+		var target_rot: float = atan2(-aim_dir.x, -aim_dir.z) - rotation.y + angle_offset
+		visuals.rotation.y = lerp_angle(visuals.rotation.y, target_rot, 20.0 * delta)
+
 	# Update timers
 	if attack_cooldown_timer > 0.0:
 		attack_cooldown_timer -= delta
@@ -388,6 +398,8 @@ func _physics_process(delta: float) -> void:
 	else:
 		velocity.x = lerp(velocity.x, 0.0, friction * delta)
 		velocity.z = lerp(velocity.z, 0.0, friction * delta)
+		if visuals and not is_attacking and not is_parrying and weapon_data.get("type") == "bow":
+			visuals.rotation.y = lerp_angle(visuals.rotation.y, 0.0, 15.0 * delta)
 
 	move_and_slide()
 
@@ -499,7 +511,7 @@ func _detect_surface_type() -> String:
 	return "grass"
 
 ## Eksekusi Serangan (Pedang / Busur Panah)
-func perform_attack() -> void:
+func perform_sword_attack() -> void:
 	if attack_cooldown_timer > 0.0 or is_dead:
 		return
 	
@@ -580,39 +592,43 @@ func perform_attack() -> void:
 ## Eksekusi Serangan Busur (Bow & Arrow) dengan 3 Animasi Taktis
 func perform_bow_attack() -> void:
 	var weapon_data: Dictionary = GameData.get_weapon_data()
-	var current_combo = combo_index
+	# var current_combo = combo_index
 	var anim_name = "MC_ARCHERYSHOT"
-	var duration = 0.75
+	var duration = 0.5
 	var release_delay = 0.32
 	var lunge_force = 0.0
 	var dmg_mult = 1.0
 	var cooldown = 0.45
 
-	match current_combo:
-		1:
-			# Combo 1: Standing Rapid Shot
-			anim_name = "MC_ARCHERYSHOT"
-			duration = 0.75
-			release_delay = 0.32
-			dmg_mult = 1.0
-			lunge_force = 0.0
-			cooldown = 0.45
-		2:
-			# Combo 2: Tactical Disengage Shot (Langkah/lompat mundur)
-			anim_name = "MC_BACKWARD"
-			duration = 0.95
-			release_delay = 0.40
-			dmg_mult = 1.3
-			lunge_force = -5.0 # Dorong ke belakang
-			cooldown = 0.50
-		3:
-			# Combo 3: Advancing Power Shot (Melangkah maju agresif)
-			anim_name = "MC_FORWARDBOW"
-			duration = 0.90
-			release_delay = 0.38
-			dmg_mult = 1.8
-			lunge_force = 5.5 # Dorong ke depan
-			cooldown = 0.55
+	# match current_combo:
+	# 	1:
+	# 		# Combo 1: Standing Rapid Shot
+	# 		anim_name = "MC_ARCHERYSHOT"
+	# 		duration = 0.3
+	# 		release_delay = 0.32
+	# 		dmg_mult = 1.0
+	# 		lunge_force = 0.0
+	# 		cooldown = 0.45
+	# 	2:
+	# 		# Combo 2: Tactical Disengage Shot (Langkah/lompat mundur)
+	# 		anim_name = "MC_BACKWARD"
+	# 		duration = 0.95
+	# 		release_delay = 0.40
+	# 		dmg_mult = 1.3
+	# 		lunge_force = -5.0 # Dorong ke belakang
+	# 		cooldown = 0.50
+	# 	3:
+	# 		# Combo 3: Advancing Power Shot (Melangkah maju agresif)
+	# 		anim_name = "MC_FORWARDBOW"
+	# 		duration = 0.90
+	# 		release_delay = 0.38
+	# 		dmg_mult = 1.8
+	# 		lunge_force = 5.5 # Dorong ke depan
+	# 		cooldown = 0.55
+
+	if is_attacking == true:
+		print("[Player] sedang menyerang, tidak bisa menumpuk")
+		return
 
 	is_attacking = true
 	attack_timer = duration
@@ -620,13 +636,16 @@ func perform_bow_attack() -> void:
 	combo_reset_timer = 1.1
 
 	if visuals:
-		visuals.rotation.y = 0.0
-
+		var aim_dir: Vector3 = _get_aim_direction(global_position)
+		visuals.rotation.y = atan2(-aim_dir.x, -aim_dir.z) - rotation.y + deg_to_rad(-90.0)
+	
 	if anim_player and anim_player.has_animation(anim_name):
-		anim_player.play(anim_name, 0.08, 1.25)
+		anim_player.play(anim_name, 0.08, 2)
 
 	# Mainkan audio busur ditarik jika disiapkan
-	_play_bow_audio("draw", weapon_data)
+	if bow_draw_player and is_instance_valid(bow_draw_player):
+		bow_draw_player.queue_free()
+	bow_draw_player = _play_bow_audio("draw", weapon_data)
 
 	# Terapkan dorongan gerak
 	var forward_dir = - global_transform.basis.z
@@ -635,13 +654,18 @@ func perform_bow_attack() -> void:
 	# Jadwalkan rilis panah sesuai timing tarikan busur
 	var calculated_damage = base_attack_power * dmg_mult
 	get_tree().create_timer(release_delay).timeout.connect(
-		func(): _fire_arrow(calculated_damage, current_combo, weapon_data)
+		func(): _fire_arrow(calculated_damage, 1, weapon_data)
 	)
 
 	# Majukan kombo busur (1 -> 2 -> 3 -> 1)
-	combo_index = (combo_index % 3) + 1
+	# combo_index = (combo_index % 3) + 1
 
 func _fire_arrow(dmg: float, combo_step: int, weapon_data: Dictionary) -> void:
+	if bow_draw_player and is_instance_valid(bow_draw_player):
+		bow_draw_player.stop()
+		bow_draw_player.queue_free()
+		bow_draw_player = null
+
 	if is_dead or not is_inside_tree():
 		return
 
@@ -661,12 +685,10 @@ func _fire_arrow(dmg: float, combo_step: int, weapon_data: Dictionary) -> void:
 	var shoot_dir = _get_aim_direction(spawn_pos)
 	var arrow_col: Color = weapon_data.get("trail_color", Color(0.85, 0.45, 1.0))
 	var sfx_dict: Dictionary = weapon_data.get("bow_sounds", {})
-	var sfx_release = _load_audio_stream(sfx_dict.get("release", ""))
 	var sfx_fly = _load_audio_stream(sfx_dict.get("fly", ""))
 	var sfx_hit = _load_audio_stream(sfx_dict.get("hit", ""))
 
-	if sfx_release:
-		_play_sfx_3d(sfx_release, spawn_pos)
+	_play_bow_audio("release", weapon_data, spawn_pos)
 
 	var parent_scene = get_parent()
 	if not parent_scene:
@@ -678,11 +700,11 @@ func _fire_arrow(dmg: float, combo_step: int, weapon_data: Dictionary) -> void:
 		arrow.setup(spawn_pos, shoot_dir, dmg, knockback, arrow_col, sfx_fly, sfx_hit)
 
 	shake_intensity = 0.05 if combo_step < 3 else 0.1
-	print("[Player] Panah Combo %d ditembakkan! Damage: %d" % [combo_step, int(dmg)])
+	# print("[Player] Panah Combo %d ditembakkan! Damage: %d" % [combo_step, int(dmg)])
 
 func _get_aim_direction(from_pos: Vector3) -> Vector3:
 	if not camera:
-		return - global_transform.basis.z
+		return -global_transform.basis.z
 
 	var space_state = get_world_3d().direct_space_state
 	var center_vp = get_viewport().get_visible_rect().size / 2.0
@@ -697,7 +719,7 @@ func _get_aim_direction(from_pos: Vector3) -> Vector3:
 	var target_point = hit.position if hit else ray_target
 	var dir = (target_point - from_pos).normalized()
 	if dir.is_zero_approx():
-		return - global_transform.basis.z
+		return -global_transform.basis.z
 	return dir
 
 func _load_audio_stream(path: String) -> AudioStream:
@@ -705,25 +727,47 @@ func _load_audio_stream(path: String) -> AudioStream:
 		return load(path) as AudioStream
 	return null
 
-func _play_bow_audio(sound_key: String, weapon_data: Dictionary) -> void:
+func _get_sound_speed(weapon_data: Dictionary, sound_key: String) -> float:
+	var speeds = weapon_data.get("sound_speeds", [])
+	if speeds is Dictionary:
+		return float(speeds.get(sound_key, 1.0))
+	if speeds is Array and not speeds.is_empty():
+		var key_map := {"draw": 0, "release": 1, "fly": 2, "hit": 3}
+		var idx: int = key_map.get(sound_key, 0)
+		if idx < speeds.size():
+			return float(speeds[idx])
+		return float(speeds[0])
+	return 1.0
+
+func _play_bow_audio(sound_key: String, weapon_data: Dictionary, pos: Vector3 = Vector3.ZERO) -> AudioStreamPlayer3D:
 	var sfx_dict: Dictionary = weapon_data.get("bow_sounds", {})
 	var path: String = sfx_dict.get(sound_key, "")
 	var stream = _load_audio_stream(path)
 	if stream:
-		_play_sfx_3d(stream, global_position)
+		var target_pos = global_position if pos == Vector3.ZERO else pos
+		var speed = _get_sound_speed(weapon_data, sound_key)
+		return _play_sfx_3d(stream, target_pos, speed)
+	return null
 
-func _play_sfx_3d(stream: AudioStream, pos: Vector3) -> void:
-	if not stream:
-		return
+func _play_sfx_3d(stream: AudioStream, pos: Vector3, pitch: float = 1.0) -> AudioStreamPlayer3D:
+	if not stream or not is_inside_tree():
+		return null
+	var parent_node = get_parent()
+	if not parent_node:
+		return null
 	var audio_player = AudioStreamPlayer3D.new()
 	audio_player.stream = stream
 	audio_player.bus = "Master"
+	audio_player.pitch_scale = pitch
+	parent_node.add_child(audio_player)
 	audio_player.global_position = pos
-	get_parent().add_child(audio_player)
 	audio_player.play()
 	audio_player.finished.connect(audio_player.queue_free)
+	return audio_player
 
 func perform_parry() -> void:
+	if is_bow_equipped == true:
+		return
 	if is_parrying or is_attacking or attack_cooldown_timer > 0.0:
 		return
 
@@ -846,6 +890,11 @@ func _spawn_hit_spark(pos: Vector3) -> void:
 	get_tree().create_timer(0.4).timeout.connect(spark.queue_free)
 
 func respawn() -> void:
+	if bow_draw_player and is_instance_valid(bow_draw_player):
+		bow_draw_player.stop()
+		bow_draw_player.queue_free()
+		bow_draw_player = null
+
 	global_position = spawn_position
 	velocity = Vector3.ZERO
 	current_health = max_health

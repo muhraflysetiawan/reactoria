@@ -1,13 +1,13 @@
-[gd_scene load_steps=3 format=3]
+[gd_scene format=3 uid="uid://do54ls21ay8qv"]
 
-[ext_resource type="Script" path="res://scripts/sword.gd" id="1_script"]
-[ext_resource type="PackedScene" path="res://assets/3dassets/bow/koh-bow-lowpoly.glb" id="2_model"]
+[ext_resource type="Script" uid="uid://c07eiitq2nyui" path="res://scripts/sword.gd" id="1_script"]
+[ext_resource type="PackedScene" uid="uid://ch5l83gmfn3r3" path="res://assets/3dassets/bow/koh-bow-lowpoly.glb" id="2_model"]
 
-[node name="BowKOH" type="Node3D"]
+[node name="BowKOH" type="Node3D" unique_id=214156086]
 script = ExtResource("1_script")
 weapon_id = "koh_bow"
 trail_color = Color(0.85, 0.45, 1, 1)
 particle_color = Color(0.9, 0.55, 1, 1)
 
-[node name="Model" parent="." instance=ExtResource("2_model")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+[node name="Model" parent="." unique_id=556633285 instance=ExtResource("2_model")]
+transform = Transform3D(0.059589073, 0.49643648, 0, -0.49643648, 0.059589073, 0, 0, 0, 0.5, -0.1317878, 0, 0)

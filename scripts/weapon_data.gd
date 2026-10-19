@@ -44,16 +44,16 @@ const WEAPONS: Array[Dictionary] = [
 		"color": Color(0.8, 0.5, 1.0),
 		"trail_color": Color(0.85, 0.45, 1.0),
 		"particle_color": Color(0.9, 0.55, 1.0),
-		"sounds": [
-			"res://assets/audio/sword_swing1.wav",
-			"res://assets/audio/sword_swing2.wav",
-			"res://assets/audio/sword_swing1.wav",
-			"res://assets/audio/sword_swing2.wav",
-		],
-		"sound_speeds": [1.5, 1.6, 1.4, 1.7],
+		# "sounds": [
+		# 	"res://assets/audio/sword_swing1.wav",
+		# 	"res://assets/audio/sword_swing2.wav",
+		# 	"res://assets/audio/sword_swing1.wav",
+		# 	"res://assets/audio/sword_swing2.wav",
+		# ],
+		"sound_speeds": [3, 1, 1.4, 1.7],
 		"bow_sounds": {
-			"draw": "",
-			"release": "",
+			"draw": "res://assets/audio/bow/bow_loading.MP3",
+			"release": "res://assets/audio/bow/arrow_release.MP3",
 			"fly": "",
 			"hit": ""
 		},
