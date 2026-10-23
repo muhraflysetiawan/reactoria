@@ -5,8 +5,8 @@ class_name GolemEnemy
 ## Mendukung 5 Varian Elemen: Earth, Ice, Lava, Lightning, Wind
 ## Dilengkapi sistem State Machine, Navigasi Fisik, Animasi Realistis, Serangan Hantam Tanah, dan Health System
 
-enum Element { EARTH, ICE, LAVA, LIGHTNING, WIND }
-enum State { IDLE, PATROL, CHASE, ATTACK, HIT, DEAD }
+enum Element {EARTH, ICE, LAVA, LIGHTNING, WIND}
+enum State {IDLE, PATROL, CHASE, ATTACK, HIT, DEAD}
 
 @export_group("Golem Identity")
 @export var element_type: Element = Element.EARTH
@@ -39,6 +39,8 @@ var attack_timer: float = 0.0
 var has_dealt_damage_this_attack: bool = false
 var label_title: Label3D = null
 var label_hp: Label3D = null
+var model_node: Node3D = null
+var collision_shape: CollisionShape3D = null
 
 func _ready() -> void:
 	add_to_group("enemies")
@@ -48,6 +50,9 @@ func _ready() -> void:
 	floor_snap_length = 0.5
 	floor_max_angle = deg_to_rad(50.0)
 	floor_stop_on_slope = true
+	
+	model_node = get_node_or_null("Model")
+	collision_shape = get_node_or_null("CollisionShape3D")
 	
 	_find_anim_player(self)
 	_setup_overhead_ui()
@@ -76,7 +81,7 @@ func _apply_elemental_identity() -> void:
 	match element_type:
 		Element.EARTH:
 			golem_title = "Mossback Colossus [Earth]"
-			element_color = Color(0.45, 0.85, 0.35)
+			element_color = Color(0.45, 0.30, 0.16)
 		Element.ICE:
 			golem_title = "Frostcrag Colossus [Ice]"
 			element_color = Color(0.4, 0.85, 1.0)
@@ -141,7 +146,10 @@ func _physics_process(delta: float) -> void:
 	if current_state == State.DEAD:
 		velocity.x = lerp(velocity.x, 0.0, 10.0 * delta)
 		velocity.z = lerp(velocity.z, 0.0, 10.0 * delta)
-		move_and_slide()
+		if not is_on_floor() or velocity.length_squared() > 0.001:
+			move_and_slide()
+		if model_node:
+			model_node.position.y = lerp(model_node.position.y, 0.35, 3.0 * delta)
 		return
 
 	if attack_timer > 0.0:
@@ -264,15 +272,81 @@ func _set_state(new_state: State) -> void:
 			if anim_player.has_animation("Hit"):
 				anim_player.play("Hit", 0.1)
 		State.DEAD:
-			anim_player.speed_scale = 1.0
-			if anim_player.has_animation("Die"):
+			remove_from_group("enemies")
+			collision_layer = 0
+			collision_mask = 1
+			if anim_player and anim_player.has_animation("Die"):
+				anim_player.speed_scale = 1.0
 				anim_player.play("Die", 0.1)
+				await anim_player.animation_finished
+
+			_spawn_death_particles()
+
+			if model_node:
+				model_node.hide()
 			if label_title:
-				label_title.text = "✝ " + golem_title + " (Defeated)"
-				label_title.modulate = Color(0.6, 0.6, 0.6)
+				label_title.hide()
 			if label_hp:
-				label_hp.text = "0 / " + str(int(max_health)) + " HP"
-				label_hp.modulate = Color(0.5, 0.5, 0.5)
+				label_hp.hide()
+			if collision_shape:
+				collision_shape.set_deferred("disabled", true)
+			set_physics_process(false)
+
+func _spawn_death_particles() -> void:
+	var parent_node = get_parent()
+	if not parent_node:
+		parent_node = self
+
+	# Partikel cahaya elemen terbang ke atas
+	var p = CPUParticles3D.new()
+	parent_node.add_child(p)
+	p.global_position = global_position + Vector3(0, 0.4, 0)
+	p.emitting = true
+	p.one_shot = true
+	p.explosiveness = 0.2
+	p.lifetime = 1.8
+	p.amount = 32
+	p.emission_shape = CPUParticles3D.EMISSION_SHAPE_BOX
+	p.emission_box_extents = Vector3(0.8, 0.3, 0.8)
+	p.direction = Vector3.UP
+	p.spread = 25.0
+	p.gravity = Vector3(0, 3.5, 0)
+	p.initial_velocity_min = 2.0
+	p.initial_velocity_max = 4.5
+	
+	var mat = StandardMaterial3D.new()
+	mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	mat.albedo_color = element_color
+	mat.emission_enabled = true
+	mat.emission = element_color
+	mat.emission_energy_multiplier = 4.5
+	
+	var sphere = SphereMesh.new()
+	sphere.radius = 0.08
+	sphere.height = 0.16
+	sphere.material = mat
+	p.mesh = sphere
+	var tree = get_tree()
+	if tree:
+		tree.create_timer(2.0).timeout.connect(p.queue_free)
+	else:
+		p.queue_free()
+
+	# Efek cahaya OmniLight3D mengikuti warna elemen
+	var light = OmniLight3D.new()
+	parent_node.add_child(light)
+	light.global_position = global_position + Vector3(0, 0.8, 0)
+	light.light_color = element_color
+	light.light_energy = 4.0
+	light.omni_range = 8.0
+	
+	if tree:
+		var tw = tree.create_tween()
+		tw.tween_property(light, "global_position:y", light.global_position.y + 3.0, 1.8)
+		tw.parallel().tween_property(light, "light_energy", 0.0, 1.8)
+		tw.tween_callback(light.queue_free)
+	else:
+		light.queue_free()
 
 func _rotate_towards(target_dir: Vector3, delta: float) -> void:
 	if target_dir.length_squared() < 0.001:

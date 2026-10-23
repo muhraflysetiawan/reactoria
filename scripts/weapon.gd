@@ -1,4 +1,4 @@
-extends SwordWeapon
-class_name WeaponBase
+# extends SwordWeapon
+# class_name WeaponBase
 
-## Alias / wrapper WeaponBase yang mewarisi seluruh fungsionalitas dari SwordWeapon.
+# ## Alias / wrapper WeaponBase yang mewarisi seluruh fungsionalitas dari SwordWeapon.

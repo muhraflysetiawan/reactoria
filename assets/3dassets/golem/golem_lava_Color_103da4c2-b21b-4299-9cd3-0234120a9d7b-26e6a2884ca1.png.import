@@ -2,14 +2,11 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://ctt3yknqcdlf8"
+uid="uid://81sx4er4e44a"
 path.s3tc="res://.godot/imported/golem_lava_Color_103da4c2-b21b-4299-9cd3-0234120a9d7b-26e6a2884ca1.png-59d6a4ebf6bc0b5186b16620b5a5bce9.s3tc.ctex"
 metadata={
 "imported_formats": ["s3tc_bptc"],
 "vram_texture": true
-}
-generator_parameters={
-"md5": "76e28506e4e044c31bf6bc5ed912442e"
 }
 
 [deps]

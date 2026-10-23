@@ -2,14 +2,11 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://mj4u5u0wgx7m"
+uid="uid://j817b424owml"
 path.s3tc="res://.godot/imported/golem_earth_Color_33f3bc82-c604-4ed5-8b25-02d98709db89-98cf8b4edc51.png-7bc4df2221d47f27873148f4c707dbf2.s3tc.ctex"
 metadata={
 "imported_formats": ["s3tc_bptc"],
 "vram_texture": true
-}
-generator_parameters={
-"md5": "3b2991a348f7c465a3ec58fafc23cd2d"
 }
 
 [deps]
