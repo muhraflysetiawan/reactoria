@@ -179,7 +179,7 @@ func _find_node_of_type(node: Node, target_type) -> Node:
 
 func _setup_animations() -> void:
 	# NLA track animations are embedded in MC_NLATracks.glb / MC_NLATracks2.glb
-	var lib = anim_player.get_animation_library("")
+	# var lib = anim_player.get_animation_library("")
 	var anim_name_loop = ["MC_IDLE", "MC_RUN", "MC_RUNFAST"]
 	var anim_name_one_shot = [
 		"MC_ARCHERYSHOT",

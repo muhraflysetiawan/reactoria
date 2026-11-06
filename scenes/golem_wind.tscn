@@ -1,13 +1,13 @@
-[gd_scene load_steps=4 format=3]
+[gd_scene format=3 uid="uid://bci2yc1w04rl2"]
 
-[ext_resource type="Script" path="res://scripts/golem_enemy.gd" id="1_script"]
-[ext_resource type="PackedScene" path="res://assets/3dassets/golem/golem_wind.glb" id="2_model"]
+[ext_resource type="Script" uid="uid://c0udssbougeen" path="res://scripts/golem_enemy.gd" id="1_script"]
+[ext_resource type="PackedScene" uid="uid://corsyywcftb26" path="res://assets/3dassets/golem/wind/wind_golem.glb" id="2_model"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_golem"]
-radius = 0.65
-height = 2.2
+radius = 1.1
+height = 3.2
 
-[node name="GolemWind" type="CharacterBody3D"]
+[node name="GolemWind" type="CharacterBody3D" unique_id=1801576348]
 collision_layer = 4
 collision_mask = 3
 script = ExtResource("1_script")
@@ -16,12 +16,13 @@ golem_title = "Cyan Tempest [Wind]"
 element_color = Color(0.3, 0.95, 0.85, 1)
 max_health = 220.0
 attack_damage = 28.0
+attack_range = 3.8
 walk_speed = 2.8
 chase_speed = 4.8
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.1, 0)
+[node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=618422116]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.6, 0)
 shape = SubResource("CapsuleShape3D_golem")
 
-[node name="Model" parent="." instance=ExtResource("2_model")]
-transform = Transform3D(-1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 0, 0, 0)
+[node name="Model" parent="." unique_id=822181699 instance=ExtResource("2_model")]
+transform = Transform3D(-2, 0, -1.74846e-07, 0, 2, 0, 1.74846e-07, 0, -2, 0, 0, 0)
