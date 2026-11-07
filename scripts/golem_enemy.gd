@@ -23,7 +23,7 @@ const SPECIAL_ATTACK_SCENES = {
 @export var max_health: float = 250.0
 @export var attack_damage: float = 30.0
 @export var attack_cooldown: float = 0.5
-@export var attack_range: float = 1
+@export var attack_range: float = 3.8
 @export var detection_range: float = 10.0
 @export var patrol_range: float = 5.0
 
@@ -578,9 +578,10 @@ func _execute_ice_spike(parent_scene: Node) -> void:
 		var spike_root = Node3D.new()
 		parent_scene.add_child(spike_root)
 		
-		var offset_x = (i - 2) * 1.15
+		var offset_x = (i - 2) * 1.5
 		var offset_z = 2.0 + abs(i - 2) * 0.25
-		spike_root.global_position = global_position + back * offset_z + right * offset_x + Vector3(0, 1.8, 0)
+		var spawn_height_y: float = 4
+		spike_root.global_position = global_position + back * offset_z + right * offset_x + Vector3(0, spawn_height_y, 0)
 		
 		# Putar model internal agar ujung lancip spike (+Y) searah dengan local -Z wrapper
 		var model = special_attack_scene.instantiate()

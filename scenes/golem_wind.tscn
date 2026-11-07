@@ -16,7 +16,6 @@ golem_title = "Cyan Tempest [Wind]"
 element_color = Color(0.3, 0.95, 0.85, 1)
 max_health = 220.0
 attack_damage = 28.0
-attack_range = 3.8
 walk_speed = 2.8
 chase_speed = 4.8
 
