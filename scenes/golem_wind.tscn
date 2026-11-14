@@ -4,8 +4,8 @@
 [ext_resource type="PackedScene" uid="uid://corsyywcftb26" path="res://assets/3dassets/golem/wind/wind_golem.glb" id="2_model"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_golem"]
-radius = 1.1
-height = 3.2
+radius = 0.8
+height = 2.6
 
 [node name="GolemWind" type="CharacterBody3D" unique_id=1801576348]
 collision_layer = 4
@@ -20,7 +20,7 @@ walk_speed = 2.8
 chase_speed = 4.8
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=618422116]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.6, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.006, 1.2151433, 0.001)
 shape = SubResource("CapsuleShape3D_golem")
 
 [node name="Model" parent="." unique_id=822181699 instance=ExtResource("2_model")]

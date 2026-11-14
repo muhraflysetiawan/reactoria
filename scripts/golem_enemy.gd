@@ -11,7 +11,9 @@ enum State {IDLE, PATROL, CHASE, ATTACK, HIT, DEAD}
 const SPECIAL_ATTACK_SCENES = {
 	Element.WIND: preload("res://assets/3dassets/golem/wind/shinra_tensei.glb"),
 	Element.EARTH: preload("res://assets/3dassets/golem/earth/doton_doryuheki.glb"),
-	Element.ICE: preload("res://assets/3dassets/golem/ice/ice-spike.glb")
+	Element.ICE: preload("res://assets/3dassets/golem/ice/ice-spike.glb"),
+	Element.LAVA: preload("res://assets/3dassets/golem/lava/lava-ball.glb"),
+	Element.LIGHTNING: preload("res://assets/3dassets/golem/lightning/lightning.glb"),
 }
 
 @export_group("Golem Identity")
@@ -23,14 +25,14 @@ const SPECIAL_ATTACK_SCENES = {
 @export var max_health: float = 250.0
 @export var attack_damage: float = 30.0
 @export var attack_cooldown: float = 0.5
-@export var attack_range: float = 3.8
+@export var attack_range: float = 1.5
 @export var detection_range: float = 10.0
 @export var patrol_range: float = 5.0
 
 @export_group("Special Attack")
 @export var special_attack_scene: PackedScene = null
 @export var special_attack_cooldown: float = 7.0
-@export var special_attack_damage: float = 48.0
+@export var special_attack_damage: float = 2.0
 @export var special_attack_range: float = 4.5
 
 @export_group("Movement")
@@ -202,7 +204,16 @@ func _physics_process(delta: float) -> void:
 			velocity.z = lerp(velocity.z, 0.0, 8.0 * delta)
 			
 			if dist_to_player <= detection_range:
-				_set_state(State.CHASE)
+				if attack_timer > 0.0:
+					# Masih cooldown serangan: tetap IDLE dan tetap menghadap player
+					if is_instance_valid(player):
+						var to_p = player.global_position - global_position
+						to_p.y = 0.0
+						_rotate_towards(to_p.normalized(), delta * 3.0)
+				elif dist_to_player <= attack_range or (dist_to_player <= special_attack_range and special_attack_timer <= 0.0):
+					_set_state(State.ATTACK)
+				else:
+					_set_state(State.CHASE)
 			elif state_timer >= 3.5:
 				_pick_patrol_target()
 				_set_state(State.PATROL)
@@ -225,8 +236,12 @@ func _physics_process(delta: float) -> void:
 		State.CHASE:
 			if not player_alive or dist_to_player > detection_range * 1.35:
 				_set_state(State.IDLE)
-			elif attack_timer <= 0.0 and (dist_to_player <= attack_range or (dist_to_player <= special_attack_range and special_attack_timer <= 0.0)):
-				_set_state(State.ATTACK)
+			elif dist_to_player <= attack_range or (dist_to_player <= special_attack_range and special_attack_timer <= 0.0):
+				if attack_timer <= 0.0:
+					_set_state(State.ATTACK)
+				else:
+					# Player sudah dalam jangkauan tapi masih cooldown: beralih ke IDLE agar tidak lari di tempat
+					_set_state(State.IDLE)
 			else:
 				var to_player = player.global_position - global_position
 				to_player.y = 0.0
@@ -244,7 +259,8 @@ func _physics_process(delta: float) -> void:
 			velocity.z = lerp(velocity.z, 0.0, 12.0 * delta)
 			
 			# Orientasikan badan ke player di awal serangan
-			if state_timer < 0.4 and is_instance_valid(player):
+			var aim_dur = 0.85 if (element_type == Element.LAVA and current_attack_variant == "Spesial Attack") else 0.4
+			if state_timer < aim_dur and is_instance_valid(player):
 				var to_p = player.global_position - global_position
 				to_p.y = 0.0
 				_rotate_towards(to_p.normalized(), delta * 2.0)
@@ -260,16 +276,18 @@ func _physics_process(delta: float) -> void:
 			# Selesai animasi serangan
 			if state_timer >= current_attack_duration:
 				attack_timer = attack_cooldown
-				if not player_alive or dist_to_player > attack_range:
-					_set_state(State.CHASE if player_alive else State.IDLE)
-				else:
-					_set_state(State.IDLE)
+				_set_state(State.IDLE)
 
 		State.HIT:
 			velocity.x = lerp(velocity.x, 0.0, 8.0 * delta)
 			velocity.z = lerp(velocity.z, 0.0, 8.0 * delta)
 			if state_timer >= 0.65:
-				_set_state(State.CHASE)
+				if dist_to_player <= attack_range:
+					_set_state(State.ATTACK if attack_timer <= 0.0 else State.IDLE)
+				elif dist_to_player <= detection_range:
+					_set_state(State.CHASE)
+				else:
+					_set_state(State.IDLE)
 
 	move_and_slide()
 
@@ -301,8 +319,12 @@ func _set_state(new_state: State) -> void:
 			if can_special:
 				current_attack_variant = "Spesial Attack"
 				special_attack_timer = special_attack_cooldown
-				current_attack_duration = 1.0
-				current_attack_hit_time = 0.35
+				if element_type == Element.LAVA:
+					current_attack_duration = 1.35
+					current_attack_hit_time = 0.0
+				else:
+					current_attack_duration = 1.0
+					current_attack_hit_time = 0.35
 			else:
 				var normals: Array[String] = []
 				if anim_player.has_animation("Attack1"):
@@ -455,6 +477,10 @@ func _execute_special_attack() -> void:
 			_execute_doton_doryuheki(parent_scene)
 		Element.ICE:
 			_execute_ice_spike(parent_scene)
+		Element.LAVA:
+			_execute_throw_lava_ball(parent_scene)
+		# Element.LIGHTNING:
+		# 	_execute_thunderstruck(parent_scene)
 		_:
 			_execute_fallback_special(parent_scene)
 
@@ -662,6 +688,125 @@ func _execute_ice_spike(parent_scene: Node) -> void:
 		var fly_tw = tree.create_tween()
 		fly_tw.tween_property(spike, "global_position", fly_target, 1.0)
 		fly_tw.tween_callback(spike.queue_free)
+
+func _execute_throw_lava_ball(parent_scene: Node) -> void:
+	if not special_attack_scene:
+		_execute_fallback_special(parent_scene)
+		return
+
+	if anim_player and anim_player.has_animation("Spesial Attack") and anim_player.current_animation != "Spesial Attack":
+		anim_player.play("Spesial Attack", 0.15)
+
+	var tree = get_tree()
+	if not tree:
+		return
+
+	# Pasang ke tangan kanan via BoneAttachment3D
+	var skeleton = find_child("Skeleton3D", true, false) as Skeleton3D
+	var hand_attach: BoneAttachment3D = null
+	if skeleton:
+		hand_attach = BoneAttachment3D.new()
+		var bone_idx = skeleton.find_bone("RightHand")
+		if bone_idx != -1:
+			hand_attach.bone_idx = bone_idx
+		hand_attach.bone_name = "RightHand"
+		skeleton.add_child(hand_attach)
+
+	var ball = special_attack_scene.instantiate()
+	var ground_glow = ball.find_child("GroundGlow", true, false)
+	if ground_glow:
+		ground_glow.visible = false
+
+	# Kompensasi skala armature skeleton (Armature GLB berskala 0.01, Model 1.5 -> total ~0.015)
+	# Target ukuran bola lava di dunia nyata: diameter ~1.6m (skala dunia 0.8)
+	var target_world_scale: float = 0.8
+	var skel_scale: float = 0.015
+	if hand_attach and hand_attach.is_inside_tree():
+		var s = hand_attach.global_transform.basis.get_scale().x
+		if s > 0.0001:
+			skel_scale = s
+	var target_local_scale = Vector3.ONE * (target_world_scale / skel_scale)
+
+	ball.scale = Vector3.ZERO
+	if hand_attach:
+		# Posisikan tepat di cekungan telapak tangan (offset lokal bone armature)
+		ball.position = Vector3(0, 80, 10)
+		hand_attach.add_child(ball)
+	else:
+		parent_scene.add_child(ball)
+		ball.global_position = global_position + Vector3(0, 1.5, 0) - global_transform.basis.z * 1.0
+
+	# Keyframe 0-4 (0.167s): Tunggu tangan membuka dan menadah
+	await tree.create_timer(4.0 / 24.0).timeout
+	if not is_instance_valid(self) or current_state == State.DEAD:
+		if is_instance_valid(ball): ball.queue_free()
+		if is_instance_valid(hand_attach): hand_attach.queue_free()
+		return
+
+	# Keyframe 4-10 (durasi 0.25s): Bola membesar dari scale 0 ke ukuran penuh di telapak tangan
+	var tw = tree.create_tween()
+	tw.tween_property(ball, "scale", target_local_scale, 18.0 / 24.0).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+
+	# Keyframe 10-22 (durasi 0.50s): Bola mengikuti pergerakan tangan saat ancang-ancang lempar
+	await tree.create_timer(18.0 / 24.0).timeout
+	if not is_instance_valid(self) or current_state == State.DEAD:
+		if is_instance_valid(ball): ball.queue_free()
+		if is_instance_valid(hand_attach): hand_attach.queue_free()
+		return
+
+	# Keyframe 22: Lepas bola dari telapak tangan ke scene utama dengan skala dunia nyata
+	if hand_attach and is_instance_valid(hand_attach):
+		var throw_pos = ball.global_position
+		var throw_rot = ball.global_rotation
+		hand_attach.remove_child(ball)
+		parent_scene.add_child(ball)
+		ball.global_position = throw_pos
+		ball.global_rotation = throw_rot
+		ball.scale = Vector3.ONE * target_world_scale
+		hand_attach.queue_free()
+
+	# Tentukan arah tembakan ke target/player
+	var target_pos: Vector3
+	if _is_player_alive():
+		target_pos = player.global_position + Vector3(0, 1.0, 0)
+	else:
+		target_pos = ball.global_position - global_transform.basis.z * 25.0
+
+	var throw_dir = (target_pos - ball.global_position).normalized()
+	if throw_dir.is_zero_approx():
+		throw_dir = -global_transform.basis.z
+
+	var fly_dist = 28.0
+	var fly_target = ball.global_position + throw_dir * fly_dist
+
+	# Area3D untuk deteksi tabrakan
+	var area = Area3D.new()
+	area.collision_layer = 0
+	area.collision_mask = 1 | 2 # Environment & Player
+	var col = CollisionShape3D.new()
+	var sphere = SphereShape3D.new()
+	sphere.radius = 0.8
+	col.shape = sphere
+	area.add_child(col)
+	ball.add_child(area)
+
+	var hit_callable = func(body: Node3D):
+		if not is_instance_valid(ball):
+			return
+		if body.is_in_group("player") or body == player:
+			if body.has_method("take_damage"):
+				body.take_damage(special_attack_damage)
+			if "velocity" in body:
+				body.velocity += throw_dir * 14.0 + Vector3.UP * 3.0
+			print("[Golem %s] Lava Ball mengenai player! Damage %d" % [golem_title, int(special_attack_damage)])
+		ball.queue_free()
+
+	area.body_entered.connect(hit_callable)
+
+	var fly_tw = tree.create_tween()
+	fly_tw.tween_property(ball, "global_position", fly_target, 0.9)
+	fly_tw.parallel().tween_property(ball, "rotation:x", ball.rotation.x + PI * 4.0, 0.9)
+	fly_tw.tween_callback(ball.queue_free)
 
 func _execute_fallback_special(parent_scene: Node) -> void:
 	if special_attack_scene:

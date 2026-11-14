@@ -422,8 +422,8 @@ func _update_animation(_delta: float, is_moving: bool, is_sprinting: bool) -> vo
 
 	if not is_on_floor():
 		# Melompat di udara
-		if anim_player.has_animation("MC_JUMP") and anim_player.current_animation != "MC_JUMP":
-			anim_player.play("MC_JUMP", 0.15)
+		if anim_player.has_animation("MC_JUMP2") and anim_player.current_animation != "MC_JUMP2":
+			anim_player.play("MC_JUMP2", 0.15)
 	elif is_moving:
 		# Berlari — MC_RUNFAST untuk sprint, MC_RUN untuk jalan
 		var target_anim = "MC_RUNFAST" if is_sprinting else "MC_RUN"

@@ -4,8 +4,8 @@
 [ext_resource type="PackedScene" uid="uid://deqo2d82nr5gx" path="res://assets/3dassets/golem/earth/earth_golem.glb" id="2_model"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_golem"]
-radius = 1.1
-height = 3.2
+radius = 0.8
+height = 2.6
 
 [node name="GolemEarth" type="CharacterBody3D" unique_id=1519489165]
 collision_layer = 4
@@ -17,7 +17,7 @@ max_health = 300.0
 attack_damage = 35.0
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=968076718]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.6, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.215, 0)
 shape = SubResource("CapsuleShape3D_golem")
 
 [node name="Model" parent="." unique_id=729566182 instance=ExtResource("2_model")]
