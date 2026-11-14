@@ -2,17 +2,20 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://bg2hr87aelugk"
-path.s3tc="res://.godot/imported/golem_ice_Color_cc6a367c-4d1d-4515-8daa-fc41561ee535-2fd588149d7b.png-eecd059c4942507985f3d6d557447e15.s3tc.ctex"
+uid="uid://dg685s81qdgwj"
+path.s3tc="res://.godot/imported/lightning_lightning_texture.png-0fe733a624dc2d67d44baa24f82e03be.s3tc.ctex"
 metadata={
 "imported_formats": ["s3tc_bptc"],
 "vram_texture": true
 }
+generator_parameters={
+"md5": "654a3e322c786c40398fba13d2bcf8bb"
+}
 
 [deps]
 
-source_file="res://assets/3dassets/golem/golem_ice_Color_cc6a367c-4d1d-4515-8daa-fc41561ee535-2fd588149d7b.png"
-dest_files=["res://.godot/imported/golem_ice_Color_cc6a367c-4d1d-4515-8daa-fc41561ee535-2fd588149d7b.png-eecd059c4942507985f3d6d557447e15.s3tc.ctex"]
+source_file="res://assets/3dassets/golem/lightning/lightning_lightning_texture.png"
+dest_files=["res://.godot/imported/lightning_lightning_texture.png-0fe733a624dc2d67d44baa24f82e03be.s3tc.ctex"]
 
 [params]
 

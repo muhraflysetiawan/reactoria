@@ -3,13 +3,13 @@
 importer="scene"
 importer_version=1
 type="PackedScene"
-uid="uid://xmg5fj74qkxs"
-path="res://.godot/imported/golem_wind.glb-407618a1f2cde2fdf3cc645b409b2e51.scn"
+uid="uid://cy1345l1ujv6k"
+path="res://.godot/imported/lightning.glb-2669f8b13cab866d60711d7a9c7515d6.scn"
 
 [deps]
 
-source_file="res://assets/3dassets/golem/golem_wind.glb"
-dest_files=["res://.godot/imported/golem_wind.glb-407618a1f2cde2fdf3cc645b409b2e51.scn"]
+source_file="res://assets/3dassets/golem/lightning/lightning.glb"
+dest_files=["res://.godot/imported/lightning.glb-2669f8b13cab866d60711d7a9c7515d6.scn"]
 
 [params]
 

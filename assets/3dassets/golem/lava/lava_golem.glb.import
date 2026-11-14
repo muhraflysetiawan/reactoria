@@ -3,13 +3,13 @@
 importer="scene"
 importer_version=1
 type="PackedScene"
-uid="uid://d2mtj7ggfout4"
-path="res://.godot/imported/golem_lava.glb-857480c3948f1cbe6ba73a229eb1d827.scn"
+uid="uid://cjnp370e8uvdq"
+path="res://.godot/imported/lava_golem.glb-205168873b2cca72868f682b86630ff6.scn"
 
 [deps]
 
-source_file="res://assets/3dassets/golem/golem_lava.glb"
-dest_files=["res://.godot/imported/golem_lava.glb-857480c3948f1cbe6ba73a229eb1d827.scn"]
+source_file="res://assets/3dassets/golem/lava/lava_golem.glb"
+dest_files=["res://.godot/imported/lava_golem.glb-205168873b2cca72868f682b86630ff6.scn"]
 
 [params]
 

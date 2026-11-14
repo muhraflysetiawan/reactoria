@@ -2,17 +2,20 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://81sx4er4e44a"
-path.s3tc="res://.godot/imported/golem_lava_Color_103da4c2-b21b-4299-9cd3-0234120a9d7b-26e6a2884ca1.png-59d6a4ebf6bc0b5186b16620b5a5bce9.s3tc.ctex"
+uid="uid://dvk34j2xtl6ep"
+path.s3tc="res://.godot/imported/lava-ball_Lava_Emission.png-ffcece539ac3c794e0dc9ee11cfed6c1.s3tc.ctex"
 metadata={
 "imported_formats": ["s3tc_bptc"],
 "vram_texture": true
 }
+generator_parameters={
+"md5": "579940e2864c97acb9bb0c28c0cb8066"
+}
 
 [deps]
 
-source_file="res://assets/3dassets/golem/golem_lava_Color_103da4c2-b21b-4299-9cd3-0234120a9d7b-26e6a2884ca1.png"
-dest_files=["res://.godot/imported/golem_lava_Color_103da4c2-b21b-4299-9cd3-0234120a9d7b-26e6a2884ca1.png-59d6a4ebf6bc0b5186b16620b5a5bce9.s3tc.ctex"]
+source_file="res://assets/3dassets/golem/lava/lava-ball_Lava_Emission.png"
+dest_files=["res://.godot/imported/lava-ball_Lava_Emission.png-ffcece539ac3c794e0dc9ee11cfed6c1.s3tc.ctex"]
 
 [params]
 

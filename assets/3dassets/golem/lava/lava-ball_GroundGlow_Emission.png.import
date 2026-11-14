@@ -2,20 +2,20 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://br40cocagqnkl"
-path.s3tc="res://.godot/imported/ice_golem_texture_0_1.png-13a2370906cede6d9cdb58d3669b1556.s3tc.ctex"
+uid="uid://b3m8swudslxyy"
+path.s3tc="res://.godot/imported/lava-ball_GroundGlow_Emission.png-123d6556dee0a88365893e2a0af013d0.s3tc.ctex"
 metadata={
 "imported_formats": ["s3tc_bptc"],
 "vram_texture": true
 }
 generator_parameters={
-"md5": "92692552ad5b53ac4b5298f227f7c0ef"
+"md5": "ac39475db3fde646c70ee923093ca77d"
 }
 
 [deps]
 
-source_file="res://assets/3dassets/golem/ice/ice_golem_texture_0_1.png"
-dest_files=["res://.godot/imported/ice_golem_texture_0_1.png-13a2370906cede6d9cdb58d3669b1556.s3tc.ctex"]
+source_file="res://assets/3dassets/golem/lava/lava-ball_GroundGlow_Emission.png"
+dest_files=["res://.godot/imported/lava-ball_GroundGlow_Emission.png-123d6556dee0a88365893e2a0af013d0.s3tc.ctex"]
 
 [params]
 
