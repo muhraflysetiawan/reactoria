@@ -421,11 +421,13 @@ func _update_animation(_delta: float, is_moving: bool, is_sprinting: bool) -> vo
 		return
 
 	if not is_on_floor():
-		# Melompat di udara
-		if anim_player.has_animation("MC_JUMP2") and anim_player.current_animation != "MC_JUMP2":
-			anim_player.play("MC_JUMP2", 0.15)
+		# Jika sedang bergerak (lari/jalan), gunakan animasi lompat lari (MC_JUMP2)
+		# Jika diam di tempat, gunakan animasi lompat vertikal di tempat (MC_JUMP)
+		var jump_anim = "MC_JUMP2" if is_moving else "MC_JUMP"
+		if anim_player.has_animation(jump_anim) and anim_player.current_animation != jump_anim:
+			anim_player.play(jump_anim, 0.15)
 	elif is_moving:
-		# Berlari — MC_RUNFAST untuk sprint, MC_RUN untuk jalan
+		# Berlari — MC_RUNFAST untuk sprint, MC_RUN untuk jala n
 		var target_anim = "MC_RUNFAST" if is_sprinting else "MC_RUN"
 		anim_player.speed_scale = 1.0
 		if anim_player.has_animation(target_anim) and anim_player.current_animation != target_anim:
