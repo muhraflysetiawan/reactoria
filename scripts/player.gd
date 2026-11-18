@@ -21,6 +21,12 @@ signal damaged(amount: float)
 @export var default_zoom: float = 4.5
 @export var min_zoom: float = 1.5
 @export var max_zoom: float = 10.0
+## Posisi offset kamera over-the-shoulder (X: Kanan/Kiri, Y: Atas/Bawah, Z: Maju/Mundur)
+@export var shoulder_offset: Vector3 = Vector3(0.55, 1.4, 0.0):
+	set(val):
+		shoulder_offset = val
+		if spring_arm and is_instance_valid(spring_arm):
+			spring_arm.position = shoulder_offset
 
 @export_group("Combat")
 @export var max_health: float = 100.0
@@ -68,6 +74,7 @@ signal damaged(amount: float)
 @onready var spring_arm: SpringArm3D = $SpringArm3D
 @onready var camera: Camera3D = $SpringArm3D/Camera3D
 @onready var visuals: Node3D = $Visuals
+@onready var crosshair: Control = get_node_or_null("CrosshairLayer/Crosshair")
 
 const WeaponBaseScript = preload("res://scripts/weapon.gd")
 
@@ -95,6 +102,10 @@ var attack_cooldown_timer: float = 0.2
 var shake_intensity: float = 0.0
 var is_dead: bool = false
 
+# Hit Reaction System
+var is_hit: bool = false
+var hit_timer: float = 0.0
+
 # Parry System
 var is_parrying: bool = false
 var parry_timer: float = 0.0
@@ -120,6 +131,9 @@ func _ready() -> void:
 	health_changed.emit(current_health, max_health)
 	# _update_hud_hp()
 	capture_mouse()
+	
+	if spring_arm:
+		spring_arm.position = shoulder_offset
 	
 	floor_snap_length = 0.4
 	floor_max_angle = deg_to_rad(50.0)
@@ -182,12 +196,15 @@ func _setup_animations() -> void:
 	# var lib = anim_player.get_animation_library("")
 	var anim_name_loop = ["MC_IDLE", "MC_RUN", "MC_RUNFAST"]
 	var anim_name_one_shot = [
-		"MC_ARCHERYSHOT",
-		"MC_BACKWARD",
+		"MC_SHOWBOW",
+		"MC_BACKWARDBOW",
 		"MC_CHARGEDSLASH",
 		"MC_CHARGEDUPSWORDSLASH",
 		"MC_DEAD",
 		"MC_FORWARDBOW",
+		"MC_HIT1",
+		"MC_HIT2",
+		"MC_HIT3",
 		"MC_JUMP",
 		"MC_JUMP2",
 		"MC_PARRY",
@@ -223,6 +240,7 @@ func _setup_sword_weapon() -> void:
 
 	var weapon_data: Dictionary = GameData.get_weapon_data()
 	is_bow_equipped = weapon_data.get("type", "") == "bow" or weapon_data.get("id", "") == "koh_bow"
+	_update_crosshair_visibility()
 	var target_bone = weapon_data.get("bone_attachment", "LeftHand" if is_bow_equipped else "RightHand")
 
 	var hand_idx = skeleton.find_bone(target_bone)
@@ -321,6 +339,10 @@ func _physics_process(delta: float) -> void:
 		var target_rot: float = atan2(-aim_dir.x, -aim_dir.z) - rotation.y + angle_offset
 		visuals.rotation.y = lerp_angle(visuals.rotation.y, target_rot, 20.0 * delta)
 
+	# Update target bidikan crosshair saat busur aktif
+	if is_bow_equipped and crosshair and crosshair.visible and not is_dead:
+		_update_crosshair_target()
+
 	# Update timers
 	if attack_cooldown_timer > 0.0:
 		attack_cooldown_timer -= delta
@@ -339,6 +361,11 @@ func _physics_process(delta: float) -> void:
 		parry_timer -= delta
 		if parry_timer <= 0.0:
 			is_parrying = false
+
+	if is_hit:
+		hit_timer -= delta
+		if hit_timer <= 0.0:
+			is_hit = false
 			
 	# Camera shake decay
 	if shake_intensity > 0.0:
@@ -416,8 +443,8 @@ func _update_animation(_delta: float, is_moving: bool, is_sprinting: bool) -> vo
 	if not anim_player:
 		return
 
-	# Jangan override jika sedang mati, menyerang, atau parry
-	if is_dead or is_attacking or is_parrying:
+	# Jangan override jika sedang mati, menyerang, parry, atau terkena hit
+	if is_dead or is_attacking or is_parrying or is_hit:
 		return
 
 	if not is_on_floor():
@@ -427,7 +454,7 @@ func _update_animation(_delta: float, is_moving: bool, is_sprinting: bool) -> vo
 		if anim_player.has_animation(jump_anim) and anim_player.current_animation != jump_anim:
 			anim_player.play(jump_anim, 0.15)
 	elif is_moving:
-		# Berlari — MC_RUNFAST untuk sprint, MC_RUN untuk jala n
+		# Berlari — MC_RUNFAST untuk sprint, MC_RUN untuk jala an
 		var target_anim = "MC_RUNFAST" if is_sprinting else "MC_RUN"
 		anim_player.speed_scale = 1.0
 		if anim_player.has_animation(target_anim) and anim_player.current_animation != target_anim:
@@ -595,7 +622,7 @@ func perform_sword_attack() -> void:
 func perform_bow_attack() -> void:
 	var weapon_data: Dictionary = GameData.get_weapon_data()
 	# var current_combo = combo_index
-	var anim_name = "MC_ARCHERYSHOT"
+	var anim_name = "MC_SHOWBOW"
 	var duration = 0.5
 	var release_delay = 0.32
 	var lunge_force = 0.0
@@ -723,6 +750,32 @@ func _get_aim_direction(from_pos: Vector3) -> Vector3:
 	if dir.is_zero_approx():
 		return -global_transform.basis.z
 	return dir
+
+func _update_crosshair_visibility() -> void:
+	if not crosshair:
+		crosshair = get_node_or_null("CrosshairLayer/Crosshair")
+	if crosshair:
+		crosshair.visible = is_bow_equipped and not is_dead
+
+func _update_crosshair_target() -> void:
+	if not camera or not crosshair:
+		return
+	var space_state = get_world_3d().direct_space_state
+	var center_vp = get_viewport().get_visible_rect().size / 2.0
+	var ray_origin = camera.project_ray_origin(center_vp)
+	var ray_dir = camera.project_ray_normal(center_vp)
+	var ray_target = ray_origin + ray_dir * 100.0
+
+	var query = PhysicsRayQueryParameters3D.create(ray_origin, ray_target)
+	query.exclude = [get_rid()]
+	query.collision_mask = 5 # World (1) & Enemies (4)
+	var hit = space_state.intersect_ray(query)
+
+	var is_enemy = false
+	if hit and hit.collider:
+		var col = hit.collider
+		is_enemy = col.is_in_group("enemies") or (col.get_parent() and col.get_parent().is_in_group("enemies"))
+	crosshair.is_targeting_enemy = is_enemy
 
 func _load_audio_stream(path: String) -> AudioStream:
 	if path != "" and ResourceLoader.exists(path):
@@ -902,8 +955,11 @@ func respawn() -> void:
 	current_health = max_health
 	is_attacking = false
 	is_parrying = false
+	is_hit = false
+	hit_timer = 0.0
 	is_dead = false
 	combo_index = 1
+	_update_crosshair_visibility()
 	health_changed.emit(current_health, max_health)
 	_update_heartbeat_audio()
 	# _update_hud_hp()
@@ -937,11 +993,38 @@ func take_damage(amount: float) -> void:
 	# _update_hud_hp()
 	if current_health <= 0.0:
 		is_dead = true
+		_update_crosshair_visibility()
 		if anim_player and anim_player.has_animation("MC_DEAD"):
 			anim_player.play("MC_DEAD", 0.1)
 			anim_player.animation_finished.connect(_on_death_anim_finished, CONNECT_ONE_SHOT)
 		else:
 			respawn()
+	else:
+		_play_hit_reaction(amount)
+
+func _play_hit_reaction(amount: float) -> void:
+	if not anim_player:
+		return
+
+	var hit_anim = "MC_HIT1"
+	var dur = 0.45
+	if amount >= 35.0:
+		hit_anim = "MC_HIT3" # Lontaran vertikal / shockwave knockup
+		dur = 0.75
+	elif amount >= 20.0:
+		hit_anim = "MC_HIT2" # Ayunan samping berat / pukulan keras
+		dur = 0.60
+	else:
+		hit_anim = "MC_HIT1" # Sentakan dada depan / proyektil cepat
+		dur = 0.45
+
+	if anim_player.has_animation(hit_anim):
+		is_hit = true
+		hit_timer = dur
+		# Batalkan status menyerang jika terkena stagger berat
+		if amount >= 20.0:
+			is_attacking = false
+		anim_player.play(hit_anim, 0.06)
 
 func _on_death_anim_finished(_anim_name: String) -> void:
 	respawn()

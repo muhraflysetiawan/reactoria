@@ -15,7 +15,7 @@ element_type = 2
 golem_title = "Molten Titan [Lava]"
 element_color = Color(1, 0.45, 0.15, 1)
 max_health = 320.0
-attack_damage = 1.0
+attack_damage = 21.0
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=1872918947]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.215, 0)

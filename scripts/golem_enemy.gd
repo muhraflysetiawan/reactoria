@@ -796,6 +796,16 @@ func _execute_throw_lava_ball(parent_scene: Node) -> void:
 		if body.is_in_group("player") or body == player:
 			if body.has_method("take_damage"):
 				body.take_damage(special_attack_damage)
+				var burn_tw = body.create_tween()
+				for i in 3:
+					burn_tw.tween_interval(1.0)
+					burn_tw.tween_callback(func():
+						if is_instance_valid(body) and body.has_method("take_damage"):
+							if "is_dead" in body and body.is_dead:
+								burn_tw.kill()
+								return
+							body.take_damage(5.0)
+					)
 			if "velocity" in body:
 				body.velocity += throw_dir * 14.0 + Vector3.UP * 3.0
 			print("[Golem %s] Lava Ball mengenai player! Damage %d" % [golem_title, int(special_attack_damage)])

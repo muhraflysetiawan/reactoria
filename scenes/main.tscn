@@ -2,11 +2,11 @@
 
 [ext_resource type="PackedScene" uid="uid://cxrn32w88i001" path="res://scenes/arena.tscn" id="1_jyhfs"]
 [ext_resource type="PackedScene" uid="uid://c84x5qvev1p1" path="res://scenes/player.tscn" id="3_tefeu"]
-[ext_resource type="PackedScene" path="res://scenes/golem_earth.tscn" id="5_earth"]
-[ext_resource type="PackedScene" path="res://scenes/golem_ice.tscn" id="6_ice"]
-[ext_resource type="PackedScene" path="res://scenes/golem_lava.tscn" id="7_lava"]
-[ext_resource type="PackedScene" path="res://scenes/golem_lightning.tscn" id="8_lightning"]
-[ext_resource type="PackedScene" path="res://scenes/golem_wind.tscn" id="9_wind"]
+[ext_resource type="PackedScene" uid="uid://dfxajbfamv4yr" path="res://scenes/golem_earth.tscn" id="5_earth"]
+[ext_resource type="PackedScene" uid="uid://bjqgmc1yho0ww" path="res://scenes/golem_ice.tscn" id="6_ice"]
+[ext_resource type="PackedScene" uid="uid://bvneiceeoqcmo" path="res://scenes/golem_lava.tscn" id="7_lava"]
+[ext_resource type="PackedScene" uid="uid://sy7jfm6ecfyf" path="res://scenes/golem_lightning.tscn" id="8_lightning"]
+[ext_resource type="PackedScene" uid="uid://bci2yc1w04rl2" path="res://scenes/golem_wind.tscn" id="9_wind"]
 [ext_resource type="PackedScene" uid="uid://cx6y8v2rakbm1" path="res://scenes/health_bar_ui.tscn" id="10_health_ui"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_tipki"]
