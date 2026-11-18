@@ -46,6 +46,7 @@ var current_state: State = State.IDLE
 var player: CharacterBody3D = null
 var spawn_point: Vector3 = Vector3.ZERO
 var patrol_target: Vector3 = Vector3.ZERO
+var is_aggroed: bool = false
 
 var anim_player: AnimationPlayer = null
 var state_timer: float = 0.0
@@ -203,7 +204,7 @@ func _physics_process(delta: float) -> void:
 			velocity.x = lerp(velocity.x, 0.0, 8.0 * delta)
 			velocity.z = lerp(velocity.z, 0.0, 8.0 * delta)
 			
-			if dist_to_player <= detection_range:
+			if player_alive and (dist_to_player <= detection_range or is_aggroed):
 				if attack_timer > 0.0:
 					# Masih cooldown serangan: tetap IDLE dan tetap menghadap player
 					if is_instance_valid(player):
@@ -219,7 +220,7 @@ func _physics_process(delta: float) -> void:
 				_set_state(State.PATROL)
 
 		State.PATROL:
-			if dist_to_player <= detection_range:
+			if player_alive and (dist_to_player <= detection_range or is_aggroed):
 				_set_state(State.CHASE)
 			else:
 				var to_target = patrol_target - global_position
@@ -234,7 +235,8 @@ func _physics_process(delta: float) -> void:
 					_rotate_towards(dir, delta)
 
 		State.CHASE:
-			if not player_alive or dist_to_player > detection_range * 1.35:
+			if not player_alive or (dist_to_player > detection_range * 1.35 and not is_aggroed):
+				is_aggroed = false
 				_set_state(State.IDLE)
 			elif dist_to_player <= attack_range or (dist_to_player <= special_attack_range and special_attack_timer <= 0.0):
 				if attack_timer <= 0.0:
@@ -281,10 +283,10 @@ func _physics_process(delta: float) -> void:
 		State.HIT:
 			velocity.x = lerp(velocity.x, 0.0, 8.0 * delta)
 			velocity.z = lerp(velocity.z, 0.0, 8.0 * delta)
-			if state_timer >= 0.65:
+			if state_timer >= 0.4:
 				if dist_to_player <= attack_range:
 					_set_state(State.ATTACK if attack_timer <= 0.0 else State.IDLE)
-				elif dist_to_player <= detection_range:
+				elif player_alive:
 					_set_state(State.CHASE)
 				else:
 					_set_state(State.IDLE)
@@ -841,6 +843,13 @@ func take_damage(amount: float) -> void:
 	_update_hp_display()
 	
 	if current_health <= 0.0:
+		is_aggroed = false
 		_set_state(State.DEAD)
 	else:
+		is_aggroed = true
+		if is_instance_valid(player):
+			var to_p = player.global_position - global_position
+			to_p.y = 0.0
+			if not to_p.is_zero_approx():
+				_rotate_towards(to_p.normalized(), 1.0)
 		_set_state(State.HIT)
