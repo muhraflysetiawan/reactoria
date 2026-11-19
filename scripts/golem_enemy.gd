@@ -13,7 +13,7 @@ const SPECIAL_ATTACK_SCENES = {
 	Element.EARTH: preload("res://assets/3dassets/golem/earth/doton_doryuheki.glb"),
 	Element.ICE: preload("res://assets/3dassets/golem/ice/ice-spike.glb"),
 	Element.LAVA: preload("res://assets/3dassets/golem/lava/lava-ball.glb"),
-	Element.LIGHTNING: preload("res://assets/3dassets/golem/lightning/lightning.glb"),
+	Element.LIGHTNING: preload("res://assets/3dassets/golem/lightning/lightning_v2.glb"),
 }
 
 @export_group("Golem Identity")
@@ -481,8 +481,8 @@ func _execute_special_attack() -> void:
 			_execute_ice_spike(parent_scene)
 		Element.LAVA:
 			_execute_throw_lava_ball(parent_scene)
-		# Element.LIGHTNING:
-		# 	_execute_thunderstruck(parent_scene)
+		Element.LIGHTNING:
+			_execute_thunderstruck(parent_scene)
 		_:
 			_execute_fallback_special(parent_scene)
 
@@ -819,6 +819,76 @@ func _execute_throw_lava_ball(parent_scene: Node) -> void:
 	fly_tw.tween_property(ball, "global_position", fly_target, 0.9)
 	fly_tw.parallel().tween_property(ball, "rotation:x", ball.rotation.x + PI * 4.0, 0.9)
 	fly_tw.tween_callback(ball.queue_free)
+
+static var _thunderstruck_anim: Animation = null
+
+func _execute_thunderstruck(parent_scene: Node) -> void:
+	if not special_attack_scene:
+		_execute_fallback_special(parent_scene)
+		return
+	
+	var tree = get_tree()
+	if not tree:
+		return
+
+	var strike_pos = player.global_position if _is_player_alive() else (global_position - global_transform.basis.z * 4.0)
+	var effect = special_attack_scene.instantiate()
+	parent_scene.add_child(effect)
+	effect.global_position = strike_pos
+
+	var eff_anim = effect.find_child("AnimationPlayer", true, false) as AnimationPlayer
+	if eff_anim:
+		var lib = eff_anim.get_animation_library("")
+		if _thunderstruck_anim == null:
+			_thunderstruck_anim = Animation.new()
+			var max_len = 0.0
+			for anim_name in lib.get_animation_list():
+				var anim = lib.get_animation(anim_name)
+				max_len = max(max_len, anim.length)
+				for t in anim.get_track_count():
+					if anim.track_get_key_count(t) > 1:
+						var nt = _thunderstruck_anim.add_track(anim.track_get_type(t))
+						_thunderstruck_anim.track_set_path(nt, anim.track_get_path(t))
+						_thunderstruck_anim.track_set_interpolation_type(nt, anim.track_get_interpolation_type(t))
+						for k in anim.track_get_key_count(t):
+							_thunderstruck_anim.track_insert_key(nt, anim.track_get_key_time(t, k), anim.track_get_key_value(t, k), anim.track_get_key_transition(t, k))
+			_thunderstruck_anim.length = max_len
+		if not lib.has_animation("Thunderstruck"):
+			lib.add_animation("Thunderstruck", _thunderstruck_anim)
+		eff_anim.play("Thunderstruck")
+
+	var cloud_light = effect.find_child("VFX_Light_Cloud", true, false) as OmniLight3D
+	var impact_light = effect.find_child("VFX_Light_Impact", true, false) as OmniLight3D
+	if cloud_light:
+		cloud_light.light_energy = 2.5
+
+	await tree.create_timer(0.37).timeout
+	if not is_instance_valid(effect):
+		return
+
+	if impact_light:
+		impact_light.light_energy = 8.0
+		var tw = tree.create_tween()
+		tw.tween_property(impact_light, "light_energy", 0.0, 0.5)
+
+	if _is_player_alive():
+		var dist = strike_pos.distance_to(player.global_position)
+		if dist <= 4.2:
+			var knock_dir = (player.global_position - strike_pos).normalized()
+			if knock_dir.is_zero_approx():
+				knock_dir = -global_transform.basis.z
+			knock_dir.y = 0.6
+			if "velocity" in player:
+				player.velocity += knock_dir.normalized() * 16.0
+			if player.has_method("take_damage"):
+				player.take_damage(special_attack_damage)
+			print("[Golem %s] Thunderstruck menyambar player! Damage %d" % [golem_title, int(special_attack_damage)])
+
+	tree.create_timer(1.0).timeout.connect(func():
+		if is_instance_valid(effect):
+			effect.queue_free()
+	)
+	
 
 func _execute_fallback_special(parent_scene: Node) -> void:
 	if special_attack_scene:
